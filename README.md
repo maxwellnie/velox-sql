@@ -12,9 +12,9 @@
 ```
     <dependencies>
         <dependency>
-            <groupId>com.crazy.sql.core</groupId>
-            <artifactId>CrazySQL</artifactId>
-            <version>1.3</version>
+          <groupId>io.github.akibanoichiichiyoha</groupId>
+          <artifactId>CrazySQL</artifactId>
+          <version>1.3</version>
         </dependency>
         <dependency>
             <groupId>mysql</groupId>
