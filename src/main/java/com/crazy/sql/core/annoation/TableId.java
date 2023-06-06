@@ -6,7 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * 标识实体类字段为主键
+ * 标识实体类字段为主键。
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
