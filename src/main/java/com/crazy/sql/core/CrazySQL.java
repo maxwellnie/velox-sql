@@ -44,7 +44,6 @@ public class CrazySQL<T> implements SQLExecutor<T> {
     public void setExecutor(SimpleSQLExecutor<T> executor) {
         this.executor = executor;
     }
-
     public ConnectionPool getPool() {
         return pool;
     }

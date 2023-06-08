@@ -1,8 +1,8 @@
 package com.crazy.sql.core.utils;
 
-import com.crazy.sql.core.annoation.TableId;
 import com.crazy.sql.core.exception.TableIdNotBoundException;
 
+import javax.persistence.Id;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
@@ -26,7 +26,7 @@ public class ReflectUtils <T>{
         this.tableSuffix=tableSuffix;
         this.standColumnName=standColumnName;
         for (Field f:fields) {
-            if(f.isAnnotationPresent(TableId.class)) {
+            if(f.isAnnotationPresent(Id.class)) {
                 this.primaryKeyField=f;
                 this.primaryKey = f.getName();
                 return;
@@ -59,7 +59,7 @@ public class ReflectUtils <T>{
      */
     public Object getPrimaryKeyValue(T t){
         for (Field f:fields) {
-            if(f.isAnnotationPresent(TableId.class)) {
+            if(f.isAnnotationPresent(Id.class)) {
                 try {
                     f.setAccessible(true);
                     return f.get(t);
