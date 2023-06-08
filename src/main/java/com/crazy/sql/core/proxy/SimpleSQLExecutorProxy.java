@@ -49,7 +49,7 @@ public class SimpleSQLExecutorProxy<T> implements SimpleSQLExecutor<T> {
         }finally {
             try {
                 execConnection.setAutoCommit(true);
-                getPool().callBack(getConnection());
+                getConnection().close();
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
@@ -80,7 +80,7 @@ public class SimpleSQLExecutorProxy<T> implements SimpleSQLExecutor<T> {
         }finally {
             try {
                 execConnection.setAutoCommit(true);
-                getPool().callBack(getConnection());
+                getConnection().close();
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
@@ -111,7 +111,7 @@ public class SimpleSQLExecutorProxy<T> implements SimpleSQLExecutor<T> {
         }finally {
             try {
                 execConnection.setAutoCommit(true);
-                getPool().callBack(getConnection());
+                getConnection().close();
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
@@ -125,14 +125,14 @@ public class SimpleSQLExecutorProxy<T> implements SimpleSQLExecutor<T> {
         if(getCacheManager()!=null){
             String key=executor.getSqlUtils().getTableName()+"queryOne";
             if(getCacheManager().hasCache(key)){
-                getPool().callBack(getConnection());
+                getConnection().close();
                 Cache<String,T> cache=getCacheManager().getCache(key);
                 return cache.get(executor.getSqlUtils().getPrimaryKeyValue(t));
             }
             result=executor.queryOne(t);
             Cache<String,T> cache=getCacheManager().getCache(key);
             cache.put(executor.getSqlUtils().getPrimaryKeyValue(t),t);
-            getPool().callBack(getConnection());
+            getConnection().close();
         }
         result=executor.queryOne(t);
         return result;
@@ -144,7 +144,7 @@ public class SimpleSQLExecutorProxy<T> implements SimpleSQLExecutor<T> {
         if(getCacheManager()!=null){
             String key=executor.getSqlUtils().getTableName()+"queryAll";
             if(getCacheManager().hasCache(key)){
-                getPool().callBack(getConnection());
+                getConnection().close();
                 Cache<String,T> cache=getCacheManager().getCache(key);
                 return new ArrayList<>(cache.values());
             }
@@ -155,7 +155,7 @@ public class SimpleSQLExecutorProxy<T> implements SimpleSQLExecutor<T> {
             });
         }
         resultList=executor.queryAll();
-        getPool().callBack(getConnection());
+        getConnection().close();
         return resultList;
     }
 
@@ -165,7 +165,7 @@ public class SimpleSQLExecutorProxy<T> implements SimpleSQLExecutor<T> {
         if(getCacheManager()!=null){
             String key=executor.getSqlUtils().getTableName()+"queryByWords"+ StringUtils.queryWordsArrayToString(queryWords);
             if(getCacheManager().hasCache(key)){
-                getPool().callBack(getConnection());
+                getConnection().close();
                 Cache<String,T> cache=getCacheManager().getCache(key);
                 return new ArrayList<>(cache.values());
             }
@@ -176,7 +176,7 @@ public class SimpleSQLExecutorProxy<T> implements SimpleSQLExecutor<T> {
             });
         }
         resultList=executor.queryByWords(queryWords);
-        getPool().callBack(getConnection());
+        getConnection().close();
         return resultList;
     }
 
@@ -188,16 +188,6 @@ public class SimpleSQLExecutorProxy<T> implements SimpleSQLExecutor<T> {
     @Override
     public Connection getConnection() {
         return this.executor.getConnection();
-    }
-
-    @Override
-    public void setPool(ConnectionPool pool) {
-        this.executor.setPool(pool);
-    }
-
-    @Override
-    public ConnectionPool getPool() {
-        return this.executor.getPool();
     }
 
     @Override

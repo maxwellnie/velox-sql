@@ -23,7 +23,7 @@ public class SimpleConnectionPool extends ConnectionPool {
         logger.info("The connection pool starts to be initialized. The configuration information is as follows:"+properties+"\nmaximum:"+maximumConnection);
         this.properties=properties;
         this.maximum=maximumConnection;
-        this.connectionUtils=new ConnectionUtils(properties);
+        this.connectionUtils=new ConnectionUtils(properties,this);
         try {
             Class.forName(properties.getProperty("driverClassName"));
             for (int i=0;i<maximum;i++)

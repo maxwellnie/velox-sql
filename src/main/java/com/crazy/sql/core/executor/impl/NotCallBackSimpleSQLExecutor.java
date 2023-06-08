@@ -19,7 +19,6 @@ import java.util.List;
 public class NotCallBackSimpleSQLExecutor<T> implements SimpleSQLExecutor<T> {
     private SQLUtils<T> sqlUtils;
     private Connection connection;
-    private ConnectionPool pool;
     private CacheManager cacheManager;
     public int insert(T t) throws SQLException {
         PreparedStatement preparedStatement= sqlUtils.insert(t,connection);
@@ -56,16 +55,6 @@ public class NotCallBackSimpleSQLExecutor<T> implements SimpleSQLExecutor<T> {
     @Override
     public Connection getConnection() {
         return connection;
-    }
-
-    @Override
-    public void setPool(ConnectionPool pool) {
-        this.pool=pool;
-    }
-
-    @Override
-    public ConnectionPool getPool() {
-        return pool;
     }
 
     @Override

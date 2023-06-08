@@ -18,19 +18,6 @@ public interface SimpleSQLExecutor<T> extends SQLExecutor<T>{
      * @return
      */
     public Connection getConnection();
-
-    /**
-     * 设置连接池，用于回收连接
-     * @param pool
-     */
-    public void setPool(ConnectionPool pool);
-
-    /**
-     * 获取连接池
-     * @return
-     */
-    public ConnectionPool getPool();
-
     /**
      * 设置SQLUtils用于操作数据库
      * @param sqlUtils

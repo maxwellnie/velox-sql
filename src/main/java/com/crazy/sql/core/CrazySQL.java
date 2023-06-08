@@ -33,7 +33,6 @@ public class CrazySQL<T> implements SQLExecutor<T> {
         }
         try {
             executor.setConnection(pool.getConnection());
-            executor.setPool(pool);
             executor.setSQLUtils(sqlUtils);
             executor.setCacheManager(cacheManager);
         } catch (ConnectionPoolBusyException e) {

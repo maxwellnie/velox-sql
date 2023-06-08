@@ -25,7 +25,6 @@ import java.util.stream.Collectors;
 public class StandSimpleSQLExecutor<T> implements SimpleSQLExecutor<T> {
     private SQLUtils<T> sqlUtils;
     private Connection connection;
-    private ConnectionPool pool;
     private CacheManager cacheManager;
     public int insert(T t) throws SQLException {
         PreparedStatement preparedStatement= sqlUtils.insert(t,connection);
@@ -41,7 +40,7 @@ public class StandSimpleSQLExecutor<T> implements SimpleSQLExecutor<T> {
             sqlUtils.setPrimaryKeyValue(t,primaryKeyValue);
             CacheUtils.updateCache(getCacheManager(),sqlUtils,list);
         }
-        getPool().callBack(getConnection());
+        connection.close();
         return primaryKeyValue;
     }
     public int update(T t) throws SQLException {
@@ -52,7 +51,7 @@ public class StandSimpleSQLExecutor<T> implements SimpleSQLExecutor<T> {
             list.add(t);
             CacheUtils.updateCache(getCacheManager(),sqlUtils,list);
         }
-        getPool().callBack(getConnection());
+        connection.close();
         return row;
     }
     public int delete(T t) throws SQLException {
@@ -63,7 +62,7 @@ public class StandSimpleSQLExecutor<T> implements SimpleSQLExecutor<T> {
             list.add(sqlUtils.getPrimaryKeyValue(t));
             CacheUtils.deleteCache(getCacheManager(),sqlUtils,list);
         }
-        getPool().callBack(getConnection());
+        connection.close();
         return row;
     }
     @Override
@@ -72,14 +71,14 @@ public class StandSimpleSQLExecutor<T> implements SimpleSQLExecutor<T> {
         if(getCacheManager()!=null){
             String key=sqlUtils.getTableName()+"queryOne";
             if(getCacheManager().hasCache(key)){
-                getPool().callBack(getConnection());
+                connection.close();
                 Cache<String,T> cache=getCacheManager().getCache(key);
                 return cache.get(sqlUtils.getPrimaryKeyValue(t));
             }
             result=sqlUtils.queryOne(t,getConnection());
             Cache<String,T> cache=getCacheManager().getCache(key);
             cache.put(sqlUtils.getPrimaryKeyValue(t),t);
-            getPool().callBack(getConnection());
+            connection.close();
         }
         result=sqlUtils.queryOne(t,connection);
         return result;
@@ -91,7 +90,7 @@ public class StandSimpleSQLExecutor<T> implements SimpleSQLExecutor<T> {
         if(getCacheManager()!=null){
             String key=sqlUtils.getTableName()+"queryAll";
             if(getCacheManager().hasCache(key)){
-                getPool().callBack(getConnection());
+                connection.close();
                 Cache<String,T> cache=getCacheManager().getCache(key);
                 return new ArrayList<>(cache.values());
             }
@@ -102,7 +101,7 @@ public class StandSimpleSQLExecutor<T> implements SimpleSQLExecutor<T> {
             });
         }
         resultList=sqlUtils.queryAll(getConnection());
-        getPool().callBack(getConnection());
+        connection.close();
         return resultList;
     }
 
@@ -112,7 +111,7 @@ public class StandSimpleSQLExecutor<T> implements SimpleSQLExecutor<T> {
         if(getCacheManager()!=null){
             String key=sqlUtils.getTableName()+"queryByWords"+ StringUtils.queryWordsArrayToString(queryWords);
             if(getCacheManager().hasCache(key)){
-                getPool().callBack(getConnection());
+                connection.close();
                 Cache<String,T> cache=getCacheManager().getCache(key);
                 return new ArrayList<>(cache.values());
             }
@@ -123,7 +122,7 @@ public class StandSimpleSQLExecutor<T> implements SimpleSQLExecutor<T> {
             });
         }
         resultList=sqlUtils.queryByWords(getConnection(),queryWords);
-        getPool().callBack(getConnection());
+        connection.close();
         return resultList;
     }
 
@@ -135,15 +134,6 @@ public class StandSimpleSQLExecutor<T> implements SimpleSQLExecutor<T> {
         return connection;
     }
 
-    @Override
-    public void setPool(ConnectionPool pool) {
-        this.pool=pool;
-    }
-
-    @Override
-    public ConnectionPool getPool() {
-        return pool;
-    }
 
     @Override
     public void setSQLUtils(SQLUtils<T> sqlUtils) {
