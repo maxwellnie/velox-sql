@@ -75,7 +75,8 @@ public class AutoCallBackConnection implements Connection{
 
     @Override
     public void close() throws SQLException {
-        pool.callBack(this);
+        if(pool!=null)
+            pool.callBack(this);
     }
 
     @Override

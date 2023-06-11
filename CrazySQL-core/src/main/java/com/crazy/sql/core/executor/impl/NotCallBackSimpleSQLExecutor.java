@@ -4,12 +4,14 @@ import com.crazy.sql.core.cahce.Cache;
 import com.crazy.sql.core.cahce.manager.CacheManager;
 import com.crazy.sql.core.executor.SimpleSQLExecutor;
 import com.crazy.sql.core.jdbc.AutoCallBackConnection;
+import com.crazy.sql.core.pool.impl.SimpleConnectionPool;
 import com.crazy.sql.core.query.QueryWord;
 import com.crazy.sql.core.utils.CacheUtils;
 import com.crazy.sql.core.utils.DirtyUtils;
 import com.crazy.sql.core.utils.SQLUtils;
 import com.crazy.sql.core.utils.StringUtils;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -115,8 +117,10 @@ public class NotCallBackSimpleSQLExecutor<T> implements SimpleSQLExecutor<T> {
         return resultList;
     }
     public void setConnection(Connection connection) {
-        this.connection = (AutoCallBackConnection) connection;
-        ((AutoCallBackConnection) connection).setCacheManager(getCacheManager());
+        if(connection instanceof SimpleConnectionPool)
+            this.connection = (AutoCallBackConnection) connection;
+        else
+            new AutoCallBackConnection(connection,null).setCacheManager(getCacheManager());
     }
     @Override
     public Connection getConnection() {
