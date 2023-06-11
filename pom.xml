@@ -16,7 +16,7 @@
 
     <groupId>io.github.akibanoichiichiyoha</groupId>
     <artifactId>CrazySQL</artifactId>
-    <version>1.4.3</version>
+    <version>1.4.4</version>
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
