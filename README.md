@@ -35,12 +35,12 @@
 ```
 接着，这里有一个代码实例：
 ```
-import com.crazy.sql.core.CrazySQL;
+import com.crazy.sql.core.Accessor;
 import com.crazy.sql.core.cahce.manager.impl.SimpleCacheManager;
-import com.crazy.sql.core.config.SQLConfig;
+import com.crazy.sql.core.config.CrazySQLConfig;
 import com.crazy.sql.core.enums.QueryCondition;
 import com.crazy.sql.core.factory.impl.SimpleConnectionPoolFactory;
-import com.crazy.sql.core.factory.impl.StandCrazySQLFactory;
+import com.crazy.sql.core.factory.impl.StandAccessorFactory;
 import com.crazy.sql.core.query.QueryWord;
 import com.crazy.sql.core.utils.SQLUtils;
 import java.sql.SQLException;
