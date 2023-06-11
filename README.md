@@ -73,3 +73,21 @@ crazy-sql:
 table-suffix:表名前缀：tb_user中的tb_
 maximum:最大连接数量
 stand-column:userId->user_id
+你需要在你的配置类中注册AccessorBean:
+```
+@Configuration
+public class MyCrazySQLConfig {
+    @Bean
+    public CacheManager cacheManager(){
+        return new SimpleCacheManager();
+    }
+    @Bean
+    public Accessor<User> userAccessor(AccessorFactory accessorFactory){
+        return new AccessorSession<>(accessorFactory.produce(User.class));
+    }
+    @Bean
+    public Accessor<Bound> boundAccessor(AccessorFactory accessorFactory){
+        return new AccessorSession<>(accessorFactory.produce(Bound.class));
+    }
+}
+```
