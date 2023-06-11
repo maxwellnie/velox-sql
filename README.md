@@ -96,7 +96,7 @@ public class MyCrazySQLConfig {
     <dependencies>
         <dependency>
             <groupId>io.github.akibanoichiichiyoha</groupId>
-            <artifactId>CrazySQL-boot-starter</artifactId>
+            <artifactId>CrazySQL-core</artifactId>
             <version>1.4.4</version>
         </dependency>
         <dependency>
