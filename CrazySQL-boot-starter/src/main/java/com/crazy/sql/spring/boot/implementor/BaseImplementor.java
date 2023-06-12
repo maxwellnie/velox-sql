@@ -1,4 +1,4 @@
-package com.crazy.sql.core.implementor;
+package com.crazy.sql.spring.boot.implementor;
 
 import com.crazy.sql.core.query.QueryWord;
 

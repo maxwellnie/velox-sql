@@ -37,7 +37,6 @@ public class StandSimpleSQLExecutor<T> implements SimpleSQLExecutor<T> {
             sqlUtils.setPrimaryKeyValue(t,primaryKeyValue);
             CacheUtils.updateCache(getCacheManager(),sqlUtils,list);
         }
-        connection.close();
         return primaryKeyValue;
     }
     public int update(T t) throws SQLException {
@@ -48,7 +47,6 @@ public class StandSimpleSQLExecutor<T> implements SimpleSQLExecutor<T> {
             list.add(t);
             CacheUtils.updateCache(getCacheManager(),sqlUtils,list);
         }
-        connection.close();
         return row;
     }
     public int delete(T t) throws SQLException {
@@ -59,7 +57,6 @@ public class StandSimpleSQLExecutor<T> implements SimpleSQLExecutor<T> {
             list.add(sqlUtils.getPrimaryKeyValue(t));
             CacheUtils.deleteCache(getCacheManager(),sqlUtils,list);
         }
-        connection.close();
         return row;
     }
     @Override
@@ -68,14 +65,12 @@ public class StandSimpleSQLExecutor<T> implements SimpleSQLExecutor<T> {
         if(getCacheManager()!=null){
             String key=sqlUtils.getTableName()+"queryOne";
             if(getCacheManager().hasCache(key)){
-                connection.close();
                 Cache<String,T> cache=getCacheManager().getCache(key);
                 return cache.get(sqlUtils.getPrimaryKeyValue(t));
             }
             result=sqlUtils.queryOne(t,getConnection());
             Cache<String,T> cache=getCacheManager().getCache(key);
             cache.put(sqlUtils.getPrimaryKeyValue(t),t);
-            connection.close();
         }
         result=sqlUtils.queryOne(t,connection);
         return result;
@@ -87,7 +82,6 @@ public class StandSimpleSQLExecutor<T> implements SimpleSQLExecutor<T> {
         if(getCacheManager()!=null){
             String key=sqlUtils.getTableName()+"queryAll";
             if(getCacheManager().hasCache(key)){
-                connection.close();
                 Cache<String,T> cache=getCacheManager().getCache(key);
                 return new ArrayList<>(cache.values());
             }
@@ -98,7 +92,6 @@ public class StandSimpleSQLExecutor<T> implements SimpleSQLExecutor<T> {
             });
         }
         resultList=sqlUtils.queryAll(getConnection());
-        connection.close();
         return resultList;
     }
 
@@ -108,7 +101,6 @@ public class StandSimpleSQLExecutor<T> implements SimpleSQLExecutor<T> {
         if(getCacheManager()!=null){
             String key=sqlUtils.getTableName()+"queryByWords"+ StringUtils.queryWordsArrayToString(queryWords);
             if(getCacheManager().hasCache(key)){
-                connection.close();
                 Cache<String,T> cache=getCacheManager().getCache(key);
                 return new ArrayList<>(cache.values());
             }
@@ -119,7 +111,6 @@ public class StandSimpleSQLExecutor<T> implements SimpleSQLExecutor<T> {
             });
         }
         resultList=sqlUtils.queryByWords(getConnection(),queryWords);
-        connection.close();
         return resultList;
     }
 
@@ -135,6 +126,10 @@ public class StandSimpleSQLExecutor<T> implements SimpleSQLExecutor<T> {
     @Override
     public void setSQLUtils(SQLUtils<T> sqlUtils) {
         this.sqlUtils=sqlUtils;
+    }
+
+    public SQLUtils<T> getSqlUtils() {
+        return sqlUtils;
     }
 
     @Override

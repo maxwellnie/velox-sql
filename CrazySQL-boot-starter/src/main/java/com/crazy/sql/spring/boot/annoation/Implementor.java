@@ -1,4 +1,4 @@
-package com.crazy.sql.core.annoation;
+package com.crazy.sql.spring.boot.annoation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

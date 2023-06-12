@@ -2,6 +2,7 @@ package com.crazy.sql.core.builder.impl;
 
 import com.crazy.sql.core.Accessor;
 import com.crazy.sql.core.executor.impl.NotCallBackSimpleSQLExecutor;
+import com.crazy.sql.core.executor.impl.StandSimpleSQLExecutor;
 import com.crazy.sql.core.proxy.SimpleSQLExecutorProxy;
 import com.crazy.sql.core.builder.AbstractAccessorBuilder;
 import com.crazy.sql.core.cahce.manager.CacheManager;
@@ -34,7 +35,7 @@ public class StandAccessorBuilder<T> implements AbstractAccessorBuilder<T> {
     @Override
     public AbstractAccessorBuilder<T> transaction(boolean b) {
         if(b)
-            accessor.setExecutor(new SimpleSQLExecutorProxy<>(new NotCallBackSimpleSQLExecutor<>()));
+            accessor.setExecutor(new SimpleSQLExecutorProxy<>(new StandSimpleSQLExecutor<>()));
         return this;
     }
 

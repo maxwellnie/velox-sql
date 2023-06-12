@@ -4,6 +4,7 @@ import com.crazy.sql.core.executor.impl.NotCallBackSimpleSQLExecutor;
 import com.crazy.sql.core.cahce.Cache;
 import com.crazy.sql.core.cahce.manager.CacheManager;
 import com.crazy.sql.core.executor.SimpleSQLExecutor;
+import com.crazy.sql.core.executor.impl.StandSimpleSQLExecutor;
 import com.crazy.sql.core.query.QueryWord;
 import com.crazy.sql.core.utils.CacheUtils;
 import com.crazy.sql.core.utils.SQLUtils;
@@ -19,9 +20,9 @@ import java.util.List;
  * @param <T>
  */
 public class SimpleSQLExecutorProxy<T> implements SimpleSQLExecutor<T> {
-    private NotCallBackSimpleSQLExecutor<T> executor;
+    private StandSimpleSQLExecutor<T> executor;
 
-    public SimpleSQLExecutorProxy(NotCallBackSimpleSQLExecutor<T> executor) {
+    public SimpleSQLExecutorProxy(StandSimpleSQLExecutor<T> executor) {
         this.executor = executor;
     }
 
