@@ -1,6 +1,7 @@
 package com.crazy.sql.core.pool;
 
 import javax.sql.DataSource;
+import javax.sql.XADataSource;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -14,7 +15,7 @@ import java.util.logging.Logger;
  */
 public abstract class ConnectionPool implements DataSource{
     protected List<Connection> pool = Collections.synchronizedList(new LinkedList<>());
-    protected int maximum;
+    protected volatile int maximum;
 
     public void setLoginTimeout(int seconds) throws SQLException {
         DriverManager.setLoginTimeout(seconds);

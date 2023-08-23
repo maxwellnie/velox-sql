@@ -75,7 +75,7 @@ public class SimpleConnectionPool extends ConnectionPool {
         logger.info("pool size:"+pool.size());
     }
     @Override
-    public synchronized Connection getConnection() throws ConnectionPoolBusyException {
+    public Connection getConnection() throws ConnectionPoolBusyException {
         if(!isInit){
             init();
         }
@@ -101,7 +101,7 @@ public class SimpleConnectionPool extends ConnectionPool {
     }
 
     @Override
-    public synchronized void callBack(Connection connection){
+    public void callBack(Connection connection){
         if (!isPoolFill(1)){
             logger.info("Returned a connection to the connection pool:"+connection);
             if(connection instanceof AutoCallBackConnection)
