@@ -18,4 +18,5 @@ public interface CacheManager{
     void clear();
     void destroy();
     void remove(String key);
+    void refreshExpireTime(String name);
 }

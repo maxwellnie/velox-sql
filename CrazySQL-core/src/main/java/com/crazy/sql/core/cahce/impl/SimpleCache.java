@@ -1,6 +1,8 @@
 package com.crazy.sql.core.cahce.impl;
 
 import com.crazy.sql.core.cahce.Cache;
+import com.crazy.sql.core.cahce.manager.CacheManager;
+import com.crazy.sql.core.cahce.manager.impl.SimpleCacheManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,6 +13,8 @@ import java.util.concurrent.ConcurrentHashMap;
 public class SimpleCache<K,V> implements Cache<K,V> {
     private static Logger logger= LoggerFactory.getLogger(SimpleCache.class);
     private ConcurrentHashMap<K,V> data=new ConcurrentHashMap<>();
+
+
     @Override
     public void put(K k, V v) {
         data.put(k,v);

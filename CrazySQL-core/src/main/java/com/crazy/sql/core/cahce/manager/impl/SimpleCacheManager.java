@@ -86,6 +86,19 @@ public class SimpleCacheManager implements CacheManager {
         futures.remove(key);
     }
 
+    @Override
+    public void refreshExpireTime(String name) {
+        Future<String> future=futures.get(name);
+        if(future!=null){
+            future.cancel(true);
+            future=scheduledService.schedule(() -> {
+                remove(name);
+                return "complete";
+            },expireTime,timeUnit);
+            futures.put(name,future);
+        }
+    }
+
     public <K,V> Cache<K,V> createCache(String name){
         logger.info("you create a cache and its name is "+name);
         Cache<K,V> cache=new SimpleCache<>();
