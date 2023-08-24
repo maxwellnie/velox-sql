@@ -23,7 +23,7 @@ public class StandAccessorBuilder<T> implements AbstractAccessorBuilder<T> {
     public StandAccessorBuilder() {
         logger.info(CrazySQLConfig.getInstance().toString());
         accessor =new Accessor<>();
-        accessor.setExecutor(new NotCallBackSimpleSQLExecutor<>());
+        accessor.setExecutor(new StandSimpleSQLExecutor<>());
     }
 
     @Override
@@ -33,9 +33,9 @@ public class StandAccessorBuilder<T> implements AbstractAccessorBuilder<T> {
     }
 
     @Override
-    public AbstractAccessorBuilder<T> transaction(boolean b) {
+    public AbstractAccessorBuilder<T> springTransaction(boolean b) {
         if(b)
-            accessor.setExecutor(new SimpleSQLExecutorProxy<>(new StandSimpleSQLExecutor<>()));
+            accessor.setExecutor(new SimpleSQLExecutorProxy<>(new NotCallBackSimpleSQLExecutor<>()));
         return this;
     }
 

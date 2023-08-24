@@ -23,6 +23,7 @@ public class SimpleCache<K,V> implements Cache<K,V> {
     @Override
     public V get(K k) {
         logger.info("Cache hit");
+        logger.info(toString());
         return data.get(k);
     }
 
@@ -50,5 +51,12 @@ public class SimpleCache<K,V> implements Cache<K,V> {
     @Override
     public void clear() {
         data.clear();
+    }
+
+    @Override
+    public String toString() {
+        return "SimpleCache{" +
+                "data=" + data +
+                '}';
     }
 }

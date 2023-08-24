@@ -20,10 +20,10 @@ public interface AbstractAccessorBuilder<T>{
     AbstractAccessorBuilder<T> setPool(DataSource pool);
 
     /**
-     * 设置开启事务
+     * 设置对接spring事务
      * @return
      */
-    AbstractAccessorBuilder<T> transaction(boolean b);
+    AbstractAccessorBuilder<T> springTransaction(boolean b);
 
     /**
      * 设置SQLUtils

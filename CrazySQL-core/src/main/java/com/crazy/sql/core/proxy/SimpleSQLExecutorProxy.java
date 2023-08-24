@@ -1,12 +1,13 @@
 package com.crazy.sql.core.proxy;
 
-import com.crazy.sql.core.executor.impl.NotCallBackSimpleSQLExecutor;
 import com.crazy.sql.core.cahce.Cache;
 import com.crazy.sql.core.cahce.manager.CacheManager;
 import com.crazy.sql.core.executor.SimpleSQLExecutor;
+import com.crazy.sql.core.executor.impl.NotCallBackSimpleSQLExecutor;
 import com.crazy.sql.core.executor.impl.StandSimpleSQLExecutor;
 import com.crazy.sql.core.query.QueryWord;
 import com.crazy.sql.core.utils.CacheUtils;
+import com.crazy.sql.core.utils.DirtyDataUtils;
 import com.crazy.sql.core.utils.SQLUtils;
 import com.crazy.sql.core.utils.StringUtils;
 
@@ -20,39 +21,25 @@ import java.util.List;
  * @param <T>
  */
 public class SimpleSQLExecutorProxy<T> implements SimpleSQLExecutor<T> {
-    private StandSimpleSQLExecutor<T> executor;
+    private NotCallBackSimpleSQLExecutor<T> executor;
 
-    public SimpleSQLExecutorProxy(StandSimpleSQLExecutor<T> executor) {
+    public SimpleSQLExecutorProxy(NotCallBackSimpleSQLExecutor<T> executor) {
         this.executor = executor;
     }
 
     @Override
     public int insert(T t) {
         int rowCount=0;
-        Connection execConnection=getConnection();
         try {
-            execConnection.setAutoCommit(false);
             rowCount=executor.insert(t);
-            execConnection.commit();
             if(rowCount>0&&getCacheManager()!=null){
                 List<T> list=new ArrayList<>();
                 list.add(t);
                 executor.getSqlUtils().setPrimaryKeyValue(t,rowCount);
-                CacheUtils.updateCache(getCacheManager(),executor.getSqlUtils(),list);
+                DirtyDataUtils.putInsertDirty(getConnection(),executor.getSqlUtils().getPrimaryKeyValue(t),list,rowCount,executor.getSqlUtils());
             }
-        }catch (SQLException e){
-            try {
-                execConnection.rollback();
-            } catch (SQLException ex) {
-                throw new RuntimeException(ex);
-            }
-        }finally {
-            try {
-                execConnection.setAutoCommit(true);
-                getConnection().close();
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
+        }catch (SQLException e) {
+            e.printStackTrace();
         }
         return rowCount;
     }
@@ -60,30 +47,16 @@ public class SimpleSQLExecutorProxy<T> implements SimpleSQLExecutor<T> {
     @Override
     public int update(T t){
         int rowCount=0;
-        Connection execConnection=getConnection();
         try {
-            execConnection.setAutoCommit(false);
             rowCount=executor.update(t);
-            execConnection.commit();
             if(rowCount>0&&getCacheManager()!=null){
                 List<T> list=new ArrayList<>();
                 list.add(t);
                 executor.getSqlUtils().setPrimaryKeyValue(t,rowCount);
-                CacheUtils.updateCache(getCacheManager(),executor.getSqlUtils(),list);
+                DirtyDataUtils.putUpdateDirty(getConnection(),executor.getSqlUtils().getPrimaryKeyValue(t),list,rowCount,executor.getSqlUtils());
             }
         }catch (SQLException e){
-            try {
-                execConnection.rollback();
-            } catch (SQLException ex) {
-                throw new RuntimeException(ex);
-            }
-        }finally {
-            try {
-                execConnection.setAutoCommit(true);
-                getConnection().close();
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
+            e.printStackTrace();
         }
         return rowCount;
     }
@@ -91,50 +64,40 @@ public class SimpleSQLExecutorProxy<T> implements SimpleSQLExecutor<T> {
     @Override
     public int delete(T t){
         int rowCount=0;
-        Connection execConnection=getConnection();
         try {
-            execConnection.setAutoCommit(false);
             rowCount=executor.delete(t);
-            execConnection.commit();
             if(rowCount>0&&getCacheManager()!=null){
                 List<String> list=new ArrayList<>();
                 list.add(executor.getSqlUtils().getPrimaryKeyValue(t));
                 executor.getSqlUtils().setPrimaryKeyValue(t,rowCount);
-                CacheUtils.deleteCache(getCacheManager(),executor.getSqlUtils(),list);
+                DirtyDataUtils.putDeleteDirty(getConnection(),executor.getSqlUtils().getPrimaryKeyValue(t),list,rowCount,executor.getSqlUtils());
             }
         }catch (SQLException e){
-            try {
-                execConnection.rollback();
-            } catch (SQLException ex) {
-                throw new RuntimeException(ex);
-            }
-        }finally {
-            try {
-                execConnection.setAutoCommit(true);
-                getConnection().close();
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
+            e.printStackTrace();
         }
         return rowCount;
     }
 
     @Override
     public T queryOne(T t) throws SQLException {
-        T result=null;
+        T result = null;
         if(getCacheManager()!=null){
             String key=executor.getSqlUtils().getTableName()+"queryOne";
             if(getCacheManager().hasCache(key)){
-                getConnection().close();
                 Cache<String,T> cache=getCacheManager().getCache(key);
-                return cache.get(executor.getSqlUtils().getPrimaryKeyValue(t));
+                result= cache.get(executor.getSqlUtils().getPrimaryKeyValue(t));
+                if(result==null) {
+                    result = executor.queryOne(t);
+                    cache.put(executor.getSqlUtils().getPrimaryKeyValue(t), result);
+                }
+            }else {
+                result = executor.queryOne(t);
+                Cache<String,T> cache=getCacheManager().getCache(key);
+                cache.put(executor.getSqlUtils().getPrimaryKeyValue(t), result);
             }
+
+        }else
             result=executor.queryOne(t);
-            Cache<String,T> cache=getCacheManager().getCache(key);
-            cache.put(executor.getSqlUtils().getPrimaryKeyValue(t),t);
-            getConnection().close();
-        }
-        result=executor.queryOne(t);
         return result;
     }
 
@@ -144,18 +107,23 @@ public class SimpleSQLExecutorProxy<T> implements SimpleSQLExecutor<T> {
         if(getCacheManager()!=null){
             String key=executor.getSqlUtils().getTableName()+"queryAll";
             if(getCacheManager().hasCache(key)){
-                getConnection().close();
                 Cache<String,T> cache=getCacheManager().getCache(key);
-                return new ArrayList<>(cache.values());
+                resultList= new ArrayList<>(cache.values());
+                if(resultList.size()==0) {
+                    resultList=executor.queryAll();
+                    resultList.forEach((x)->{
+                        cache.put(executor.getSqlUtils().getPrimaryKeyValue(x),x);
+                    });
+                }
+            }else {
+                resultList=executor.queryAll();
+                Cache<String,T> cache=getCacheManager().getCache(key);
+                resultList.forEach((x)->{
+                    cache.put(executor.getSqlUtils().getPrimaryKeyValue(x),x);
+                });
             }
+        }else
             resultList=executor.queryAll();
-            Cache<String,T> cache=getCacheManager().getCache(key);
-            resultList.forEach((x)->{
-                cache.put(executor.getSqlUtils().getPrimaryKeyValue(x),x);
-            });
-        }
-        resultList=executor.queryAll();
-        getConnection().close();
         return resultList;
     }
 
@@ -165,18 +133,17 @@ public class SimpleSQLExecutorProxy<T> implements SimpleSQLExecutor<T> {
         if(getCacheManager()!=null){
             String key=executor.getSqlUtils().getTableName()+"queryByWords"+ StringUtils.queryWordsArrayToString(queryWords);
             if(getCacheManager().hasCache(key)){
-                getConnection().close();
                 Cache<String,T> cache=getCacheManager().getCache(key);
-                return new ArrayList<>(cache.values());
+                resultList= new ArrayList<>(cache.values());
+            }else {
+                resultList = executor.queryByWords(queryWords);
+                Cache<String, T> cache = getCacheManager().getCache(key);
+                resultList.forEach((x) -> {
+                    cache.put(executor.getSqlUtils().getPrimaryKeyValue(x), x);
+                });
             }
+        }else
             resultList=executor.queryByWords(queryWords);
-            Cache<String,T> cache=getCacheManager().getCache(key);
-            resultList.forEach((x)->{
-                cache.put(executor.getSqlUtils().getPrimaryKeyValue(x),x);
-            });
-        }
-        resultList=executor.queryByWords(queryWords);
-        getConnection().close();
         return resultList;
     }
 

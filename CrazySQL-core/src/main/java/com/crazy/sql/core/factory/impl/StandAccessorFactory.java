@@ -26,7 +26,7 @@ public class StandAccessorFactory extends AccessorFactory {
         CrazySQLConfig crazySqlConfig = CrazySQLConfig.getInstance();
         AbstractAccessorBuilder<T> crazySQLBuilder=new StandAccessorBuilder<>();
         crazySQLBuilder=crazySQLBuilder.setPool(getConnectionPool())
-                .transaction(isEnableTransaction())
+                .springTransaction(isEnableTransaction())
                 .SQLUtils(new SQLUtils<>(tClass, crazySqlConfig.getTableSuffix(), crazySqlConfig.isStandColumn()));
         if(getCacheManager()!=null)
             crazySQLBuilder.enableCache(getCacheManager());

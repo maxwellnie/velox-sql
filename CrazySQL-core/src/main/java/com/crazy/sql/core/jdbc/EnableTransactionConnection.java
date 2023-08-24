@@ -1,6 +1,8 @@
 package com.crazy.sql.core.jdbc;
 
-import com.crazy.sql.core.pool.ConnectionPool;
+import com.crazy.sql.core.cahce.manager.CacheManager;
+import com.crazy.sql.core.jdbc.dirtydata.queue.ConnectionDirtyDataQueue;
+import com.crazy.sql.core.utils.DirtyDataUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -9,16 +11,15 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.Executor;
 
-public class AutoCallBackConnection implements Connection{
-    private static Logger logger= LoggerFactory.getLogger(AutoCallBackConnection.class);
+public class EnableTransactionConnection implements Connection {
+    private static Logger logger= LoggerFactory.getLogger(EnableTransactionConnection.class);
+    private ConnectionDirtyDataQueue queue=new ConnectionDirtyDataQueue();
     private final Connection connection;
-    private final ConnectionPool pool;
+    private CacheManager cacheManager;
 
-    private boolean isClosed=false;
-
-    public AutoCallBackConnection(Connection connection, ConnectionPool pool) {
+    public EnableTransactionConnection(Connection connection, CacheManager cacheManager) {
         this.connection = connection;
-        this.pool = pool;
+        this.cacheManager = cacheManager;
     }
 
     @Override
@@ -53,20 +54,26 @@ public class AutoCallBackConnection implements Connection{
 
     @Override
     public void commit() throws SQLException {
+        logger.info(this.toString());
+        if(cacheManager!=null&&queue.size()>0){
+            DirtyDataUtils.writeCache(cacheManager,queue);
+            logger.info("update cache,because data is updated");
+        }
         logger.info("commit data");
+        reset();
         connection.commit();
     }
 
     @Override
     public void rollback() throws SQLException {
         logger.info("rollback data");
+        reset();
         connection.rollback();
     }
 
     @Override
     public void close() throws SQLException {
-        if(pool!=null)
-            pool.callBack(this);
+        connection.close();
     }
 
     @Override
@@ -293,7 +300,17 @@ public class AutoCallBackConnection implements Connection{
     public boolean isWrapperFor(Class<?> iface) throws SQLException {
         return connection.isWrapperFor(iface);
     }
-    public void destroy() throws SQLException {
-        this.connection.close();
+    public void reset(){
+        this.queue.clear();
+    }
+    public ConnectionDirtyDataQueue getDirtyData() {
+        return queue;
+    }
+    public CacheManager getCacheManager() {
+        return cacheManager;
+    }
+
+    public void setCacheManager(CacheManager cacheManager) {
+        this.cacheManager = cacheManager;
     }
 }

@@ -21,48 +21,15 @@ public class SimpleConnectionPool extends ConnectionPool {
     protected String username;
     protected String url;
     protected String password;
-    private final Properties properties=new Properties();
     protected ConnectionUtils connectionUtils;
     private boolean isInit=false;
 
     public SimpleConnectionPool() {
     }
-
-    public SimpleConnectionPool(Properties properties) {
-        logger.info("The connection pool starts to be initialized. The configuration information is as follows:"+properties);
-        this.driverClassName =properties.getProperty("driverClassName");
-        this.username=properties.getProperty("username");
-        this.url=properties.getProperty("url");
-        this.password=properties.getProperty("password");
-        this.connectionUtils=new ConnectionUtils(properties,this);
-        try {
-            Class.forName(properties.getProperty("driverClassName"));
-            for (int i=0;i<maximum;i++)
-                pool.add(connectionUtils.establishConnection());
-        } catch (ClassNotFoundException | SQLException e) {
-            e.printStackTrace();
-        }
-        isInit=true;
-    }
-    public SimpleConnectionPool(String driverClassName, String userName, String url, String password) {
-
-        this.maximum= CrazySQLConfig.getInstance().getMaximum();
-        logger.info("The connection pool starts to be initialized. The configuration information is as follows:"+getProperties()+"\nmaximum:"+maximum);
-        this.connectionUtils=new ConnectionUtils(getProperties(),this);
-        try {
-            Class.forName(driverClassName);
-            for (int i=0;i<maximum;i++)
-                pool.add(connectionUtils.establishConnection());
-        } catch (ClassNotFoundException | SQLException e) {
-            e.printStackTrace();
-        }
-        isInit=true;
-        logger.info("pool size:"+pool.size());
-    }
     private synchronized void init(){
 
         logger.info("The connection pool starts to be initialized. The configuration information is as follows:"+getProperties()+"maximum:"+maximum);
-        this.connectionUtils=new ConnectionUtils(getProperties(),this);
+        this.connectionUtils=new ConnectionUtils(this,url,username,password);
         maximum=CrazySQLConfig.getInstance().getMaximum();
         try {
             Class.forName(driverClassName);
@@ -161,12 +128,13 @@ public class SimpleConnectionPool extends ConnectionPool {
     public void setConnectionUtils(ConnectionUtils connectionUtils) {
         this.connectionUtils = connectionUtils;
     }
-    public Properties getProperties(){
-        properties.setProperty("driverClassName", driverClassName);
-        properties.setProperty("username",username);
-        properties.setProperty("url",url);
-        properties.setProperty("password",password);
-        return properties;
+    public String getProperties(){
+        return "{" +
+                "driverClassName='" + driverClassName + '\'' +
+                ", username='" + username + '\'' +
+                ", url='" + url + '\'' +
+                ", password='" + password + '\'' +
+                '}';
     }
 
 }

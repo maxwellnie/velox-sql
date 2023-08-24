@@ -3,6 +3,7 @@ package com.crazy.sql.spring.boot.autoconfiguration;
 import com.crazy.sql.core.cahce.manager.CacheManager;
 import com.crazy.sql.core.config.CrazySQLConfig;
 import com.crazy.sql.core.executor.impl.NotCallBackSimpleSQLExecutor;
+import com.crazy.sql.core.executor.impl.StandSimpleSQLExecutor;
 import com.crazy.sql.core.factory.AccessorFactory;
 import com.crazy.sql.core.factory.impl.StandAccessorFactory;
 import com.crazy.sql.spring.boot.configuration.CrazySQLConfiguration;
@@ -38,7 +39,7 @@ public class CrazySQLAutoConfiguration implements InitializingBean {
         config.setTableSuffix(configuration.getTableSuffix());
         config.setMaximum(configuration.getMaximum());
         config.setStandColumn(configuration.isStandColumn());
-        AccessorFactory accessorFactory=new StandAccessorFactory(dataSource,false);
+        AccessorFactory accessorFactory=new StandAccessorFactory(dataSource,true);
         return accessorFactory;
     }
 }

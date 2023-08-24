@@ -66,13 +66,18 @@ public class StandSimpleSQLExecutor<T> implements SimpleSQLExecutor<T> {
             String key=sqlUtils.getTableName()+"queryOne";
             if(getCacheManager().hasCache(key)){
                 Cache<String,T> cache=getCacheManager().getCache(key);
-                return cache.get(sqlUtils.getPrimaryKeyValue(t));
+                result= cache.get(sqlUtils.getPrimaryKeyValue(t));
+                if(result==null){
+                    result = sqlUtils.queryOne(t, getConnection());
+                    cache.put(sqlUtils.getPrimaryKeyValue(t), result);
+                }
+            }else {
+                result = sqlUtils.queryOne(t, getConnection());
+                Cache<String, T> cache = getCacheManager().getCache(key);
+                cache.put(sqlUtils.getPrimaryKeyValue(t), result);
             }
-            result=sqlUtils.queryOne(t,getConnection());
-            Cache<String,T> cache=getCacheManager().getCache(key);
-            cache.put(sqlUtils.getPrimaryKeyValue(t),t);
-        }
-        result=sqlUtils.queryOne(t,connection);
+        }else
+            result=sqlUtils.queryOne(t,connection);
         return result;
     }
 
@@ -83,15 +88,22 @@ public class StandSimpleSQLExecutor<T> implements SimpleSQLExecutor<T> {
             String key=sqlUtils.getTableName()+"queryAll";
             if(getCacheManager().hasCache(key)){
                 Cache<String,T> cache=getCacheManager().getCache(key);
-                return new ArrayList<>(cache.values());
+                resultList= new ArrayList<>(cache.values());
+                if(resultList.size()==0){
+                    resultList = sqlUtils.queryAll(getConnection());
+                    resultList.forEach((x) -> {
+                        cache.put(sqlUtils.getPrimaryKeyValue(x), x);
+                    });
+                }
+            }else {
+                resultList = sqlUtils.queryAll(getConnection());
+                Cache<String, T> cache = getCacheManager().getCache(key);
+                resultList.forEach((x) -> {
+                    cache.put(sqlUtils.getPrimaryKeyValue(x), x);
+                });
             }
+        }else
             resultList=sqlUtils.queryAll(getConnection());
-            Cache<String,T> cache=getCacheManager().getCache(key);
-            resultList.forEach((x)->{
-                cache.put(sqlUtils.getPrimaryKeyValue(x),x);
-            });
-        }
-        resultList=sqlUtils.queryAll(getConnection());
         return resultList;
     }
 
@@ -102,15 +114,22 @@ public class StandSimpleSQLExecutor<T> implements SimpleSQLExecutor<T> {
             String key=sqlUtils.getTableName()+"queryByWords"+ StringUtils.queryWordsArrayToString(queryWords);
             if(getCacheManager().hasCache(key)){
                 Cache<String,T> cache=getCacheManager().getCache(key);
-                return new ArrayList<>(cache.values());
+                resultList= new ArrayList<>(cache.values());
+                if(resultList.size()==0){
+                    resultList = sqlUtils.queryByWords(getConnection(), queryWords);
+                    resultList.forEach((x) -> {
+                        cache.put(sqlUtils.getPrimaryKeyValue(x), x);
+                    });
+                }
+            }else {
+                resultList = sqlUtils.queryByWords(getConnection(), queryWords);
+                Cache<String, T> cache = getCacheManager().getCache(key);
+                resultList.forEach((x) -> {
+                    cache.put(sqlUtils.getPrimaryKeyValue(x), x);
+                });
             }
+        }else
             resultList=sqlUtils.queryByWords(getConnection(),queryWords);
-            Cache<String,T> cache=getCacheManager().getCache(key);
-            resultList.forEach((x)->{
-                cache.put(sqlUtils.getPrimaryKeyValue(x),x);
-            });
-        }
-        resultList=sqlUtils.queryByWords(getConnection(),queryWords);
         return resultList;
     }
 
