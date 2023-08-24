@@ -29,7 +29,7 @@ public class SimpleConnectionPool extends ConnectionPool {
     private synchronized void init(){
 
         logger.info("The connection pool starts to be initialized. The configuration information is as follows:"+getProperties()+"maximum:"+maximum);
-        this.connectionUtils=new ConnectionUtils(this,driverClassName,url,username,password);
+        this.connectionUtils=new ConnectionUtils(this,driverClassName,username,url,password);
         maximum=CrazySQLConfig.getInstance().getMaximum();
         try {
             for (int i=0;i<maximum;i++)
