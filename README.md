@@ -38,7 +38,7 @@ springboot:
         <dependency>
             <groupId>io.github.akibanoichiichiyoha</groupId>
             <artifactId>CrazySQL-boot-starter</artifactId>
-            <version>1.4.4</version>
+            <version>1.4.6</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -97,7 +97,7 @@ public class MyCrazySQLConfig {
         <dependency>
             <groupId>io.github.akibanoichiichiyoha</groupId>
             <artifactId>CrazySQL-core</artifactId>
-            <version>1.4.4</version>
+            <version>1.4.6</version>
         </dependency>
         <dependency>
             <groupId>mysql</groupId>
@@ -124,19 +124,22 @@ public class MyCrazySQLConfig {
 使用如下代码即可
 ```
 public class Main {
-    public  static void main(String[] args) throws SQLException {
-        Properties properties = new Properties();
-        properties.put("driverClassName", "com.mysql.jdbc.Driver");
-        properties.put("url", "jdbc:mysql://localhost:3307/bounddatabase");
-        properties.put("username", "root");
-        properties.put("password", "123456");
-        properties.put("maximum", "10");
+    public static void main(String[] args) throws SQLException {
+        CrazySQLConfig config=CrazySQLConfig.getInstance();
         CrazySQLConfig.getInstance().setMaximum(20);
         CrazySQLConfig.getInstance().setTableSuffix("tb_");
+        config.setProperties(properties);
         CrazySQLConfig.getInstance().setStandColumn(true);
-        SimpleConnectionPool simpleConnectionPool=new SimpleConnectionPool(properties);
+        Class.forName("com.mysql.jdbc.Driver");
+        SimpleConnectionPool simpleConnectionPool=new SimpleConnectionPool();
+        simpleConnectionPool.setDriverClassName("com.mysql.jdbc.Driver");
+        simpleConnectionPool.setUrl("jdbc:mysql://localhost:3307/bounddatabase");
+        simpleConnectionPool.setUsername("root");
+        simpleConnectionPool.setPassword("123456");
+        System.out.println(simpleConnectionPool.size());
         AccessorFactory factory=new StandAccessorFactory(simpleConnectionPool,null,false);
         Accessor<User> accessor=factory.produce(User.class);
+        System.out.println(accessor.queryAll());
         System.out.println(accessor.queryAll());
     }
 }
