@@ -76,7 +76,7 @@ public class SimpleCacheManager implements CacheManager {
 
     @Override
     public boolean hasCache(String key) {
-        return cacheMap.containsKey(key);
+        return cacheMap.containsKey(key)&&!cacheMap.get(key).isExpire();
     }
 
     @Override
