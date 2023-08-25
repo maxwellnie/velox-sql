@@ -2,6 +2,7 @@ package com.crazy.sql.core.cahce;
 
 import java.util.Collection;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 public interface Cache<K,V> {
     void put(K k,V v);
@@ -11,4 +12,7 @@ public interface Cache<K,V> {
     Set<K> keys();
     Collection<V> values();
     void clear();
+    void setExpireTime(TimeUnit timeUnit, long expireTime);
+    boolean isExpire();
+    long getExpireTime();
 }

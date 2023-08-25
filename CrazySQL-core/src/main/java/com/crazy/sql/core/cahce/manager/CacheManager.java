@@ -10,13 +10,9 @@ public interface CacheManager{
     <K,V> Cache<K,V> getCache(String name);
     Set<String> keySet();
     Collection<Cache> caches();
-    void setExpireTime(long time, TimeUnit timeUnit);
-    long getExpireTime();
-    void enableRegularClear();
-    TimeUnit getTimeUnit();
+    void enableRegularClear(boolean enabled);
     boolean hasCache(String key);
     void clear();
     void destroy();
     void remove(String key);
-    void refreshExpireTime(String name);
 }

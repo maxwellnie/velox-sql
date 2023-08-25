@@ -6,14 +6,22 @@ import com.crazy.sql.core.cahce.manager.impl.SimpleCacheManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collection;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 public class SimpleCache<K,V> implements Cache<K,V> {
-    private static Logger logger= LoggerFactory.getLogger(SimpleCache.class);
-    private ConcurrentHashMap<K,V> data=new ConcurrentHashMap<>();
+    private static final Logger logger= LoggerFactory.getLogger(SimpleCache.class);
+    private final Map<K,V> data=new ConcurrentHashMap<>();
+    private TimeUnit timeUnit;
+    private long expireTime;
+    private final long createTime;
 
+    public SimpleCache(TimeUnit timeUnit, long expireTime) {
+        this.createTime=System.currentTimeMillis();
+        this.timeUnit = timeUnit;
+        this.expireTime = expireTime;
+    }
 
     @Override
     public void put(K k, V v) {
@@ -51,6 +59,22 @@ public class SimpleCache<K,V> implements Cache<K,V> {
     @Override
     public void clear() {
         data.clear();
+    }
+
+    @Override
+    public void setExpireTime(TimeUnit timeUnit, long expireTime) {
+        this.timeUnit=timeUnit;
+        this.expireTime=expireTime;
+    }
+
+    @Override
+    public boolean isExpire() {
+        return timeUnit.toMillis(expireTime)<=(System.currentTimeMillis()-createTime);
+    }
+
+    @Override
+    public long getExpireTime() {
+        return this.expireTime;
     }
 
     @Override
