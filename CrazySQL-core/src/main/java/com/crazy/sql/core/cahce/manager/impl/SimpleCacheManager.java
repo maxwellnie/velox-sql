@@ -55,7 +55,7 @@ public class SimpleCacheManager implements CacheManager {
     public void enableRegularClear(boolean enabled) {
         this.enableAutoRegular=enabled;
         if(enabled){
-            scheduledService.schedule(()->{
+            scheduledService.scheduleAtFixedRate(()->{
                 Set<Map.Entry<String,Cache>> entrySet=cacheMap.entrySet();
                 ArrayList<String> keys=new ArrayList<>();
                 for (Map.Entry<String,Cache> entry:entrySet
@@ -66,7 +66,7 @@ public class SimpleCacheManager implements CacheManager {
                 keys.forEach((key)->{
                     cacheMap.remove(key);
                 });
-            },clearInterval,TimeUnit.SECONDS);
+            },0,clearInterval,TimeUnit.SECONDS);
         }else {
             scheduledService.shutdown();
             scheduledService=new ScheduledThreadPoolExecutor(10);
@@ -102,5 +102,17 @@ public class SimpleCacheManager implements CacheManager {
     public <K,V> Cache<K,V> createCache(String name){
         logger.info("you create a cache and its name is "+name);
         return new SimpleCache<>(TimeUnit.HOURS,1);
+    }
+
+    public boolean isEnableAutoRegular() {
+        return enableAutoRegular;
+    }
+
+    public long getClearInterval() {
+        return clearInterval;
+    }
+
+    public int getDefaultCapacity() {
+        return defaultCapacity;
     }
 }
