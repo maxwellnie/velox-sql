@@ -6,7 +6,7 @@
 #### 软件重要部分
 
 1. Executor - 代理Accessor的方法。
-2. TypeConvertor - 处理Jdbc提供数据类型到正常Java数据类型。
+2. TypeConvertor - 处理Jdbc提供数据类型到期望的Java数据类型。
 3. KeyStrategy - 这个实体包括主键生成器和主键查询器，前者用于产生主键值，后者用于查询产生的主键值。
 4. JdbcContext - 这个实体包含了事务实例、缓存实例和数据库连接实例。
 5. Transaction - JdbcContext事务的实体。
