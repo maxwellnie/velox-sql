@@ -3,9 +3,13 @@
 #### 介绍
 基于Java的数据持久化框架，目前只适配了MySql数据库和Java8
 
-#### 软件架构
-软件架构说明
-
+#### 软件重要部分
+Executor - 代理Accessor的方法。
+TypeConvertor - 处理Jdbc提供数据类型到正常Java数据类型。
+KeyStrategy - 这个实体包括主键生成器和主键查询器，前者用于产生主键值，后者用于查询产生的主键值。
+JdbcContext - 这个实体包含了事务实例、缓存实例和数据库连接实例。
+Transaction - JdbcContext事务的实体。
+MetaObject - 元对象，可以参考QT和mybatis中的元对象。
 #### 使用说明
 导入依赖
 ```
