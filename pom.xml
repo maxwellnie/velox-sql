@@ -5,10 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <packaging>pom</packaging>
     <modules>
-        <module>CrazySQL-boot-starter</module>
         <module>CrazySQL-core</module>
-        <module>CrazySQL-plugin</module>
-        <module>CrazySQL-spring</module>
     </modules>
     <parent>
         <groupId>org.sonatype.oss</groupId>
