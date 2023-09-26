@@ -7,91 +7,7 @@
 软件架构说明
 
 #### 使用说明
-springboot:
 导入依赖
-```
-<dependencies>
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>5.1.8</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-thymeleaf</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.github.akibanoichiichiyoha</groupId>
-            <artifactId>CrazySQL-boot-starter</artifactId>
-            <version>1.5.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-configuration-processor</artifactId>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>javax.persistence</groupId>
-            <artifactId>persistence-api</artifactId>
-            <version>1.0.2</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-jdbc</artifactId>
-        </dependency>
-    </dependencies>
-```
-配置文件：
-```
-spring:
-  datasource:
-    type: com.crazy.sql.spring.boot.datasource.CrazySQLDataSource
-    url: jdbc:mysql://localhost:3307/bounddatabase?useUnicode=true&characterEncoding=utf8
-    username: root
-    password: 123456
-    driver-class-name: com.mysql.jdbc.Driver
-crazy-sql:
-  table-suffix: tb_
-  maximum: 50
-  stand-column: true
-```
-table-suffix:表名前缀：tb_user中的tb_
-maximum:最大连接数量
-stand-column:userId->user_id
-你需要在你的配置类中注册AccessorBean:
-```
-@Configuration
-public class MyCrazySQLConfig {
-    @Bean
-    public CacheManager cacheManager(){
-        return new SimpleCacheManager();
-    }
-    @Bean
-    public Accessor<User> userAccessor(AccessorFactory accessorFactory){
-        return new AccessorSession<>(accessorFactory.produce(User.class));
-    }
-    @Bean
-    public Accessor<Bound> boundAccessor(AccessorFactory accessorFactory){
-        return new AccessorSession<>(accessorFactory.produce(Bound.class));
-    }
-}
-```
-如果不想使用spring，也可以使用如下的方法：
 ```
     <dependencies>
         <dependency>
@@ -105,11 +21,6 @@ public class MyCrazySQLConfig {
             <version>5.1.8</version>
         </dependency>
         <dependency>
-            <groupId>javax.persistence</groupId>
-            <artifactId>persistence-api</artifactId>
-            <version>1.0.2</version>
-        </dependency>
-        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>1.6.1</version>
@@ -121,39 +32,134 @@ public class MyCrazySQLConfig {
         </dependency>
     </dependencies>
 ```
-使用如下代码即可
+example:
 ```
-public class Main {
-    public static void main(String[] args) throws SQLException {
-        CrazySQLConfig config=CrazySQLConfig.getInstance();
-        CrazySQLConfig.getInstance().setMaximum(20);
-        CrazySQLConfig.getInstance().setTableSuffix("tb_");
-        config.setProperties(properties);
-        CrazySQLConfig.getInstance().setStandColumn(true);
-        Class.forName("com.mysql.jdbc.Driver");
-        SimpleConnectionPool simpleConnectionPool=new SimpleConnectionPool();
+import com.crazy.sql.core.accessor.SqlBuilder;
+import com.crazy.sql.core.accessor.Accessor;
+import com.crazy.sql.core.accessor.env.Environment;
+import com.crazy.sql.core.cahce.impl.SimpleCache;
+import com.crazy.sql.core.config.GlobalConfig;
+import com.crazy.sql.core.jdbc.context.JdbcContext;
+import com.crazy.sql.core.jdbc.context.JdbcContextFactory;
+import com.crazy.sql.core.jdbc.context.SimpleContext;
+import com.crazy.sql.core.jdbc.context.SimpleContextFactory;
+import com.crazy.sql.core.jdbc.pool.impl.SimpleConnectionPool;
+import com.crazy.sql.core.jdbc.sql.condition.LikeFragment;
+import com.crazy.sql.core.proxy.AccessorInvokeHandler;
+import com.crazy.sql.core.jdbc.transaction.Transaction;
+import com.crazy.sql.core.jdbc.transaction.impl.jdbc.JdbcTransactionFactory;
+import com.crazy.sql.core.utils.reflect.ReflectUtils;
+
+import java.lang.reflect.Proxy;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.*;
+
+public class Tests {
+    public static void main(String[] args) throws SQLException, ClassNotFoundException, InterruptedException {
+        //配置连接池
+        SimpleConnectionPool simpleConnectionPool = new SimpleConnectionPool();
         simpleConnectionPool.setDriverClassName("com.mysql.jdbc.Driver");
-        simpleConnectionPool.setUrl("jdbc:mysql://localhost:3307/bounddatabase");
         simpleConnectionPool.setUsername("root");
         simpleConnectionPool.setPassword("123456");
-        System.out.println(simpleConnectionPool.size());
-        AccessorFactory factory=new StandAccessorFactory(simpleConnectionPool,null,false);
-        Accessor<User> accessor=factory.produce(User.class);
-        System.out.println(accessor.queryAll());
-        System.out.println(accessor.queryAll());
+        simpleConnectionPool.setUrl("jdbc:mysql://localhost:3307/bounddatabase");
+        //获取全局配置实例
+        GlobalConfig globalConfig=GlobalConfig.getInstance();
+        //开启缓存
+        globalConfig.setCache(true);
+        //设置实体类class对象数组，用于获取Accessor实例
+        globalConfig.setClazzArr(new Class[]{User.class});
+        //设置表前缀
+        globalConfig.setTablePrefix("tb_");
+        //开启名称转化：SpringBoot -> spring_boot
+        globalConfig.setStandColumn(true);
+        globalConfig.setStandTable(true);
+        //创建框架环境
+        Environment environment=new Environment(new JdbcTransactionFactory(),simpleConnectionPool);
+        //创建Jdbc环境工厂
+        JdbcContextFactory jdbcContextFactory=new SimpleContextFactory(environment);
+        //生成实例
+        JdbcContext jdbcContext= jdbcContextFactory.produce();
+        //获取实体类对应Accessor实例
+        Accessor<User> accessor= (Accessor<User>) environment.getAccessor(User.class).produce(jdbcContext);
+        //使用查询构建工具构建查询操作
+        List<User> list=accessor.queryAll(new SqlBuilder<User>().where().like("user_id",66, LikeFragment.ALL).build());
+        System.out.println(list);
     }
 }
 ```
 ```
-import lombok.Getter;
-import lombok.Setter;
+import com.crazy.sql.core.annotation.Table;
+import com.crazy.sql.core.annotation.TableField;
+import com.crazy.sql.core.annotation.TableId;
+import com.crazy.sql.core.enums.PrimaryMode;
 
-import javax.persistence.Id;
-public class User {
-    @Id
-    private int userId;
-    private String loginName;
-    private String password;
+import java.util.Date;
+
+/**
+ * @author Akiba no ichiichiyoha
+ */
+@Table("tb_user")
+public  class User {
+    @TableId(PrimaryMode.JDBC_AUTO)
+    public int userId;
+    public String loginName;
+    public String password;
+    private String userName;
+    private String roleName;
+    private String rights;
+    private String iconPath;
+    private boolean sex;
+    @TableField(value = "last_time")
+    private Date lastTime;
+
+    public boolean isSex() {
+        return sex;
+    }
+
+    public void setSex(boolean sex) {
+        this.sex = sex;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getRoleName() {
+        return roleName;
+    }
+
+    public void setRoleName(String roleName) {
+        this.roleName = roleName;
+    }
+
+    public String getRights() {
+        return rights;
+    }
+
+    public void setRights(String rights) {
+        this.rights = rights;
+    }
+
+    public String getIconPath() {
+        return iconPath;
+    }
+
+    public void setIconPath(String iconPath) {
+        this.iconPath = iconPath;
+    }
+
+    public Date getLastTime() {
+        return lastTime;
+    }
+
+    public void setLastTime(Date lastTime) {
+        this.lastTime = lastTime;
+    }
 
     public int getUserId() {
         return userId;
@@ -177,6 +183,21 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "userId=" + userId +
+                ", loginName='" + loginName + '\'' +
+                ", password='" + password + '\'' +
+                ", userName='" + userName + '\'' +
+                ", roleName='" + roleName + '\'' +
+                ", rights='" + rights + '\'' +
+                ", iconPath='" + iconPath + '\'' +
+                ", sex=" + sex +
+                ", lastTime=" + lastTime +
+                '}';
     }
 }
 ```
