@@ -1,42 +1,44 @@
 package com.crazy.sql.core.cahce.impl;
 
 import com.crazy.sql.core.cahce.Cache;
-import com.crazy.sql.core.cahce.manager.CacheManager;
-import com.crazy.sql.core.cahce.manager.impl.SimpleCacheManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
 
-public class SimpleCache<K,V> implements Cache<K,V> {
+public class SimpleCache implements Cache<Object,Object> {
     private static final Logger logger= LoggerFactory.getLogger(SimpleCache.class);
-    private final Map<K,V> data=new ConcurrentHashMap<>();
-    private TimeUnit timeUnit;
-    private long expireTime;
-    private final long createTime;
+    private int capacity=1000;
+    private final Map<Object,Object> data=Collections.synchronizedMap(new LinkedHashMap<Object,Object>(capacity, 0.75f, true) {
+        @Override
+        protected boolean removeEldestEntry(Map.Entry<Object,Object> eldest) {
+            return size() > SimpleCache.this.getCapacity();
+        }
+    });
 
-    public SimpleCache(TimeUnit timeUnit, long expireTime) {
-        this.createTime=System.currentTimeMillis();
-        this.timeUnit = timeUnit;
-        this.expireTime = expireTime;
+    public SimpleCache() {
+    }
+
+    public SimpleCache(int capacity) {
+        this.capacity = capacity;
+    }
+
+    public long getCapacity() {
+        return capacity;
     }
 
     @Override
-    public void put(K k, V v) {
+    public void put(Object k, Object v) {
         data.put(k,v);
     }
 
     @Override
-    public V get(K k) {
-        logger.info("Cache hit");
-        logger.info(toString());
+    public Object get(Object k) {
+        logger.debug("select cache named "+k);
         return data.get(k);
     }
 
     @Override
-    public V remove(K k) {
+    public Object remove(Object k) {
         return data.remove(k);
     }
 
@@ -46,35 +48,18 @@ public class SimpleCache<K,V> implements Cache<K,V> {
     }
 
     @Override
-    public Set<K> keys() {
+    public Set<Object> keys() {
         return data.keySet();
     }
 
     @Override
-    public Collection<V> values() {
-        logger.info("Cache hit");
+    public Collection<Object> values() {
         return data.values();
     }
 
     @Override
     public void clear() {
         data.clear();
-    }
-
-    @Override
-    public void setExpireTime(TimeUnit timeUnit, long expireTime) {
-        this.timeUnit=timeUnit;
-        this.expireTime=expireTime;
-    }
-
-    @Override
-    public boolean isExpire() {
-        return timeUnit.toMillis(expireTime)<=(System.currentTimeMillis()-createTime);
-    }
-
-    @Override
-    public long getExpireTime() {
-        return this.expireTime;
     }
 
     @Override

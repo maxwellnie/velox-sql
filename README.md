@@ -38,7 +38,7 @@ springboot:
         <dependency>
             <groupId>io.github.akibanoichiichiyoha</groupId>
             <artifactId>CrazySQL-boot-starter</artifactId>
-            <version>1.4.6</version>
+            <version>1.5.0</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -97,7 +97,7 @@ public class MyCrazySQLConfig {
         <dependency>
             <groupId>io.github.akibanoichiichiyoha</groupId>
             <artifactId>CrazySQL-core</artifactId>
-            <version>1.4.6</version>
+            <version>1.5.0</version>
         </dependency>
         <dependency>
             <groupId>mysql</groupId>

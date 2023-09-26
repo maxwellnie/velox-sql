@@ -12,7 +12,4 @@ public interface Cache<K,V> {
     Set<K> keys();
     Collection<V> values();
     void clear();
-    void setExpireTime(TimeUnit timeUnit, long expireTime);
-    boolean isExpire();
-    long getExpireTime();
 }

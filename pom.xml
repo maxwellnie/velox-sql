@@ -7,6 +7,8 @@
     <modules>
         <module>CrazySQL-boot-starter</module>
         <module>CrazySQL-core</module>
+        <module>CrazySQL-plugin</module>
+        <module>CrazySQL-spring</module>
     </modules>
     <parent>
         <groupId>org.sonatype.oss</groupId>
@@ -16,7 +18,7 @@
 
     <groupId>io.github.akibanoichiichiyoha</groupId>
     <artifactId>CrazySQL</artifactId>
-    <version>1.4.6</version>
+    <version>1.5.0</version>
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>

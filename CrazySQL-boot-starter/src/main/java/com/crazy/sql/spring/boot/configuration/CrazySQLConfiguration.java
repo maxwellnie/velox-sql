@@ -1,37 +1,20 @@
 package com.crazy.sql.spring.boot.configuration;
 
+import com.crazy.sql.core.config.GlobalConfig;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.stereotype.Component;
 
+/**
+ * 框架配置类
+ * @author Akiba no ichiichiyoha
+ */
 @Component
 @ConfigurationProperties(prefix = "crazy-sql")
 public class CrazySQLConfiguration {
-    private int maximum=50;
-    private String tableSuffix="";
-    private boolean standColumn=false;
-
-    public int getMaximum() {
-        return maximum;
-    }
-
-    public void setMaximum(int maximum) {
-        this.maximum = maximum;
-    }
-
-    public String getTableSuffix() {
-        return tableSuffix;
-    }
-
-    public void setTableSuffix(String tableSuffix) {
-        this.tableSuffix = tableSuffix;
-    }
-
-    public boolean isStandColumn() {
-        return standColumn;
-    }
-
-    public void setStandColumn(boolean standColumn) {
-        this.standColumn = standColumn;
-    }
+    /**
+     * 和全局配置绑定
+     */
+    @NestedConfigurationProperty
+    private GlobalConfig config= GlobalConfig.getInstance();
 }
