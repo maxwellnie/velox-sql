@@ -1,14 +1,18 @@
 # CrazySQL
 
 #### 介绍
+
 基于Java的数据持久化框架
 
 #### 软件架构
+
 软件架构说明
 
 #### 使用说明
+
 springboot:
 导入依赖
+
 ```
 <dependencies>
         <dependency>
@@ -17,46 +21,15 @@ springboot:
             <version>5.1.8</version>
         </dependency>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-thymeleaf</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
-
-        <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <optional>true</optional>
         </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.github.akibanoichiichiyoha</groupId>
-            <artifactId>CrazySQL-boot-starter</artifactId>
-            <version>1.5.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-configuration-processor</artifactId>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>javax.persistence</groupId>
-            <artifactId>persistence-api</artifactId>
-            <version>1.0.2</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-jdbc</artifactId>
-        </dependency>
     </dependencies>
 ```
+
 配置文件：
+
 ```
 spring:
   datasource:
@@ -66,36 +39,40 @@ spring:
     password: 123456
     driver-class-name: com.mysql.jdbc.Driver
 crazy-sql:
-  table-suffix: tb_
+  entity-suffix: tb_
   maximum: 50
   stand-column: true
 ```
-table-suffix:表名前缀：tb_user中的tb_
+
+entity-suffix:表名前缀：tb_user中的tb_
 maximum:最大连接数量
 stand-column:userId->user_id
-你需要在你的配置类中注册AccessorBean:
+你需要在你的配置类中注册DaoImplBean:
+
 ```
 @Configuration
 public class MyCrazySQLConfig {
     @Bean
-    public CacheManager cacheManager(){
+    public CacheManager cacheDirtyManager(){
         return new SimpleCacheManager();
     }
     @Bean
-    public Accessor<User> userAccessor(AccessorFactory accessorFactory){
-        return new AccessorSession<>(accessorFactory.produce(User.class));
+    public DaoImpl<User> userDaoImpl(DaoImplFactory daoImplFactory){
+        return new DaoImplSession<>(daoImplFactory.produce(User.class));
     }
     @Bean
-    public Accessor<Bound> boundAccessor(AccessorFactory accessorFactory){
-        return new AccessorSession<>(accessorFactory.produce(Bound.class));
+    public DaoImpl<Bound> boundDaoImpl(DaoImplFactory daoImplFactory){
+        return new DaoImplSession<>(daoImplFactory.produce(Bound.class));
     }
 }
 ```
+
 如果不想使用spring，也可以使用如下的方法：
+
 ```
     <dependencies>
         <dependency>
-            <groupId>io.github.akibanoichiichiyoha</groupId>
+            <groupId>io.github.maxwellnie</groupId>
             <artifactId>CrazySQL-core</artifactId>
             <version>1.5.0</version>
         </dependency>
@@ -121,7 +98,9 @@ public class MyCrazySQLConfig {
         </dependency>
     </dependencies>
 ```
+
 使用如下代码即可
+
 ```
 public class Main {
     public static void main(String[] args) throws SQLException {
@@ -137,13 +116,14 @@ public class Main {
         simpleConnectionPool.setUsername("root");
         simpleConnectionPool.setPassword("123456");
         System.out.println(simpleConnectionPool.size());
-        AccessorFactory factory=new StandAccessorFactory(simpleConnectionPool,null,false);
-        Accessor<User> accessor=factory.produce(User.class);
-        System.out.println(accessor.queryAll());
-        System.out.println(accessor.queryAll());
+        DaoImplFactory factory=new StandDaoImplFactory(simpleConnectionPool,null,false);
+        DaoImpl<User> daoImpl=factory.produce(User.class);
+        System.out.println(daoImpl.queryAll());
+        System.out.println(daoImpl.queryAll());
     }
 }
 ```
+
 ```
 import lombok.Getter;
 import lombok.Setter;
