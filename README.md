@@ -4,7 +4,6 @@
 基于Java的数据持久化框架，目前只适配了MySql数据库和Java8
 
 #### 软件重要部分
-
 1. Executor - 代理Dao的方法。
 2. TypeConvertor - 处理Jdbc提供数据类型到期望的Java数据类型。
 3. KeyStrategy - 这个实体包括主键生成器和主键查询器，前者用于产生主键值，后者用于查询产生的主键值。

@@ -1,5 +1,6 @@
 package com.velox.jpa.spring.config.bean;
 
+import com.maxwellnie.vleox.jpa.core.utils.CollectionUtils;
 import com.velox.jpa.spring.transaction.SpringTransactionFactory;
 import com.maxwellnie.vleox.jpa.core.dao.support.env.Environment;
 import com.maxwellnie.vleox.jpa.core.annotation.Entity;
@@ -65,7 +66,7 @@ public class VeloxJpaConfigBean extends BaseConfig implements InitializingBean, 
             throw new VeloxImplConfigException("The packagePath must be not empty.");
         } else {
             Set<Class<?>> classSet = getAllMarkedClassOfPath(packagePath);
-            this.setClazzArr((Class<?>[]) classSet.toArray());
+            this.setClazzArr(CollectionUtils.toClassArray(classSet));
             Environment environment = new Environment(new SpringTransactionFactory(), dataSource, this);
             jdbcContextFactory = new SimpleContextFactory(environment);
         }
