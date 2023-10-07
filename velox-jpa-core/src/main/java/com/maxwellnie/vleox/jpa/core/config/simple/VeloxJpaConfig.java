@@ -8,14 +8,14 @@ import com.maxwellnie.vleox.jpa.core.config.BaseConfig;
  *
  * @author Maxwell Nie
  */
-public class CrazySqlConfig extends BaseConfig {
-    private static final CrazySqlConfig INSTANCE = new CrazySqlConfig();
+public class VeloxJpaConfig extends BaseConfig {
+    private static final VeloxJpaConfig INSTANCE = new VeloxJpaConfig();
 
-    private CrazySqlConfig() {
+    private VeloxJpaConfig() {
 
     }
 
-    public static CrazySqlConfig getInstance() {
+    public static VeloxJpaConfig getInstance() {
         return INSTANCE;
     }
 }

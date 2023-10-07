@@ -1,6 +1,6 @@
 package com.maxwellnie.vleox.jpa.core.jdbc.context;
 
-import com.maxwellnie.vleox.jpa.core.config.simple.CrazySqlConfig;
+import com.maxwellnie.vleox.jpa.core.config.simple.VeloxJpaConfig;
 import com.maxwellnie.vleox.jpa.core.dao.support.env.Environment;
 
 /**
@@ -25,7 +25,7 @@ public class SimpleContextFactory implements JdbcContextFactory {
         return new SimpleContext(
                 environment.
                         getTransactionFactory().
-                        produce(environment.getDataSource(), autoCommit, CrazySqlConfig.getInstance().getLevel()), autoCommit);
+                        produce(environment.getDataSource(), autoCommit, VeloxJpaConfig.getInstance().getLevel()), autoCommit);
     }
 
     @Override

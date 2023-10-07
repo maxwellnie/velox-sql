@@ -1,7 +1,7 @@
 package com.velox.jpa.spring.bean;
 
 import com.velox.jpa.spring.bean.factory.DaoImplFactoryBean;
-import com.velox.jpa.spring.config.bean.CrazySqlConfigBean;
+import com.velox.jpa.spring.config.bean.VeloxJpaConfigBean;
 import com.maxwellnie.vleox.jpa.core.dao.support.env.Environment;
 import com.maxwellnie.vleox.jpa.core.jdbc.context.JdbcContextFactory;
 import com.maxwellnie.vleox.jpa.core.utils.java.StringUtils;
@@ -26,15 +26,15 @@ import static org.springframework.util.Assert.notNull;
 @Component
 public class DaoImplRegister implements BeanDefinitionRegistryPostProcessor {
     private static final Logger logger = LoggerFactory.getLogger(DaoImplRegister.class);
-    private CrazySqlConfigBean crazySqlConfigBean;
+    private VeloxJpaConfigBean veloxJpaConfigBean;
     private JdbcContextFactory jdbcContextFactory;
 
-    public CrazySqlConfigBean getCrazySqlConfigBean() {
-        return crazySqlConfigBean;
+    public VeloxJpaConfigBean getVeloxImplConfigBean() {
+        return veloxJpaConfigBean;
     }
 
-    public void setCrazySqlConfigBean(CrazySqlConfigBean crazySqlConfigBean) {
-        this.crazySqlConfigBean = crazySqlConfigBean;
+    public void setVeloxImplConfigBean(VeloxJpaConfigBean veloxJpaConfigBean) {
+        this.veloxJpaConfigBean = veloxJpaConfigBean;
     }
 
     public JdbcContextFactory getJdbcContextFactory() {
@@ -46,7 +46,7 @@ public class DaoImplRegister implements BeanDefinitionRegistryPostProcessor {
     }
 
     private void register(BeanDefinitionRegistry registry) {
-        for (Class<?> entityClass : crazySqlConfigBean.getClazzArr()) {
+        for (Class<?> entityClass : veloxJpaConfigBean.getClazzArr()) {
             try {
                 registerBean(entityClass, registry);
             } catch (Throwable throwable) {
@@ -58,16 +58,16 @@ public class DaoImplRegister implements BeanDefinitionRegistryPostProcessor {
 
     private void registerBean(Class<?> entityClass, BeanDefinitionRegistry registry) {
         notNull(entityClass, "entityClass must be not null.");
-        notNull(crazySqlConfigBean.getDaoImplClazz(), "daoImplInterface must be not null.");
+        notNull(veloxJpaConfigBean.getDaoImplClazz(), "daoImplInterface must be not null.");
         notNull(jdbcContextFactory, "jdbcContextFactory must be not null.");
         Environment environment = jdbcContextFactory.getEnvironment();
         notNull(environment.getDaoImplFactory(entityClass), "daoImplFactory must be not null.");
         BeanDefinitionBuilder beanDefinitionBuilder = BeanDefinitionBuilder.genericBeanDefinition(DaoImplFactoryBean.class);
-        beanDefinitionBuilder.addPropertyValue("daoImplInterface", crazySqlConfigBean.getDaoImplClazz());
+        beanDefinitionBuilder.addPropertyValue("daoImplInterface", veloxJpaConfigBean.getDaoImplClazz());
         beanDefinitionBuilder.addPropertyValue("daoImplFactory", environment.getDaoImplFactory(entityClass));
         beanDefinitionBuilder.addPropertyValue("JdbcContext", jdbcContextFactory.produce());
         beanDefinitionBuilder.setScope(BeanDefinition.SCOPE_SINGLETON);
-        String beanName = StringUtils.toFirstLowerCase(entityClass.getSimpleName()) + crazySqlConfigBean.getDaoImplClazz().getSimpleName();
+        String beanName = StringUtils.toFirstLowerCase(entityClass.getSimpleName()) + veloxJpaConfigBean.getDaoImplClazz().getSimpleName();
         if (registry.isBeanNameInUse(beanName))
             throw new BeanCreationException("The bean named " + beanName + " is used.");
         else

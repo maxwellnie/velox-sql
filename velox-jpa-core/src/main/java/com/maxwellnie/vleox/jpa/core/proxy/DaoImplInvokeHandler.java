@@ -1,7 +1,7 @@
 package com.maxwellnie.vleox.jpa.core.proxy;
 
 import com.maxwellnie.vleox.jpa.core.cahce.Cache;
-import com.maxwellnie.vleox.jpa.core.config.simple.CrazySqlConfig;
+import com.maxwellnie.vleox.jpa.core.config.simple.VeloxJpaConfig;
 import com.maxwellnie.vleox.jpa.core.dao.support.DaoImpl;
 import com.maxwellnie.vleox.jpa.core.exception.NotMappedMethodException;
 import com.maxwellnie.vleox.jpa.core.jdbc.context.JdbcContext;
@@ -73,7 +73,7 @@ public class DaoImplInvokeHandler implements InvocationHandler {
         this.jdbcContext = jdbcContext;
         this.cache = cache;
         logger.debug("table info : " + tableInfo);
-        logger.debug("enable cache : " + CrazySqlConfig.getInstance().isCache());
+        logger.debug("enable cache : " + VeloxJpaConfig.getInstance().isCache());
     }
 
     public DaoImplInvokeHandler(TableInfo tableInfo, Cache<Object, Object> cache) {

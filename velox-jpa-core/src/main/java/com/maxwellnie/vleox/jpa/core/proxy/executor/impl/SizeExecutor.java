@@ -3,7 +3,7 @@ package com.maxwellnie.vleox.jpa.core.proxy.executor.impl;
 import com.maxwellnie.vleox.jpa.core.cahce.Cache;
 import com.maxwellnie.vleox.jpa.core.cahce.dirty.CacheDirtyManager;
 import com.maxwellnie.vleox.jpa.core.cahce.key.CacheKey;
-import com.maxwellnie.vleox.jpa.core.config.simple.CrazySqlConfig;
+import com.maxwellnie.vleox.jpa.core.config.simple.VeloxJpaConfig;
 import com.maxwellnie.vleox.jpa.core.dao.support.SqlBuilder;
 import com.maxwellnie.vleox.jpa.core.jdbc.context.JdbcContext;
 import com.maxwellnie.vleox.jpa.core.jdbc.sql.SizeStatement;
@@ -85,7 +85,7 @@ public class SizeExecutor extends BaseQueryExecutor {
         key.addValueCollection(sizeStatement.getValues());
         resultMap.put("cacheKey", key);
         Object count = null;
-        if (CrazySqlConfig.getInstance().isCache()) {
+        if (VeloxJpaConfig.getInstance().isCache()) {
             /**
              * 获取缓存中的数据
              */

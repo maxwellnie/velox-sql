@@ -4,7 +4,7 @@ import com.maxwellnie.vleox.jpa.core.annotation.Column;
 import com.maxwellnie.vleox.jpa.core.annotation.Entity;
 import com.maxwellnie.vleox.jpa.core.annotation.PrimaryKey;
 import com.maxwellnie.vleox.jpa.core.annotation.RegisterMethod;
-import com.maxwellnie.vleox.jpa.core.config.simple.CrazySqlConfig;
+import com.maxwellnie.vleox.jpa.core.config.simple.VeloxJpaConfig;
 import com.maxwellnie.vleox.jpa.core.enums.PrimaryMode;
 import com.maxwellnie.vleox.jpa.core.exception.RegisterMethodException;
 import com.maxwellnie.vleox.jpa.core.java.type.TypeConvertor;
@@ -59,9 +59,9 @@ public class ReflectUtils {
      */
     private static TableInfo initTableInfo(Class<?> clazz) {
         TableInfo tableInfo = new TableInfo();
-        handleTable(clazz, tableInfo, CrazySqlConfig.getInstance().getTablePrefix(), CrazySqlConfig.getInstance().isStandTable());
+        handleTable(clazz, tableInfo, VeloxJpaConfig.getInstance().getTablePrefix(), VeloxJpaConfig.getInstance().isStandTable());
         tableInfo.setMappedClazz(clazz);
-        initFieldMapped(tableInfo, clazz, CrazySqlConfig.getInstance().isStandColumn());
+        initFieldMapped(tableInfo, clazz, VeloxJpaConfig.getInstance().isStandColumn());
         return tableInfo;
     }
 

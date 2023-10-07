@@ -4,7 +4,7 @@ import com.velox.jpa.spring.transaction.SpringTransactionFactory;
 import com.maxwellnie.vleox.jpa.core.dao.support.env.Environment;
 import com.maxwellnie.vleox.jpa.core.annotation.Entity;
 import com.maxwellnie.vleox.jpa.core.config.BaseConfig;
-import com.maxwellnie.vleox.jpa.core.exception.CrazySqlConfigException;
+import com.maxwellnie.vleox.jpa.core.exception.VeloxImplConfigException;
 import com.maxwellnie.vleox.jpa.core.jdbc.context.JdbcContextFactory;
 import com.maxwellnie.vleox.jpa.core.jdbc.context.SimpleContextFactory;
 import com.maxwellnie.vleox.jpa.core.utils.java.StringUtils;
@@ -27,8 +27,8 @@ import java.util.Set;
  *
  * @author Maxwell Nie
  */
-public class CrazySqlConfigBean extends BaseConfig implements InitializingBean, FactoryBean<JdbcContextFactory>, ApplicationListener<ApplicationEvent> {
-    private static final Logger logger = LoggerFactory.getLogger(CrazySqlConfigBean.class);
+public class VeloxJpaConfigBean extends BaseConfig implements InitializingBean, FactoryBean<JdbcContextFactory>, ApplicationListener<ApplicationEvent> {
+    private static final Logger logger = LoggerFactory.getLogger(VeloxJpaConfigBean.class);
     private DataSource dataSource;
     private String packagePath;
     private JdbcContextFactory jdbcContextFactory;
@@ -58,11 +58,11 @@ public class CrazySqlConfigBean extends BaseConfig implements InitializingBean, 
     public void afterPropertiesSet() {
         if (dataSource == null) {
             logger.error("Your datasource is null.");
-            throw new CrazySqlConfigException("The datasource must be not null.");
+            throw new VeloxImplConfigException("The datasource must be not null.");
         }
         if (StringUtils.isNullOrEmpty(packagePath)) {
             logger.error("Your package path - " + packagePath + " - is empty.");
-            throw new CrazySqlConfigException("The packagePath must be not empty.");
+            throw new VeloxImplConfigException("The packagePath must be not empty.");
         } else {
             Set<Class<?>> classSet = getAllMarkedClassOfPath(packagePath);
             this.setClazzArr((Class<?>[]) classSet.toArray());
