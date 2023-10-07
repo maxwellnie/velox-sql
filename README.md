@@ -1,4 +1,4 @@
-# CrazySQL
+# VeloxJPA
 
 #### 介绍
 基于Java的数据持久化框架，目前只适配了MySql数据库和Java8
@@ -21,9 +21,9 @@
 ```
     <dependencies>
         <dependency>
-            <groupId>io.github.akibanoichiichiyoha</groupId>
-            <artifactId>CrazySQL-core</artifactId>
-            <version>1.5.0</version>
+            <groupId>io.github.maxwellnie</groupId>
+            <artifactId>velox-jpa-core</artifactId>
+            <version>1.0</version>
         </dependency>
         <dependency>
             <groupId>mysql</groupId>
@@ -36,9 +36,9 @@
             <version>1.6.1</version>
         </dependency>
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-simple</artifactId>
-            <version>1.6.1</version>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.2.6</version>
         </dependency>
     </dependencies>
 ```
