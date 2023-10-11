@@ -1,6 +1,6 @@
 package com.velox.jpa.spring.transaction;
 
-import com.maxwellnie.vleox.jpa.core.jdbc.transaction.Transaction;
+import com.maxwellnie.velox.jpa.core.jdbc.transaction.Transaction;
 import org.springframework.jdbc.datasource.DataSourceUtils;
 
 import javax.sql.DataSource;

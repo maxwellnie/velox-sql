@@ -1,6 +1,6 @@
 package com.velox.jpa.spring.resource;
 
-import com.maxwellnie.vleox.jpa.core.jdbc.context.JdbcContext;
+import com.maxwellnie.velox.jpa.core.jdbc.context.JdbcContext;
 import org.springframework.transaction.support.ResourceHolderSupport;
 
 /**

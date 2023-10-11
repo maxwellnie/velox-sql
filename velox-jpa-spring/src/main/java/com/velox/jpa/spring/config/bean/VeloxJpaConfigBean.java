@@ -1,14 +1,15 @@
 package com.velox.jpa.spring.config.bean;
 
-import com.maxwellnie.vleox.jpa.core.utils.CollectionUtils;
+import com.maxwellnie.velox.jpa.core.utils.CollectionUtils;
+import com.velox.jpa.spring.executor.ExecutorUtils;
 import com.velox.jpa.spring.transaction.SpringTransactionFactory;
-import com.maxwellnie.vleox.jpa.core.dao.support.env.Environment;
-import com.maxwellnie.vleox.jpa.core.annotation.Entity;
-import com.maxwellnie.vleox.jpa.core.config.BaseConfig;
-import com.maxwellnie.vleox.jpa.core.exception.VeloxImplConfigException;
-import com.maxwellnie.vleox.jpa.core.jdbc.context.JdbcContextFactory;
-import com.maxwellnie.vleox.jpa.core.jdbc.context.SimpleContextFactory;
-import com.maxwellnie.vleox.jpa.core.utils.java.StringUtils;
+import com.maxwellnie.velox.jpa.core.dao.support.env.Environment;
+import com.maxwellnie.velox.jpa.core.annotation.Entity;
+import com.maxwellnie.velox.jpa.core.config.BaseConfig;
+import com.maxwellnie.velox.jpa.core.exception.VeloxImplConfigException;
+import com.maxwellnie.velox.jpa.core.jdbc.context.JdbcContextFactory;
+import com.maxwellnie.velox.jpa.core.jdbc.context.SimpleContextFactory;
+import com.maxwellnie.velox.jpa.core.utils.java.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.FactoryBean;
@@ -28,19 +29,11 @@ import java.util.Set;
  *
  * @author Maxwell Nie
  */
-public class VeloxJpaConfigBean extends BaseConfig implements InitializingBean, FactoryBean<JdbcContextFactory>, ApplicationListener<ApplicationEvent> {
+public class VeloxJpaConfigBean extends BaseConfig implements InitializingBean,FactoryBean<JdbcContextFactory>, ApplicationListener<ApplicationEvent> {
     private static final Logger logger = LoggerFactory.getLogger(VeloxJpaConfigBean.class);
     private DataSource dataSource;
-    private String packagePath;
     private JdbcContextFactory jdbcContextFactory;
 
-    public String getPackagePath() {
-        return packagePath;
-    }
-
-    public void setPackagePath(String packagePath) {
-        this.packagePath = packagePath;
-    }
 
     public DataSource getDataSource() {
         return dataSource;
@@ -52,7 +45,7 @@ public class VeloxJpaConfigBean extends BaseConfig implements InitializingBean, 
 
     @Override
     public void onApplicationEvent(ApplicationEvent applicationEvent) {
-
+        //1.0 version ,before it's validate to bean registered method.
     }
 
     @Override
@@ -61,40 +54,23 @@ public class VeloxJpaConfigBean extends BaseConfig implements InitializingBean, 
             logger.error("Your datasource is null.");
             throw new VeloxImplConfigException("The datasource must be not null.");
         }
-        if (StringUtils.isNullOrEmpty(packagePath)) {
-            logger.error("Your package path - " + packagePath + " - is empty.");
-            throw new VeloxImplConfigException("The packagePath must be not empty.");
-        } else {
-            Set<Class<?>> classSet = getAllMarkedClassOfPath(packagePath);
-            this.setClazzArr(CollectionUtils.toClassArray(classSet));
-            Environment environment = new Environment(new SpringTransactionFactory(), dataSource, this);
-            jdbcContextFactory = new SimpleContextFactory(environment);
-        }
-
+        Environment environment=new Environment(new SpringTransactionFactory(),dataSource,this);
+        this.jdbcContextFactory=new SimpleContextFactory(environment);
+        ExecutorUtils.proxyAllExecutor(this.jdbcContextFactory);
     }
-
-    private Set<Class<?>> getAllMarkedClassOfPath(String packagePath) {
-        final Set<Class<?>> classSet = new HashSet<>();
-        ClassPathScanningCandidateComponentProvider provider = new ClassPathScanningCandidateComponentProvider(false);
-        provider.addIncludeFilter(new AnnotationTypeFilter(Entity.class));
-        for (BeanDefinition bd : provider.findCandidateComponents(packagePath)) {
-            try {
-                Class<?> clazz = Class.forName(bd.getBeanClassName());
-                logger.debug("Get a entity " + clazz.getName() + " ,it's added to clazzArr.");
-                classSet.add(clazz);
-            } catch (ClassNotFoundException e) {
-                logger.warn("The class named " + bd.getBeanClassName() + " cannot be properly loaded.");
-            }
-        }
-        return classSet;
-    }
-
     @Override
     public JdbcContextFactory getObject() throws Exception {
-        if (this.jdbcContextFactory != null) {
+        if(this.jdbcContextFactory == null)
             afterPropertiesSet();
-        }
         return this.jdbcContextFactory;
+    }
+
+    public JdbcContextFactory getJdbcContextFactory() {
+        return jdbcContextFactory;
+    }
+
+    public void setJdbcContextFactory(JdbcContextFactory jdbcContextFactory) {
+        this.jdbcContextFactory = jdbcContextFactory;
     }
 
     @Override

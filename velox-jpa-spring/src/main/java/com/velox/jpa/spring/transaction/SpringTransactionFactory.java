@@ -1,8 +1,8 @@
 package com.velox.jpa.spring.transaction;
 
-import com.maxwellnie.vleox.jpa.core.exception.MethodNotSupportException;
-import com.maxwellnie.vleox.jpa.core.jdbc.transaction.Transaction;
-import com.maxwellnie.vleox.jpa.core.jdbc.transaction.TransactionFactory;
+import com.maxwellnie.velox.jpa.core.exception.MethodNotSupportException;
+import com.maxwellnie.velox.jpa.core.jdbc.transaction.Transaction;
+import com.maxwellnie.velox.jpa.core.jdbc.transaction.TransactionFactory;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -19,7 +19,7 @@ public class SpringTransactionFactory implements TransactionFactory {
 
     @Override
     public Transaction produce(DataSource dataSource, boolean autoCommit, int level) {
-        throw new MethodNotSupportException("This method is applied to a custom Transaction factory, the built-in factory does not support this method.");
+        return produce(dataSource);
     }
 
     @Override

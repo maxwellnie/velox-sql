@@ -7,6 +7,7 @@
     <modules>
         <module>velox-jpa-core</module>
         <module>velox-jpa-spring</module>
+        <module>velox-jpa-core-template</module>
     </modules>
     <parent>
         <groupId>org.sonatype.oss</groupId>
@@ -33,20 +34,6 @@
         <maven-gpg-plugin.version>1.6</maven-gpg-plugin.version>
         <maven-deploy-plugin.version>3.0.0-M1</maven-deploy-plugin.version>
     </properties>
-    <dependencies>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>1.6.1</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>javax.persistence</groupId>
-            <artifactId>persistence-api</artifactId>
-            <version>1.0.2</version>
-            <scope>provided</scope>
-        </dependency>
-    </dependencies>
     <licenses>
         <license>
             <name>The Apache Software License, Version 2.0</name>
@@ -60,6 +47,14 @@
             <email>overcolorworkgroup@qq.com</email>
         </developer>
     </developers>
+    <dependencies>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.6.1</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
     <scm>
         <connection>scm:git@github.com:maxwellnie/velox-jpa.git</connection>
         <developerConnection>scm:git@github.com:maxwellnie/velox-jpa.git</developerConnection>
