@@ -1,28 +1,20 @@
 package com.velox.jpa.spring.config.bean;
 
-import com.maxwellnie.velox.jpa.core.utils.CollectionUtils;
 import com.velox.jpa.spring.executor.ExecutorUtils;
 import com.velox.jpa.spring.transaction.SpringTransactionFactory;
 import com.maxwellnie.velox.jpa.core.dao.support.env.Environment;
-import com.maxwellnie.velox.jpa.core.annotation.Entity;
 import com.maxwellnie.velox.jpa.core.config.BaseConfig;
 import com.maxwellnie.velox.jpa.core.exception.VeloxImplConfigException;
 import com.maxwellnie.velox.jpa.core.jdbc.context.JdbcContextFactory;
 import com.maxwellnie.velox.jpa.core.jdbc.context.SimpleContextFactory;
-import com.maxwellnie.velox.jpa.core.utils.java.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
-import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
-import org.springframework.core.type.filter.AnnotationTypeFilter;
 
 import javax.sql.DataSource;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * 配置类，可以通过设置来初始化JdbcContextFactory
@@ -59,7 +51,7 @@ public class VeloxJpaConfigBean extends BaseConfig implements InitializingBean,F
         ExecutorUtils.proxyAllExecutor(this.jdbcContextFactory);
     }
     @Override
-    public JdbcContextFactory getObject() throws Exception {
+    public JdbcContextFactory getObject() {
         if(this.jdbcContextFactory == null)
             afterPropertiesSet();
         return this.jdbcContextFactory;

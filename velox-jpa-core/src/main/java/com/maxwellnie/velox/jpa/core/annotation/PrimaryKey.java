@@ -1,5 +1,7 @@
 package com.maxwellnie.velox.jpa.core.annotation;
 
+import com.maxwellnie.velox.jpa.core.java.type.TypeConvertor;
+import com.maxwellnie.velox.jpa.core.java.type.impl.DefaultConvertor;
 import com.maxwellnie.velox.jpa.core.manager.KeyStrategyManager;
 import com.maxwellnie.velox.jpa.core.enums.PrimaryMode;
 
@@ -16,12 +18,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.FIELD})
 public @interface PrimaryKey {
-    /**
-     * 主键的模式：无、jdbc自增，其他
-     *
-     * @return
-     */
-    PrimaryMode value() default PrimaryMode.NONE;
 
     /**
      * 主键策略：默认策略、jdbc自增策略、自定义策略
@@ -34,4 +30,8 @@ public @interface PrimaryKey {
      * @return 主键名
      */
     String name() default "";
+    /**
+     * @return 类型转换器
+     */
+    Class<? extends TypeConvertor> convertor() default DefaultConvertor.class;
 }

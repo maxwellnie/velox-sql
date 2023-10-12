@@ -11,7 +11,7 @@ import com.maxwellnie.velox.jpa.core.jdbc.table.column.ColumnInfo;
 import com.maxwellnie.velox.jpa.core.utils.java.ObjectUtils;
 import com.maxwellnie.velox.jpa.core.utils.jdbc.JdbcUtils;
 import com.maxwellnie.velox.jpa.core.utils.jdbc.ResultSetUtils;
-import com.maxwellnie.velox.jpa.core.utils.reflect.ReflectUtils;
+import com.maxwellnie.velox.jpa.core.utils.reflect.TableIfoUtils;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -40,7 +40,7 @@ public class MultiThreadQuery {
     }
 
     public <E> void execute(SqlBuilder<E> sqlBuilder, QueryHandle<E> queryHandle, Class<E> clazz) throws SQLException {
-        TableInfo tableInfo = ReflectUtils.getTableInfo(clazz,baseConfig);
+        TableInfo tableInfo = TableIfoUtils.getTableInfo(clazz,baseConfig);
         SizeStatement sizeStatement = new SizeStatement();
         sizeStatement.setTableName(tableInfo.getTableName());
         /**

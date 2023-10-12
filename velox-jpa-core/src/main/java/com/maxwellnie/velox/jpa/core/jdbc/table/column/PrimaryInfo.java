@@ -13,18 +13,13 @@ import java.lang.reflect.Field;
 public class PrimaryInfo extends ColumnInfo {
     private String fieldName;
     /**
-     * 主键策略模式
-     */
-    private PrimaryMode primaryMode;
-    /**
      * 策略名
      */
     private String strategyName;
 
-    public PrimaryInfo(String columnName, Field columnMappedField, TypeConvertor convertor, String fieldName, PrimaryMode primaryMode, String strategyName) {
+    public PrimaryInfo(String columnName, Field columnMappedField, TypeConvertor<?> convertor, String fieldName, String strategyName) {
         super(columnName, columnMappedField, convertor);
         this.fieldName = fieldName;
-        this.primaryMode = primaryMode;
         this.strategyName = strategyName;
     }
 
@@ -39,13 +34,6 @@ public class PrimaryInfo extends ColumnInfo {
         this.fieldName = fieldName;
     }
 
-    public PrimaryMode getPrimaryMode() {
-        return primaryMode;
-    }
-
-    public void setPrimaryMode(PrimaryMode primaryMode) {
-        this.primaryMode = primaryMode;
-    }
 
     public String getStrategyName() {
         return strategyName;
@@ -58,7 +46,6 @@ public class PrimaryInfo extends ColumnInfo {
     @Override
     public String toString() {
         return "PrimaryInfo{" +
-                "primaryMode=" + primaryMode +
                 ", strategyName='" + strategyName + '\'' +
                 '}';
     }

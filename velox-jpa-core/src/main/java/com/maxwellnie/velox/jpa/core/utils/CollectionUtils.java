@@ -1,7 +1,6 @@
 package com.maxwellnie.velox.jpa.core.utils;
 
 import java.util.Collection;
-import java.util.List;
 
 /**
  * @author Maxwell Nie

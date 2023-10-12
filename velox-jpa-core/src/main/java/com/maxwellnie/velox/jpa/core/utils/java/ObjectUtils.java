@@ -15,9 +15,6 @@ public class ObjectUtils {
     public static boolean notEmptyFragment(SqlFragment sqlFragment) {
         if (sqlFragment == null)
             return false;
-        else if (StringUtils.isNullOrEmpty(sqlFragment.getNativeSql()))
-            return false;
-        else
-            return true;
+        else return !StringUtils.isNullOrEmpty(sqlFragment.getNativeSql());
     }
 }

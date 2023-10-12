@@ -32,7 +32,7 @@ public class SpringTransaction implements Transaction {
     }
 
     @Override
-    public void release() throws SQLException {
+    public void release() {
         if (connection != null && dataSource != null) {
             DataSourceUtils.releaseConnection(connection, dataSource);
         }

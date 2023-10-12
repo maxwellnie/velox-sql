@@ -1,6 +1,5 @@
 package com.maxwellnie.velox.jpa.core.jdbc.context;
 
-import com.maxwellnie.velox.jpa.core.config.simple.VeloxJpaConfig;
 import com.maxwellnie.velox.jpa.core.dao.support.env.Environment;
 
 /**

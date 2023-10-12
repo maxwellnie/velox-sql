@@ -69,7 +69,7 @@ public class CallBackConnection implements Connection {
     }
 
     @Override
-    public void close() throws SQLException {
+    public void close() {
         if (pool != null)
             pool.callBack(this);
     }

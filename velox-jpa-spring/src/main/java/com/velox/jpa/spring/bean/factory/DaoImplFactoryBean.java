@@ -1,12 +1,8 @@
 package com.velox.jpa.spring.bean.factory;
 
-import com.maxwellnie.velox.jpa.core.jdbc.context.JdbcContext;
 import com.maxwellnie.velox.jpa.core.jdbc.context.JdbcContextFactory;
 import com.maxwellnie.velox.jpa.core.proxy.DaoImplFactory;
-import com.maxwellnie.velox.jpa.core.proxy.DaoImplInvokeHandler;
-import com.velox.jpa.spring.resource.JdbcContextUtils;
 import org.springframework.beans.factory.FactoryBean;
-import org.springframework.beans.factory.InitializingBean;
 
 import java.lang.reflect.Type;
 
@@ -23,7 +19,7 @@ public class DaoImplFactoryBean<T> implements FactoryBean<T>{
     private JdbcContextFactory jdbcContextFactory;
 
     @Override
-    public T getObject() throws Exception {
+    public T getObject() {
         notNull(entityClass,"DaoImplFactoryBean need an class object of entity.");
         if(daoImplFactory==null){
             jdbcContextFactory.getEnvironment().addDaoImpl(entityClass);

@@ -5,7 +5,7 @@ package com.maxwellnie.velox.jpa.core.enums;
  */
 public enum QueryCondition {
     GREATER_THAN(">"), LESS_THAN("<"), EQUAL("="), NOT_EQUAL("<>"), GE(">="), LE("<="), LIKE("LIKE"), IS_NULL("IS NULL"), NOT_NULL("IS NOT NULL"), IN("IN"), BETWEEN("BETWEEN"), AND("AND");
-    private String syntax;
+    private final String syntax;
 
     private QueryCondition(String syntax) {
         this.syntax = syntax;

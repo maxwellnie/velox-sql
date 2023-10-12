@@ -44,14 +44,7 @@ public class InsertExecutor extends BaseUpdateExecutor {
         if (!tableInfo.hasPk()) {
             strategyKey = KeyStrategyManager.DEFAULT;
         } else {
-            PrimaryMode mode = tableInfo.getPkColumn().getPrimaryMode();
-            if (mode.equals(PrimaryMode.NONE)) {
-                strategyKey = KeyStrategyManager.DEFAULT;
-            } else if (mode.equals(PrimaryMode.JDBC_AUTO)) {
-                strategyKey = KeyStrategyManager.JDBC_AUTO;
-            } else {
-                strategyKey = tableInfo.getPkColumn().getStrategyName();
-            }
+            strategyKey = tableInfo.getPkColumn().getStrategyName();
         }
 
         PrimaryKeyStrategy primaryKeyStrategy = KeyStrategyManager.getPrimaryKeyStrategy(strategyKey);

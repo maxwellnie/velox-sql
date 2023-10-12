@@ -6,7 +6,7 @@ import com.maxwellnie.velox.jpa.core.jdbc.table.TableInfo;
 import com.maxwellnie.velox.jpa.core.exception.NotMappedMethodException;
 import com.maxwellnie.velox.jpa.core.jdbc.context.JdbcContext;
 import com.maxwellnie.velox.jpa.core.proxy.executor.Executor;
-import com.maxwellnie.velox.jpa.core.utils.reflect.ReflectUtils;
+import com.maxwellnie.velox.jpa.core.utils.reflect.TableIfoUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -123,15 +123,14 @@ public class DaoImplInvokeHandler implements InvocationHandler {
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         logger.debug("Method - " + method.getName() + " invoke ");
-        Executor executor = ReflectUtils.getMethodMapped(method);
+        Executor executor = TableIfoUtils.getMethodMapped(method);
 
         /**
          * 判断处理器是否被获取到，被获取到就开始执行，反之就判断是否Object的方法，是则执行代理类的对应方法，如果都不是则抛出异常
          * 如果设置了自动提交，那么每次执行完Executor都会更新缓存。
          */
         if (executor != null) {
-            Object result = executor.execute(tableInfo, jdbcContext, cache, toString(), args);
-            return result;
+            return executor.execute(tableInfo, jdbcContext, cache, toString(), args);
         } else if (Object.class.equals(method.getDeclaringClass())) {
             return method.invoke(this, args);
         } else if (method.isDefault()) {

@@ -11,13 +11,11 @@ public class CacheKey implements Serializable {
     private Class<?> clazz;
     private String sql;
     private String daoImplHashCode;
-    private int baseHash = 12;
 
     public CacheKey(Class<?> clazz, String sql, String daoImplHashCode) {
         this.clazz = clazz;
         this.sql = sql;
-        this.daoImplHashCode = daoImplHashCode;
-        baseHash = 12 + Objects.hash(clazz, sql, daoImplHashCode) << 1;
+        this.daoImplHashCode=daoImplHashCode;
     }
 
     public String getDaoImplHashCode() {

@@ -18,9 +18,9 @@ public class ColumnInfo {
      * 列映射属性
      */
     private Field columnMappedField;
-    private TypeConvertor typeConvertor;
+    private TypeConvertor<?> typeConvertor;
 
-    public ColumnInfo(String columnName, Field columnMappedField, TypeConvertor typeConvertor) {
+    public ColumnInfo(String columnName, Field columnMappedField, TypeConvertor<?> typeConvertor) {
         this.columnName = columnName;
         this.columnMappedField = columnMappedField;
         this.typeConvertor = typeConvertor;
@@ -29,11 +29,11 @@ public class ColumnInfo {
     public ColumnInfo() {
     }
 
-    public TypeConvertor getTypeConvertor() {
+    public TypeConvertor<?> getTypeConvertor() {
         return typeConvertor;
     }
 
-    public void setTypeConvertor(TypeConvertor typeConvertor) {
+    public void setTypeConvertor(TypeConvertor<?> typeConvertor) {
         this.typeConvertor = typeConvertor;
     }
 

@@ -18,50 +18,45 @@ public interface TemplateDao<T> {
      *
      * @param t
      * @return
-     * @throws SQLException
      */
     @RegisterMethod(InsertExecutor.class)
-    public int insert(T t) throws SQLException;
+    public int insert(T t);
 
     /**
      * 批量添加
      *
      * @param collection
      * @return
-     * @throws SQLException
      */
     @RegisterMethod(BatchInsertExecutor.class)
-    public int[] batchInsert(Collection<T> collection) throws SQLException;
+    public int[] batchInsert(Collection<T> collection);
 
     /**
      * 修改一条数据
      *
      * @param sqlBuilder
      * @return
-     * @throws SQLException
      */
     @RegisterMethod(UpdateExecutor.class)
-    public int update(T t, SqlBuilder<T> sqlBuilder) throws SQLException;
+    public int update(T t, SqlBuilder<T> sqlBuilder);
 
     /**
      * 删除一条数据
      *
      * @param sqlBuilder
      * @return
-     * @throws SQLException
      */
     @RegisterMethod(DeleteExecutor.class)
-    public int delete(SqlBuilder<T> sqlBuilder) throws SQLException;
+    public int delete(SqlBuilder<T> sqlBuilder);
 
     /**
      * 批量删除
      *
      * @param collection
      * @return
-     * @throws SQLException
      */
     @RegisterMethod(BatchDeleteByIdsExecutor.class)
-    public int[] batchDeleteByIds(Collection<Serializable> collection) throws SQLException;
+    public int[] batchDeleteByIds(Collection<Serializable> collection);
 
     /**
      * 查询数据
@@ -82,17 +77,15 @@ public interface TemplateDao<T> {
      * 查询全部数据
      *
      * @return
-     * @throws SQLException
      */
     @RegisterMethod(QueryAllExecutor.class)
-    public List<T> queryAll(SqlBuilder<T> sqlBuilder) throws SQLException;
+    public List<T> queryAll(SqlBuilder<T> sqlBuilder);
 
     /**
      * 获取表数据长度
      *
      * @return
-     * @throws SQLException
      */
     @RegisterMethod(SizeExecutor.class)
-    public long size(SqlBuilder<T> sqlBuilder) throws SQLException;
+    public long size(SqlBuilder<T> sqlBuilder);
 }

@@ -35,8 +35,7 @@ public class LikeFragment extends ConditionFragment {
     }
 
     public void setValue(Object value) {
-        String v = "%" + value.toString() + "%";
-        this.value = v;
+        this.value = "%" + value.toString() + "%";
     }
 
     public void setValue(Object value, int mode) {
