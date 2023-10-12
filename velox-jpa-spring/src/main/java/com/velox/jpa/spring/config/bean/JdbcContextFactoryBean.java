@@ -21,8 +21,8 @@ import javax.sql.DataSource;
  *
  * @author Maxwell Nie
  */
-public class VeloxJpaConfigBean extends BaseConfig implements InitializingBean,FactoryBean<JdbcContextFactory>, ApplicationListener<ApplicationEvent> {
-    private static final Logger logger = LoggerFactory.getLogger(VeloxJpaConfigBean.class);
+public class JdbcContextFactoryBean extends BaseConfig implements InitializingBean,FactoryBean<JdbcContextFactory>, ApplicationListener<ApplicationEvent> {
+    private static final Logger logger = LoggerFactory.getLogger(JdbcContextFactoryBean.class);
     private DataSource dataSource;
     private JdbcContextFactory jdbcContextFactory;
 

@@ -28,13 +28,13 @@ import static org.springframework.util.Assert.notNull;
 /**
  * @author Maxwell Nie
  */
-public class VeloxJpaRegister implements BeanDefinitionRegistryPostProcessor {
-    private static final Logger logger = LoggerFactory.getLogger(VeloxJpaRegister.class);
-    private String jdbcContextFactoryBeanName = "veloxJpaConfigBean";
+public class DaoImplRegister implements BeanDefinitionRegistryPostProcessor {
+    private static final Logger logger = LoggerFactory.getLogger(DaoImplRegister.class);
+    private String jdbcContextFactoryBeanName = "jdbcContextFactoryBean";
     private String packagePath;
     private String daoImplClassName;
 
-    public VeloxJpaRegister() {
+    public DaoImplRegister() {
     }
     public String getDaoImplClassName() {
         return daoImplClassName;
@@ -67,7 +67,8 @@ public class VeloxJpaRegister implements BeanDefinitionRegistryPostProcessor {
         return classSet;
     }
     private void register(BeanDefinitionRegistry registry) {
-        BaseConfig.setDaoImplClassName(this.daoImplClassName);
+        if(!StringUtils.isNullOrEmpty(this.daoImplClassName))
+            BaseConfig.setDaoImplClassName(this.daoImplClassName);
         for (Class<?> entityClass : getAllMarkedClassOfPath(packagePath)) {
             try {
                 registerBean(entityClass,Class.forName(BaseConfig.getDaoImplClassName()),registry);

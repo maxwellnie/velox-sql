@@ -8,5 +8,4 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  */
 @ConfigurationProperties(prefix = "velox-jpa")
 public class VeloxJpaBootConfig extends BaseConfig {
-
 }
