@@ -55,6 +55,8 @@ public class SizeExecutor extends BaseQueryExecutor {
              */
             Object result = resultMap.get("result");
             CacheKey cacheKey = (CacheKey) resultMap.get("cacheKey");
+            if((boolean)resultMap.get("needFlush"))
+                flushCache(result, cacheKey, cache, cacheDirtyManager, !context.getAutoCommit());
             flushCache(result, cacheKey, cache, cacheDirtyManager, !context.getAutoCommit());
             return result;
         } catch (SQLException e){
@@ -92,6 +94,7 @@ public class SizeExecutor extends BaseQueryExecutor {
              */
             count = cache.get(key);
         }
+        resultMap.put("needFlush",count==null);
         /**
          * 如果数据为空，那么从数据库中获取数据。
          */

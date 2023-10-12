@@ -56,7 +56,8 @@ public class QueryAllExecutor extends BaseQueryExecutor {
              */
             Object result = resultMap.get("result");
             CacheKey cacheKey = (CacheKey) resultMap.get("cacheKey");
-            flushCache(result, cacheKey, cache, cacheDirtyManager, !context.getAutoCommit());
+            if((boolean)resultMap.get("needFlush"))
+                flushCache(result, cacheKey, cache, cacheDirtyManager, !context.getAutoCommit());
             return result;
         } catch (SQLException e){
             logger.error("The sql error :"+e.getMessage()+"\t\n"+e.getCause());
@@ -91,20 +92,21 @@ public class QueryAllExecutor extends BaseQueryExecutor {
          */
         String sql = selectStatement.getNativeSql();
         logger.debug("queryAll() - sql:" + sql);
-        Map<String, Object> map = new LinkedHashMap<>();
+        Map<String, Object> resultMap = new LinkedHashMap<>();
         Object list = null;
         /**
          * 创建缓存的key
          */
         CacheKey key = new CacheKey(tableInfo.getMappedClazz(), sql, daoImplHashCode);
         key.addValueCollection(selectStatement.getValues());
-        map.put("cacheKey", key);
+        resultMap.put("cacheKey", key);
         if (cache != null) {
             /**
              * 获取缓存中的数据
              */
             list = cache.get(key);
         }
+        resultMap.put("needFlush",list==null);
         /**
          * 如果数据为空，那么从数据库中获取数据。
          */
@@ -129,8 +131,8 @@ public class QueryAllExecutor extends BaseQueryExecutor {
             }
         } else
             logger.debug("Cache hit for key:" + key);
-        map.put("result", list);
-        return map;
+        resultMap.put("result", list);
+        return resultMap;
     }
 
     /**
