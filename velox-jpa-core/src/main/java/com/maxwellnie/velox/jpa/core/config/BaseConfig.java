@@ -15,7 +15,7 @@ public abstract class BaseConfig {
     private boolean isCache;
     private static String daoImplClassName ="com.maxwellnie.velox.jpa.core.template.dao.TemplateDao";
     private int level = Connection.TRANSACTION_REPEATABLE_READ;
-    private Class<? extends Cache> cacheClass = LRUCache.class;
+    private String cacheClassName = LRUCache.class.getName();
 
 
     public boolean isStandTable() {
@@ -67,11 +67,11 @@ public abstract class BaseConfig {
         this.level = level;
     }
 
-    public Class<? extends Cache> getCacheClass() {
-        return cacheClass;
+    public String getCacheClassName() {
+        return cacheClassName;
     }
 
-    public void setCacheClass(Class<? extends Cache> cacheClass) {
-        this.cacheClass = cacheClass;
+    public void setCacheClassName(String cacheClassName) {
+        this.cacheClassName = cacheClassName;
     }
 }

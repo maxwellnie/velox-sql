@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -27,6 +28,7 @@ public class Environment {
     private TransactionFactory transactionFactory;
     private DataSource dataSource;
     private Class<?> daoImplClazz;
+    private Class<? extends Cache> cacheClass;
     private int level;
 
     public Environment(TransactionFactory transactionFactory, DataSource dataSource, BaseConfig baseConfig) {
@@ -51,6 +53,14 @@ public class Environment {
                 throw new EnvironmentInitException("Not found class "+ BaseConfig.getDaoImplClassName()+".",e.getCause());
             }
         }
+        if (baseConfig.isCache() && !StringUtils.isNullOrEmpty(baseConfig.getCacheClassName())) {
+            try {
+                cacheClass= (Class<? extends Cache>) Class.forName(baseConfig.getCacheClassName());
+            } catch (ClassNotFoundException | ClassCastException e) {
+                e.printStackTrace();
+            }
+        } else
+            throw new EnvironmentInitException("Cache supporter must be null.");
     }
     public TransactionFactory getTransactionFactory() {
         return transactionFactory;
@@ -99,12 +109,11 @@ public class Environment {
         public void registerDaoImplFactory(Class<?> clazz) {
             if ((clazz != null)) {
                 Cache cache = null;
-                if (baseConfig.isCache() && baseConfig.getCacheClass() != null) {
+                if (baseConfig.isCache()) {
                     try {
-                        cache = baseConfig.getCacheClass().newInstance();
-                    } catch (InstantiationException e) {
-                        logger.error(e.getMessage()+"\t\n"+e.getCause());
-                    } catch (IllegalAccessException e) {
+                        cache= cacheClass.getConstructor().newInstance();
+                    } catch (InstantiationException | NoSuchMethodException |
+                             IllegalAccessException | InvocationTargetException e) {
                         e.printStackTrace();
                     }
                 } else

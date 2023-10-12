@@ -8,6 +8,7 @@
         <module>velox-jpa-core</module>
         <module>velox-jpa-spring</module>
         <module>velox-jpa-core-template</module>
+        <module>velox-jpa-spring-boot-starer</module>
     </modules>
     <parent>
         <groupId>org.sonatype.oss</groupId>

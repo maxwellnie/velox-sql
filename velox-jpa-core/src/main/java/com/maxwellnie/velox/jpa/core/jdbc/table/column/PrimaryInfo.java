@@ -46,6 +46,7 @@ public class PrimaryInfo extends ColumnInfo {
     @Override
     public String toString() {
         return "PrimaryInfo{" +
+                "fieldName='" + fieldName + '\'' +
                 ", strategyName='" + strategyName + '\'' +
                 '}';
     }
