@@ -31,7 +31,7 @@ import static org.springframework.util.Assert.notNull;
 public class DaoImplRegister implements BeanDefinitionRegistryPostProcessor {
     private static final Logger logger = LoggerFactory.getLogger(DaoImplRegister.class);
     private String jdbcContextFactoryBeanName = "jdbcContextFactoryBean";
-    private String packagePath;
+    private String packagePaths;
     private String daoImplClassName;
 
     public DaoImplRegister() {
@@ -51,17 +51,21 @@ public class DaoImplRegister implements BeanDefinitionRegistryPostProcessor {
     public void setJdbcContextFactoryBeanName(String jdbcContextFactoryBeanName) {
         this.jdbcContextFactoryBeanName = jdbcContextFactoryBeanName;
     }
-    private Set<Class<?>> getAllMarkedClassOfPath(String packagePath) {
+    private Set<Class<?>> getAllMarkedClassOfPath(String packagePaths) {
         final Set<Class<?>> classSet = new HashSet<>();
         ClassPathScanningCandidateComponentProvider provider = new ClassPathScanningCandidateComponentProvider(false);
         provider.addIncludeFilter(new AnnotationTypeFilter(Entity.class));
-        for (BeanDefinition bd : provider.findCandidateComponents(packagePath)) {
-            try {
-                Class<?> clazz = Class.forName(bd.getBeanClassName());
-                logger.debug("Get a entity " + clazz.getName() + " ,it's added to clazzArr.");
-                classSet.add(clazz);
-            } catch (ClassNotFoundException e) {
-                logger.warn("The class named " + bd.getBeanClassName() + " cannot be properly loaded.");
+        for (String packagePath:packagePaths.split(",")){
+            if(StringUtils.isNullOrEmpty(packagePath))
+                continue;
+            for (BeanDefinition bd : provider.findCandidateComponents(packagePath)) {
+                try {
+                    Class<?> clazz = Class.forName(bd.getBeanClassName());
+                    logger.debug("Get a entity " + clazz.getName() + " ,it's added to clazzArr.");
+                    classSet.add(clazz);
+                } catch (ClassNotFoundException e) {
+                    logger.warn("The class named " + bd.getBeanClassName() + " cannot be properly loaded.");
+                }
             }
         }
         return classSet;
@@ -69,7 +73,7 @@ public class DaoImplRegister implements BeanDefinitionRegistryPostProcessor {
     private void register(BeanDefinitionRegistry registry) {
         if(!StringUtils.isNullOrEmpty(this.daoImplClassName))
             BaseConfig.setDaoImplClassName(this.daoImplClassName);
-        for (Class<?> entityClass : getAllMarkedClassOfPath(packagePath)) {
+        for (Class<?> entityClass : getAllMarkedClassOfPath(packagePaths)) {
             try {
                 registerBean(entityClass,Class.forName(BaseConfig.getDaoImplClassName()),registry);
             } catch (Throwable throwable) {
@@ -84,12 +88,12 @@ public class DaoImplRegister implements BeanDefinitionRegistryPostProcessor {
         }
     }
 
-    public String getPackagePath() {
-        return packagePath;
+    public String getPackagePaths() {
+        return packagePaths;
     }
 
-    public void setPackagePath(String packagePath) {
-        this.packagePath = packagePath;
+    public void setPackagePaths(String packagePaths) {
+        this.packagePaths = packagePaths;
     }
 
     private void registerBean(Class<?> entityClass, Class<?> daoImplClass, BeanDefinitionRegistry registry) {
