@@ -269,16 +269,16 @@ xml配置文件：
        xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:task="http://www.springframework.org/schema/task"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
-		http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+		http://www.springframework.org/schema/beans/spring-beans-5.0.xsd
 		http://www.springframework.org/schema/mvc
 		http://www.springframework.org/schema/context
-		http://www.springframework.org/schema/context/spring-context-4.0.xsd
+		http://www.springframework.org/schema/context/spring-context-5.0.xsd
 		http://www.springframework.org/schema/aop
-		http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
+		http://www.springframework.org/schema/aop/spring-aop-5.0.xsd
 		http://www.springframework.org/schema/tx
-		http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+		http://www.springframework.org/schema/tx/spring-tx-5.0.xsd
 		http://www.springframework.org/schema/task
-   		http://www.springframework.org/schema/task/spring-task-4.0.xsd">
+   		http://www.springframework.org/schema/task/spring-task-5.0.xsd">
     <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
         <property name="url" value="jdbc:mysql://localhost:3307/bounddatabase?useUnicode=true&amp;characterEncoding=UTF8"/>
