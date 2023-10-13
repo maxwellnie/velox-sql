@@ -1,14 +1,16 @@
 # VeloxJPA
 
-#### 介绍
+### 介绍
 基于Java的数据持久化框架，目前只适配了mysql5+ & Java8+ & spring 5+
 
-#### 注意事项
+### 注意事项
 
 由于 0.2.original 及以前的版本含有重大安全漏洞，进行了下架处理。
 
-#### 使用说明
+### 使用说明
 
+
+#### java原生快速上手:
 导入依赖：
 ```xml
 <dependencies>
@@ -39,8 +41,6 @@
     </dependency>
 </dependencies>
 ```
-java原生快速上手:
-
 ```java
 import com.maxwellnie.vleox.jpa.core.dao.support.DaoImpl;
 import com.maxwellnie.vleox.jpa.core.dao.support.SqlBuilder;
@@ -198,7 +198,8 @@ public  class User {
                 '}';
     }
 }
-springboot快速上手:
+```
+#### springboot快速上手:
 依赖：
 ```xml
  <dependencies>
@@ -376,7 +377,7 @@ CREATE TABLE `tb_user`  (
 
 SET FOREIGN_KEY_CHECKS = 1;
 ```
-####开发者
+#### 开发者
 
 如果你是一个想要丰富VeloxJpa功能的开发者，你需要了解VeloxJpa的特点、架构。
 
@@ -517,7 +518,7 @@ public class DateConvertor implements TypeConvertor<Date> {
 }
 ```
 
-#####Generator主键值生成器
+##### Generator主键值生成器
 
 用于在添加前生成主键值。
 
