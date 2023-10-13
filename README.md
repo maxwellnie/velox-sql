@@ -2,7 +2,7 @@
 
 ### 什么是VeloxJPA？
 
-VeloxJPA是一款基于Java的，符合JPA规范的数据持久化框架，扩展性很强，可以根据自身需要，自定义或者是优化SQL来生产出符合业务场景的VeloxJPATemplate（数据持久化抽象模板）。
+VeloxJPA是一款基于Java的，符合JPA规范的数据持久化框架，扩展性很强，可以无需书写SQL语句和声明Dao接口，由VeloxJPA为你实现Dao层的功能。你可以根据自身需要，自定义或者是优化SQL来生产出符合业务场景的VeloxJPATemplate（数据持久化抽象模板），进而提升原Dao层的性能。
 ### 适配性
 
 目前只适配了mysql5+ & Java8+ & spring 5+
