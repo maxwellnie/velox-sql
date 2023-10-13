@@ -45,21 +45,21 @@ VeloxJPA是一款基于Java的，符合JPA规范的数据持久化框架，扩�
 </dependencies>
 ```
 ```java
-import com.maxwellnie.vleox.jpa.core.dao.support.DaoImpl;
-import com.maxwellnie.vleox.jpa.core.dao.support.SqlBuilder;
-import com.maxwellnie.vleox.jpa.core.dao.support.env.Environment;
-import com.maxwellnie.vleox.jpa.core.cahce.impl.LRUCache;
-import com.maxwellnie.vleox.jpa.core.config.simple.VeloxJpaConfig;
-import com.maxwellnie.vleox.jpa.core.jdbc.context.JdbcContext;
-import com.maxwellnie.vleox.jpa.core.jdbc.context.JdbcContextFactory;
-import com.maxwellnie.vleox.jpa.core.jdbc.context.SimpleContextFactory;
-import com.maxwellnie.vleox.jpa.core.jdbc.pool.impl.SimpleConnectionPool;
-import com.maxwellnie.vleox.jpa.core.jdbc.transaction.impl.jdbc.JdbcTransactionFactory;
+import com.maxwellnie.velox.jpa.core.dao.support.SqlBuilder;
+import com.maxwellnie.velox.jpa.core.dao.support.env.Environment;
+import com.maxwellnie.velox.jpa.core.cahce.impl.LRUCache;
+import com.maxwellnie.velox.jpa.core.config.simple.VeloxJpaConfig;
+import com.maxwellnie.velox.jpa.core.jdbc.context.JdbcContext;
+import com.maxwellnie.velox.jpa.core.jdbc.context.JdbcContextFactory;
+import com.maxwellnie.velox.jpa.core.jdbc.context.SimpleContextFactory;
+import com.maxwellnie.velox.jpa.core.jdbc.pool.impl.SimpleConnectionPool;
+import com.maxwellnie.velox.jpa.core.jdbc.transaction.impl.jdbc.JdbcTransactionFactory;
+import com.maxwellnie.velox.jpa.core.template.dao.TemplateDao;
 
 import java.sql.SQLException;
 
 public class Tests {
-   public static void main(String[] args) throws SQLException {
+    public static void main(String[] args) throws SQLException {
         //配置数据源
         SimpleConnectionPool simpleConnectionPool = new SimpleConnectionPool();
         simpleConnectionPool.setDriverClassName("com.mysql.jdbc.Driver");
@@ -75,14 +75,15 @@ public class Tests {
         veloxJpaConfig.setStandTable(true);
         //初始化JdbcContext生产环境环境
         Environment environment=new Environment(new JdbcTransactionFactory(),simpleConnectionPool, veloxJpaConfig);
-     	//注册实体User的DaoImplFactory
-     	enviroment.addDaoImpl(User.class);
+        environment.addDaoImpl(User.class);
         //JdbcContext工厂
         JdbcContextFactory jdbcContextFactory=new SimpleContextFactory(environment);
-        JdbcContext jdbcContext= jdbcContextFactory.produce(true);
+        JdbcContext jdbcContext= jdbcContextFactory.produce(false);
         //获取实例
-        DaoImpl<User> daoImpl = (DaoImpl<User>) environment.getDaoImplFactory(User.class).produce(jdbcContext);
+        TemplateDao<User> daoImpl = (TemplateDao<User>) environment.getDaoImplFactory(User.class).produce(jdbcContext);
         //查询数据
+        System.out.println(daoImpl.queryAll(new SqlBuilder<User>().where().eq("user_id",32).build()));
+        jdbcContext.commit();
         System.out.println(daoImpl.queryAll(new SqlBuilder<User>().where().eq("user_id",32).build()));
     }
 }
