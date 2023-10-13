@@ -66,7 +66,7 @@ public class Tests {
         //配置针对普通Java程序的配置类VeloxJpaConfig
         VeloxJpaConfig veloxJpaConfig = VeloxJpaConfig.getInstance();
         veloxJpaConfig.setCache(true);
-        veloxJpaConfig.setCacheClass(LRUCache.class);
+        veloxJpaConfig.setCacheClassName(LRUCache.class.getName());
         veloxJpaConfig.setTablePrefix("tb_");
         veloxJpaConfig.setStandColumn(true);
         veloxJpaConfig.setStandTable(true);
