@@ -39,7 +39,7 @@
     </dependency>
 </dependencies>
 ```
-快速上手:
+java原生快速上手:
 
 ```java
 import com.maxwellnie.vleox.jpa.core.dao.support.DaoImpl;
@@ -197,6 +197,145 @@ public  class User {
                 ", lastTime=" + lastTime +
                 '}';
     }
+}
+springboot快速上手:
+依赖：
+```xml
+ <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-jdbc</artifactId>
+            <version>${spring-boot.version}</version>
+
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <version>${spring-boot.version}</version>
+            <scope>test</scope>
+        </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring-boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>mysql</groupId>
+                <artifactId>mysql-connector-java</artifactId>
+                <version>5.1.8</version>
+            </dependency>
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <optional>true</optional>
+                <version>1.18.28</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.maxwellnie</groupId>
+                <artifactId>velox-jpa-spring-boot-starer</artifactId>
+                <version>1.0</version>
+            </dependency>
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>druid</artifactId>
+                <version>1.2.16</version>
+            </dependency>
+        <dependency>
+            <groupId>io.github.maxwellnie</groupId>
+            <artifactId>velox-jpa-core-template</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>net.bytebuddy</groupId>
+            <artifactId>byte-buddy</artifactId>
+            <version>1.14.5</version>
+        </dependency>
+        </dependencies>
+```
+application.yml:
+```yaml
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3307/bounddatabase?useUnicode=true&characterEncoding=UTF8
+    driver-class-name: com.mysql.jdbc.Driver
+    password: 123456
+    username: root
+    type: com.alibaba.druid.pool.DruidDataSource
+logging:
+  level:
+    root: debug
+velox-jpa:
+  tablePrefix: tb_
+  cache: true
+  standTable : true
+  standColumn: true
+```
+启动类：
+```java
+@SpringBootApplication
+@DaoImplConf(value = "com.example.ttdemo.po")
+public class TtdemoApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(TtdemoApplication.class, args);
+    }
+
+}
+```
+User实体：
+```java
+package com.example.ttdemo.po;
+
+import com.maxwellnie.velox.jpa.core.annotation.Entity;
+import com.maxwellnie.velox.jpa.core.annotation.PrimaryKey;
+import com.maxwellnie.velox.jpa.core.enums.PrimaryMode;
+import com.maxwellnie.velox.jpa.core.manager.KeyStrategyManager;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
+
+@Getter
+@Setter
+@ToString
+@Entity
+public class User {
+    @PrimaryKey(strategyKey = KeyStrategyManager.JDBC_AUTO)
+    private int userId;
+    private String loginName;
+    private String password;
+
+}
+```
+Test:
+```java
+package com.example.ttdemo;
+
+import com.example.ttdemo.po.User;
+import com.maxwellnie.velox.jpa.core.dao.support.SqlBuilder;
+import com.maxwellnie.velox.jpa.core.template.dao.TemplateDao;
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+
+import javax.annotation.Resource;
+import java.sql.SQLException;
+
+@SpringBootTest
+class TtdemoApplicationTests {
+    @Resource
+    TemplateDao<User> userTemplateDao;
+    @Test
+    void contextLoads() throws SQLException {
+        System.out.println(userTemplateDao);
+        User user= userTemplateDao.queryOne(new SqlBuilder<User>().where().eq("user_id",49).build());
+        System.out.println(userTemplateDao.queryOne(new SqlBuilder<User>().where().eq("user_id",49).build()));
+        System.out.println(userTemplateDao.queryOne(new SqlBuilder<User>().where().eq("user_id",490).build()));
+        System.out.println(userTemplateDao.queryOne(new SqlBuilder<User>().where().eq("user_id",234).build()));
+    }
+
 }
 ```
 sql:
