@@ -1,7 +1,6 @@
 package com.maxwellnie.velox.jpa.core.template.dao;
 
 import com.maxwellnie.velox.jpa.core.annotation.RegisterMethod;
-import com.maxwellnie.velox.jpa.core.dao.support.SqlBuilder;
 import com.maxwellnie.velox.jpa.core.template.proxy.executor.impl.*;
 
 import java.io.Serializable;

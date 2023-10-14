@@ -6,7 +6,7 @@ import com.maxwellnie.velox.jpa.core.jdbc.table.TableInfo;
 import com.maxwellnie.velox.jpa.core.exception.NotMappedMethodException;
 import com.maxwellnie.velox.jpa.core.jdbc.context.JdbcContext;
 import com.maxwellnie.velox.jpa.core.proxy.executor.Executor;
-import com.maxwellnie.velox.jpa.core.utils.reflect.TableIfoUtils;
+import com.maxwellnie.velox.jpa.core.utils.reflect.TableInfoUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,6 +18,7 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.Objects;
 
 /**
  * 这是一个代理类，会处理被代理接口的方法，即使他不是我们的初始DaoImpl，我们将整个框架的很多结构都修改为可自定义的模式。<br/>
@@ -123,7 +124,7 @@ public class DaoImplInvokeHandler implements InvocationHandler {
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         logger.debug("Method - " + method.getName() + " invoke ");
-        Executor executor = TableIfoUtils.getMethodMapped(method);
+        Executor executor = TableInfoUtils.getMethodMapped(method);
 
         /**
          * 判断处理器是否被获取到，被获取到就开始执行，反之就判断是否Object的方法，是则执行代理类的对应方法，如果都不是则抛出异常
@@ -150,9 +151,21 @@ public class DaoImplInvokeHandler implements InvocationHandler {
         else
             return getHighJavaVersionMethodHandle(method).bindTo(proxy).invokeWithArguments(args);
     }
+    @Override
+    public int hashCode() {
+        return Objects.hash(tableInfo, jdbcContext, cache);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DaoImplInvokeHandler that = (DaoImplInvokeHandler) o;
+        return Objects.equals(tableInfo, that.tableInfo) && Objects.equals(jdbcContext, that.jdbcContext) && Objects.equals(cache, that.cache);
+    }
 
     @Override
     public String toString() {
-        return super.toString() + "-" + tableInfo.getMappedClazz().getName() + "-DaoImpl";
+        return super.toString() + "&" + tableInfo.getMappedClazz().getName();
     }
 }

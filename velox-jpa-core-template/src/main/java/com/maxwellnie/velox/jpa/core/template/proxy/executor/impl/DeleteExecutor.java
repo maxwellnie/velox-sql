@@ -1,13 +1,13 @@
 package com.maxwellnie.velox.jpa.core.template.proxy.executor.impl;
 
-import com.maxwellnie.velox.jpa.core.dao.support.SqlBuilder;
-import com.maxwellnie.velox.jpa.core.jdbc.sql.DeleteStatement;
+import com.maxwellnie.velox.jpa.core.template.dao.SqlBuilder;
+import com.maxwellnie.velox.jpa.core.template.sql.DeleteStatement;
 import com.maxwellnie.velox.jpa.core.jdbc.table.TableInfo;
 import com.maxwellnie.velox.jpa.core.jdbc.transaction.Transaction;
 import com.maxwellnie.velox.jpa.core.cahce.Cache;
 import com.maxwellnie.velox.jpa.core.jdbc.context.JdbcContext;
-import com.maxwellnie.velox.jpa.core.proxy.executor.BaseUpdateExecutor;
-import com.maxwellnie.velox.jpa.core.utils.jdbc.JdbcUtils;
+import com.maxwellnie.velox.jpa.core.template.proxy.executor.BaseUpdateExecutor;
+import com.maxwellnie.velox.jpa.core.template.utils.JdbcUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

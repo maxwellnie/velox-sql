@@ -36,6 +36,11 @@
       "name": "velox-jpa.table-prefix",
       "type": "java.lang.String",
       "sourceType": "com.maxwellnie.velox.jpa.spring.boot.VeloxJpaBootConfig"
+    },
+    {
+      "name": "velox-jpa.table-info-utils-class",
+      "type": "java.lang.String",
+      "sourceType": "com.maxwellnie.velox.jpa.spring.boot.VeloxJpaBootConfig"
     }
   ],
   "hints": [

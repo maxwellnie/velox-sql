@@ -1,15 +1,15 @@
 package com.maxwellnie.velox.jpa.core.template.proxy.executor.impl;
 
-import com.maxwellnie.velox.jpa.core.dao.support.SqlBuilder;
+import com.maxwellnie.velox.jpa.core.template.dao.SqlBuilder;
 import com.maxwellnie.velox.jpa.core.exception.EntityObjectException;
-import com.maxwellnie.velox.jpa.core.jdbc.sql.UpdateStatement;
+import com.maxwellnie.velox.jpa.core.template.sql.UpdateStatement;
 import com.maxwellnie.velox.jpa.core.jdbc.table.TableInfo;
 import com.maxwellnie.velox.jpa.core.jdbc.table.column.ColumnInfo;
 import com.maxwellnie.velox.jpa.core.jdbc.transaction.Transaction;
 import com.maxwellnie.velox.jpa.core.cahce.Cache;
 import com.maxwellnie.velox.jpa.core.jdbc.context.JdbcContext;
-import com.maxwellnie.velox.jpa.core.proxy.executor.BaseUpdateExecutor;
-import com.maxwellnie.velox.jpa.core.utils.jdbc.JdbcUtils;
+import com.maxwellnie.velox.jpa.core.template.proxy.executor.BaseUpdateExecutor;
+import com.maxwellnie.velox.jpa.core.template.utils.JdbcUtils;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

@@ -1,7 +1,7 @@
 package com.maxwellnie.velox.jpa.spring.boot;
 
 import com.maxwellnie.velox.jpa.core.jdbc.context.JdbcContext;
-import com.velox.jpa.spring.config.bean.JdbcContextFactoryBean;
+import com.maxwellnie.velox.jpa.spring.config.bean.JdbcContextFactoryBean;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -36,6 +36,7 @@ public class VeloxJpaAutoConfiguration {
         jdbcContextFactoryBean.setStandColumn(veloxJpaBootConfig.isStandColumn());
         jdbcContextFactoryBean.setStandTable(veloxJpaBootConfig.isStandColumn());
         jdbcContextFactoryBean.setTablePrefix(veloxJpaBootConfig.getTablePrefix());
+        jdbcContextFactoryBean.setTableInfoUtilsClass(veloxJpaBootConfig.getTableInfoUtilsClass());
         return jdbcContextFactoryBean;
     }
 }

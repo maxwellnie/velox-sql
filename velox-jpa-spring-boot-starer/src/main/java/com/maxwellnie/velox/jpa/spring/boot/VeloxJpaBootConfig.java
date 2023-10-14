@@ -8,4 +8,13 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  */
 @ConfigurationProperties(prefix = "velox-jpa")
 public class VeloxJpaBootConfig extends BaseConfig {
+    private String tableInfoUtilsClass;
+
+    public String getTableInfoUtilsClass() {
+        return tableInfoUtilsClass;
+    }
+
+    public void setTableInfoUtilsClass(String tableInfoUtilsClass) {
+        this.tableInfoUtilsClass = tableInfoUtilsClass;
+    }
 }

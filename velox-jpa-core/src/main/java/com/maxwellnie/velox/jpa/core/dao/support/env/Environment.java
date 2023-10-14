@@ -6,7 +6,7 @@ import com.maxwellnie.velox.jpa.core.cahce.Cache;
 import com.maxwellnie.velox.jpa.core.exception.EnvironmentInitException;
 import com.maxwellnie.velox.jpa.core.jdbc.transaction.TransactionFactory;
 import com.maxwellnie.velox.jpa.core.utils.java.StringUtils;
-import com.maxwellnie.velox.jpa.core.utils.reflect.TableIfoUtils;
+import com.maxwellnie.velox.jpa.core.utils.reflect.TableInfoUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,21 +17,51 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * DaoImpl工作环境
- *
+ * DaoImpl生产环境
  * @author Maxwell Nie
  */
 public class Environment {
     private static final Logger logger= LoggerFactory.getLogger(Environment.class);
+    /**
+     * 基础配置
+     */
     private final BaseConfig baseConfig;
+    /**
+     * 开放接口工厂管理器
+     */
     private final DaoImplFactoryManager daoImplManager;
+    /**
+     * 事务工厂
+     * @see TransactionFactory#produce(DataSource, boolean, int)
+     */
     private TransactionFactory transactionFactory;
+    /**
+     * 数据源
+     * @see TransactionFactory#produce(DataSource, boolean, int)
+     */
     private DataSource dataSource;
+    /**
+     * 开放接口
+     * @see DaoImplFactory
+     */
     private Class<?> daoImplClazz;
+    /**
+     * 缓存类
+     */
     private Class<? extends Cache> cacheClass;
+    /**
+     * 事务隔离级别
+     * @see java.sql.Connection
+     */
     private int level;
+    /**
+     * 表信息工具
+     * @see TableInfoUtils
+     * @see com.maxwellnie.velox.jpa.core.jdbc.table.TableInfo
+     */
+    private TableInfoUtils tableInfoUtils;
 
-    public Environment(TransactionFactory transactionFactory, DataSource dataSource, BaseConfig baseConfig) {
+    public Environment(TransactionFactory transactionFactory, DataSource dataSource, BaseConfig baseConfig,TableInfoUtils tableInfoUtils) {
         this.baseConfig = baseConfig;
         this.level=baseConfig.getLevel();
         if (transactionFactory == null)
@@ -42,12 +72,14 @@ public class Environment {
             throw new EnvironmentInitException("DataSource must be not null");
         else
             this.dataSource = dataSource;
+        if(tableInfoUtils!=null)
+            this.tableInfoUtils=tableInfoUtils;
         if(StringUtils.isNullOrEmpty(BaseConfig.getDaoImplClassName()))
             throw new EnvironmentInitException("DaoImplClazz must be not null.");
         else {
             try {
                 this.daoImplClazz=Class.forName(BaseConfig.getDaoImplClassName());
-                TableIfoUtils.registerDaoImpl(this.daoImplClazz);
+                TableInfoUtils.registerDaoImpl(this.daoImplClazz);
                 this.daoImplManager=new DaoImplFactoryManager();
             } catch (ClassNotFoundException e) {
                 throw new EnvironmentInitException("Not found class "+ BaseConfig.getDaoImplClassName()+".",e.getCause());
@@ -61,6 +93,9 @@ public class Environment {
             }
         } else
             throw new EnvironmentInitException("Cache supporter must be null.");
+    }
+    public Environment(TransactionFactory transactionFactory, DataSource dataSource, BaseConfig baseConfig){
+        this(transactionFactory,dataSource,baseConfig,new TableInfoUtils() {});
     }
     public TransactionFactory getTransactionFactory() {
         return transactionFactory;
@@ -92,19 +127,29 @@ public class Environment {
         return level;
     }
 
+    /**
+     * 注册clazz对应的开放接口实例工厂
+     * @param clazz
+     */
     public void addDaoImpl(Class<?> clazz) {
         daoImplManager.registerDaoImplFactory(clazz);
     }
 
+    /**
+     * 获取clazz对应的开放接口实例工厂
+     * @param clazz
+     * @return 开放接口实例工厂
+     * @param <T>
+     */
     public <T> DaoImplFactory<T> getDaoImplFactory(Class<?> clazz) {
-        return daoImplManager.getDaoImplFactory(clazz);
+        return (DaoImplFactory<T>) daoImplManager.getDaoImplFactory(clazz);
     }
 
     private class DaoImplFactoryManager {
         private final Map<Class<?>, DaoImplFactory<?>> daoImplMap = Collections.synchronizedMap(new LinkedHashMap<>());
 
-        public <T> DaoImplFactory<T> getDaoImplFactory(Class<?> clazz) {
-            return (DaoImplFactory<T>) daoImplMap.get(clazz);
+        public DaoImplFactory<?> getDaoImplFactory(Class<?> clazz) {
+            return daoImplMap.get(clazz);
         }
         public void registerDaoImplFactory(Class<?> clazz) {
             if ((clazz != null)) {
@@ -118,7 +163,7 @@ public class Environment {
                     }
                 } else
                     throw new EnvironmentInitException("Cache supporter must be null.");
-                this.daoImplMap.put(clazz, new DaoImplFactory(daoImplClazz, TableIfoUtils.getTableInfo(clazz,baseConfig), cache));
+                this.daoImplMap.put(clazz, new DaoImplFactory(daoImplClazz, tableInfoUtils.getTableInfo(clazz,baseConfig), cache));
             } else
                 throw new RegisterDaoImplFailedException("The daoImpl mapped class is null");
         }

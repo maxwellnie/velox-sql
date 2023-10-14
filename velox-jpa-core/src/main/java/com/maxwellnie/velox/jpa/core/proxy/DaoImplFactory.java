@@ -24,9 +24,9 @@ public class DaoImplFactory<T> {
         return daoInterfaceClass;
     }
 
-    public T produce(JdbcContext jdbcContext) {
+    public<B extends T> T produce(JdbcContext jdbcContext) {
         if (daoInterfaceClass.isInterface()) {
-            return (T) Proxy.newProxyInstance(daoInterfaceClass.getClassLoader(), new Class[]{daoInterfaceClass},
+            return (B) Proxy.newProxyInstance(daoInterfaceClass.getClassLoader(), new Class[]{daoInterfaceClass},
                     new DaoImplInvokeHandler(tableInfo, jdbcContext, cache));
         } else
             throw new DaoImplClassException();

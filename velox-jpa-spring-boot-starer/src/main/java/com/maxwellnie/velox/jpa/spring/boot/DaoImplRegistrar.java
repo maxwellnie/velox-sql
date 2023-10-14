@@ -1,19 +1,13 @@
 package com.maxwellnie.velox.jpa.spring.boot;
 
 import com.maxwellnie.velox.jpa.core.utils.java.StringUtils;
-import com.velox.jpa.spring.bean.DaoImplRegister;
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.BeanFactoryAware;
+import com.maxwellnie.velox.jpa.spring.bean.DaoImplRegister;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanNameGenerator;
-import org.springframework.boot.autoconfigure.AutoConfigurationPackages;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.type.AnnotationMetadata;
-
-import java.util.List;
 
 /**
  * @author Maxwell Nie

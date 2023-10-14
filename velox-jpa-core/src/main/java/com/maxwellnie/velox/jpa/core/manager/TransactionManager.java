@@ -9,7 +9,9 @@ import java.util.Map;
 
 /**
  * @author Maxwell Nie
+ * @deprecated 我们已经做好淘汰掉这个管理器的准备了，将会在2.x淘汰这个管理器。
  */
+@Deprecated
 public class TransactionManager {
     public final String JDBC = "JDBC";
     public final String SPRING = "SPRING";

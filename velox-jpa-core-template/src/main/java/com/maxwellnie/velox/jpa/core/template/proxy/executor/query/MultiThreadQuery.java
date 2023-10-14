@@ -1,17 +1,14 @@
 package com.maxwellnie.velox.jpa.core.template.proxy.executor.query;
 
 import com.maxwellnie.velox.jpa.core.config.BaseConfig;
-import com.maxwellnie.velox.jpa.core.dao.support.SqlBuilder;
+import com.maxwellnie.velox.jpa.core.template.dao.SqlBuilder;
 import com.maxwellnie.velox.jpa.core.exception.ThreadPoolException;
-import com.maxwellnie.velox.jpa.core.jdbc.sql.LimitFragment;
-import com.maxwellnie.velox.jpa.core.jdbc.sql.SelectStatement;
-import com.maxwellnie.velox.jpa.core.jdbc.sql.SizeStatement;
+import com.maxwellnie.velox.jpa.core.template.sql.*;
 import com.maxwellnie.velox.jpa.core.jdbc.table.TableInfo;
 import com.maxwellnie.velox.jpa.core.jdbc.table.column.ColumnInfo;
-import com.maxwellnie.velox.jpa.core.utils.java.ObjectUtils;
-import com.maxwellnie.velox.jpa.core.utils.jdbc.JdbcUtils;
+import com.maxwellnie.velox.jpa.core.template.utils.JdbcUtils;
 import com.maxwellnie.velox.jpa.core.utils.jdbc.ResultSetUtils;
-import com.maxwellnie.velox.jpa.core.utils.reflect.TableIfoUtils;
+import com.maxwellnie.velox.jpa.core.utils.reflect.TableInfoUtils;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -40,7 +37,7 @@ public class MultiThreadQuery {
     }
 
     public <E> void execute(SqlBuilder<E> sqlBuilder, QueryHandle<E> queryHandle, Class<E> clazz) throws SQLException {
-        TableInfo tableInfo = TableIfoUtils.getTableInfo(clazz,baseConfig);
+        TableInfo tableInfo = TableInfoUtils.getTableInfo(clazz,baseConfig);
         SizeStatement sizeStatement = new SizeStatement();
         sizeStatement.setTableName(tableInfo.getTableName());
         /**
@@ -78,7 +75,7 @@ public class MultiThreadQuery {
             } else {
                 sizeStatement.getSelectedColumns().addAll(sqlBuilder.getColumnList());
             }
-            if (ObjectUtils.notEmptyFragment(sqlBuilder.getLimitFragment())) {
+            if (SqlFragmentUtils.notEmptyFragment(sqlBuilder.getLimitFragment())) {
                 start = sqlBuilder.getLimitFragment().getStart();
             }
         } else {

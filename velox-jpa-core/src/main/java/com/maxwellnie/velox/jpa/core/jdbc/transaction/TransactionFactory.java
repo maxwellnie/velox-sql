@@ -12,6 +12,13 @@ import java.util.Map;
 public interface TransactionFactory {
     Transaction produce(DataSource dataSource);
 
+    /**
+     * it's mainly method,must be implemented.
+     * @param dataSource
+     * @param autoCommit
+     * @param level
+     * @return Transaction Object
+     */
     Transaction produce(DataSource dataSource, boolean autoCommit, int level);
 
     Transaction produce(Connection connection);

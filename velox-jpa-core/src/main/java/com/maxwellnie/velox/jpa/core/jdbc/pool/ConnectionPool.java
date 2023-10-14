@@ -13,7 +13,9 @@ import java.util.logging.Logger;
 
 /**
  * 连接池
+ * @deprecated 我们提供的连接池是很基本的连接池，我们并不建议使用这个连接池，可能会带来一些问题，将会在2.x版本彻底弃用。
  */
+@Deprecated
 public abstract class ConnectionPool implements DataSource {
     protected List<Connection> pool = Collections.synchronizedList(new LinkedList<>());
     protected volatile int maximum;

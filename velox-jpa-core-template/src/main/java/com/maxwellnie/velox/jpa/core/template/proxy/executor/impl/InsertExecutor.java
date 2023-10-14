@@ -1,8 +1,7 @@
 package com.maxwellnie.velox.jpa.core.template.proxy.executor.impl;
 
-import com.maxwellnie.velox.jpa.core.enums.PrimaryMode;
 import com.maxwellnie.velox.jpa.core.exception.EntityObjectException;
-import com.maxwellnie.velox.jpa.core.jdbc.sql.InsertStatement;
+import com.maxwellnie.velox.jpa.core.template.sql.InsertStatement;
 import com.maxwellnie.velox.jpa.core.jdbc.table.TableInfo;
 import com.maxwellnie.velox.jpa.core.jdbc.table.column.ColumnInfo;
 import com.maxwellnie.velox.jpa.core.jdbc.transaction.Transaction;
@@ -12,8 +11,8 @@ import com.maxwellnie.velox.jpa.core.jdbc.context.JdbcContext;
 import com.maxwellnie.velox.jpa.core.jdbc.table.primary.PrimaryKeyStrategy;
 import com.maxwellnie.velox.jpa.core.jdbc.table.primary.generator.Generator;
 import com.maxwellnie.velox.jpa.core.jdbc.table.primary.keyselector.KeySelector;
-import com.maxwellnie.velox.jpa.core.proxy.executor.BaseUpdateExecutor;
-import com.maxwellnie.velox.jpa.core.utils.jdbc.JdbcUtils;
+import com.maxwellnie.velox.jpa.core.template.proxy.executor.BaseUpdateExecutor;
+import com.maxwellnie.velox.jpa.core.template.utils.JdbcUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
