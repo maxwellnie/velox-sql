@@ -2,9 +2,9 @@ package com.maxwellnie.velox.jpa.core.proxy;
 
 import com.maxwellnie.velox.jpa.core.cahce.Cache;
 import com.maxwellnie.velox.jpa.core.config.simple.VeloxJpaConfig;
-import com.maxwellnie.velox.jpa.core.jdbc.table.TableInfo;
 import com.maxwellnie.velox.jpa.core.exception.NotMappedMethodException;
 import com.maxwellnie.velox.jpa.core.jdbc.context.JdbcContext;
+import com.maxwellnie.velox.jpa.core.jdbc.table.TableInfo;
 import com.maxwellnie.velox.jpa.core.proxy.executor.Executor;
 import com.maxwellnie.velox.jpa.core.utils.reflect.TableInfoUtils;
 import org.slf4j.Logger;
@@ -30,10 +30,12 @@ public class DaoImplInvokeHandler implements InvocationHandler {
     private static final Logger logger = LoggerFactory.getLogger(DaoImplInvokeHandler.class);
     /**
      * JDK9+ introduces a novel method named "privateLookupIn" to handle PRIVATE and PROTECTED methods.
+     * @since 1.0
      */
     private static final Method highJavaVersionLookUpMethod;
     /**
      * JDK8 it is necessary to use a invisible constructor to instantiate the LookUp class to handle PRIVATE and PROTECTED methods.
+     * @since 1.0
      */
     private static final Constructor<MethodHandles.Lookup> java8LookupConstructor;
 
@@ -61,10 +63,14 @@ public class DaoImplInvokeHandler implements InvocationHandler {
         }
         java8LookupConstructor = lookup;
     }
-    //since 1.0
 
+    /**
+     * @since 1.0
+     */
     private TableInfo tableInfo;
-    //since 1.0
+    /**
+     * @since 1.0
+     */
     private JdbcContext jdbcContext;
     private Cache<Object, Object> cache;
 
@@ -76,12 +82,14 @@ public class DaoImplInvokeHandler implements InvocationHandler {
         logger.debug("enable cache : " + VeloxJpaConfig.getInstance().isCache());
     }
 
-    public DaoImplInvokeHandler(TableInfo tableInfo, Cache<Object, Object> cache) {
-        this.tableInfo = tableInfo;
-        this.cache = cache;
-    }
-
-    //since 1.0
+    /**
+     * @since 1.0
+     * @param method
+     * @return
+     * @throws NoSuchMethodException
+     * @throws IllegalAccessException
+     * @throws InvocationTargetException
+     */
     private MethodHandle getHighJavaVersionMethodHandle(Method method)
             throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         final Class<?> declaringClass = method.getDeclaringClass();
@@ -90,7 +98,14 @@ public class DaoImplInvokeHandler implements InvocationHandler {
                 declaringClass);
     }
 
-    //since 1.0
+    /**
+     * @since 1.0
+     * @param method
+     * @return
+     * @throws IllegalAccessException
+     * @throws InstantiationException
+     * @throws InvocationTargetException
+     */
     private MethodHandle getJava8MethodHandle(Method method)
             throws IllegalAccessException, InstantiationException, InvocationTargetException {
         final Class<?> declaringClass = method.getDeclaringClass();
@@ -151,6 +166,7 @@ public class DaoImplInvokeHandler implements InvocationHandler {
         else
             return getHighJavaVersionMethodHandle(method).bindTo(proxy).invokeWithArguments(args);
     }
+
     @Override
     public int hashCode() {
         return Objects.hash(tableInfo, jdbcContext, cache);

@@ -1,6 +1,5 @@
 package com.maxwellnie.velox.jpa.core.jdbc.table.column;
 
-import com.maxwellnie.velox.jpa.core.enums.PrimaryMode;
 import com.maxwellnie.velox.jpa.core.java.type.TypeConvertor;
 
 import java.lang.reflect.Field;

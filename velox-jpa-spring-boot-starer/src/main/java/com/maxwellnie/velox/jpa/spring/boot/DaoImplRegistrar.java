@@ -20,15 +20,15 @@ public class DaoImplRegistrar implements ImportBeanDefinitionRegistrar {
         if (attributes != null) {
             BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(DaoImplRegister.class);
 
-            String  jdbcContextFactoryBeanName= attributes.getString("jdbcContextFactoryBeanName");
+            String jdbcContextFactoryBeanName = attributes.getString("jdbcContextFactoryBeanName");
             if (!StringUtils.isNullOrEmpty(jdbcContextFactoryBeanName)) {
                 builder.addPropertyValue("jdbcContextFactoryBeanName", jdbcContextFactoryBeanName);
             }
-            String  packagePaths= attributes.getString("value");
+            String packagePaths = attributes.getString("value");
             if (!StringUtils.isNullOrEmpty(packagePaths)) {
                 builder.addPropertyValue("packagePaths", packagePaths);
             }
-            String  daoImplClassName= attributes.getString("daoImplClassName");
+            String daoImplClassName = attributes.getString("daoImplClassName");
             if (!StringUtils.isNullOrEmpty(daoImplClassName)) {
                 builder.addPropertyValue("daoImplClassName", daoImplClassName);
             }

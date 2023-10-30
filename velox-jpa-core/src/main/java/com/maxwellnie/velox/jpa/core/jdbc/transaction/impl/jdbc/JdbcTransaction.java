@@ -12,7 +12,7 @@ import java.sql.SQLException;
  * @author Maxwell Nie
  */
 public class JdbcTransaction implements Transaction {
-    private static final Logger logger= LoggerFactory.getLogger(JdbcTransaction.class);
+    private static final Logger logger = LoggerFactory.getLogger(JdbcTransaction.class);
     private boolean autoCommit;
     private int level;
     private DataSource dataSource;
@@ -30,7 +30,7 @@ public class JdbcTransaction implements Transaction {
             this.autoCommit = connection.getAutoCommit();
             this.level = connection.getTransactionIsolation();
         } catch (SQLException e) {
-            logger.error(e.getMessage()+"\t\n"+e.getCause());
+            logger.error(e.getMessage() + "\t\n" + e.getCause());
         }
     }
 

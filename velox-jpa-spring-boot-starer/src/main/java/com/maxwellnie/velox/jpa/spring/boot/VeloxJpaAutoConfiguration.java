@@ -25,10 +25,11 @@ public class VeloxJpaAutoConfiguration {
     public VeloxJpaAutoConfiguration(VeloxJpaBootConfig veloxJpaBootConfig) {
         this.veloxJpaBootConfig = veloxJpaBootConfig;
     }
+
     @Bean
     @ConditionalOnMissingBean
-    public JdbcContextFactoryBean jdbcContextFactoryBean(DataSource dataSource){
-        JdbcContextFactoryBean jdbcContextFactoryBean=new JdbcContextFactoryBean();
+    public JdbcContextFactoryBean jdbcContextFactoryBean(DataSource dataSource) {
+        JdbcContextFactoryBean jdbcContextFactoryBean = new JdbcContextFactoryBean();
         jdbcContextFactoryBean.setDataSource(dataSource);
         jdbcContextFactoryBean.setCache(veloxJpaBootConfig.isCache());
         jdbcContextFactoryBean.setCacheClassName(veloxJpaBootConfig.getCacheClassName());

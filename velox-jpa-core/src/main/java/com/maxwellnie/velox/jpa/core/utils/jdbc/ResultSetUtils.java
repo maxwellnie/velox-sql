@@ -1,9 +1,9 @@
 package com.maxwellnie.velox.jpa.core.utils.jdbc;
 
-import com.maxwellnie.velox.jpa.core.jdbc.table.column.PrimaryInfo;
 import com.maxwellnie.velox.jpa.core.exception.NotMappedFieldException;
 import com.maxwellnie.velox.jpa.core.jdbc.table.TableInfo;
 import com.maxwellnie.velox.jpa.core.jdbc.table.column.ColumnInfo;
+import com.maxwellnie.velox.jpa.core.jdbc.table.column.PrimaryInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,7 +15,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class ResultSetUtils {
-    private static final Logger logger= LoggerFactory.getLogger(ResultSetUtils.class);
+    private static final Logger logger = LoggerFactory.getLogger(ResultSetUtils.class);
+
     /**
      * 获取自增主键值
      *
@@ -50,8 +51,9 @@ public class ResultSetUtils {
             Object result = null;
             try {
                 result = tableInfo.getMappedClazz().getConstructor().newInstance();
-            } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
-                logger.error("The "+tableInfo.getMappedClazz().getName()+" is not instant.\t\nmessage:"+e.getMessage()+"\t\ncause:"+e.getCause());
+            } catch (InstantiationException | IllegalAccessException | NoSuchMethodException |
+                     InvocationTargetException e) {
+                logger.error("The " + tableInfo.getMappedClazz().getName() + " is not instant.\t\nmessage:" + e.getMessage() + "\t\ncause:" + e.getCause());
             }
             try {
                 if (tableInfo.hasPk()) {

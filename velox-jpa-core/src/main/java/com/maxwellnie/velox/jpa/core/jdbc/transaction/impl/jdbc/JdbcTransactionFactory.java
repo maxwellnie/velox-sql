@@ -1,7 +1,7 @@
 package com.maxwellnie.velox.jpa.core.jdbc.transaction.impl.jdbc;
 
-import com.maxwellnie.velox.jpa.core.jdbc.transaction.Transaction;
 import com.maxwellnie.velox.jpa.core.exception.MethodNotSupportException;
+import com.maxwellnie.velox.jpa.core.jdbc.transaction.Transaction;
 import com.maxwellnie.velox.jpa.core.jdbc.transaction.TransactionFactory;
 
 import javax.sql.DataSource;

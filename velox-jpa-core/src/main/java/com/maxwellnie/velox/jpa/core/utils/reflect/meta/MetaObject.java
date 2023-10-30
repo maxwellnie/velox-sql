@@ -12,7 +12,7 @@ import java.util.Map;
  * @author Maxwell Nie
  */
 public class MetaObject {
-    private static final Logger logger= LoggerFactory.getLogger(MetaObject.class);
+    private static final Logger logger = LoggerFactory.getLogger(MetaObject.class);
     /**
      * 被转换的对象
      */
@@ -39,7 +39,7 @@ public class MetaObject {
         try {
             field.set(obj, value);
         } catch (IllegalAccessException e) {
-            logger.error(e.getMessage()+"\t\n"+e.getCause());
+            logger.error(e.getMessage() + "\t\n" + e.getCause());
         }
     }
 
@@ -53,7 +53,7 @@ public class MetaObject {
         try {
             return fieldMap.get(fieldName).get(obj);
         } catch (IllegalAccessException e) {
-            logger.error(e.getMessage()+"\t\n"+e.getCause());
+            logger.error(e.getMessage() + "\t\n" + e.getCause());
             return null;
         }
     }

@@ -2,30 +2,34 @@
 
 ### 什么是VeloxJPA？
 
-VeloxJPA是一款基于Java的，符合JPA规范的数据持久化框架，扩展性很强，可以无需书写SQL语句和声明Dao接口，由VeloxJPA为你实现Dao层的功能，VeloxJPA核心提供基本的框架，你可以根据自身需要，自定义或者是优化SQL来生产出符合业务场景的VeloxJPATemplate（数据持久化抽象模板），进而提升原Dao层的性能。
+VeloxJPA是一款基于Java的，符合JPA规范的数据持久化框架，扩展性很强，可以无需书写SQL语句和声明Dao接口，由VeloxJPA为你实现Dao层的功能，VeloxJPA框架为你提供基本的Sql执行逻辑，你可以根据自身需要，来设计出符合业务场景的VeloxJPATemplate（抽象模板），进而适配每个业务场景。
+
 ### 适配性
 
-目前VeloxJPATemplate只适配了mysql5+ & Java8+ & spring 5+，你可以根据自身需求编写新的VeloxJPAOtherTemplate，以适配不同的数据库。
+目前VeloxJPATemplate只适配了mysql5+ & Java8+ & spring 5+，你可以根据自身需求编写新的Sql构建逻辑，以适配不同的数据库。
 
-### 安全漏洞警告
+### 更新日志
 
-由于 0.2.original 及以前的版本含有重大安全漏洞，进行了下架处理。
+抛弃了TransactionManager类，修改了template的代码，删除了原Executor的实现逻辑，采用执行器执行阶段来实现自定义模板。
+
 
 ### 使用文档
 
 #### java原生快速上手:
+
 导入依赖：
+
 ```xml
 <dependencies>
     <dependency>
         <groupId>io.github.maxwellnie</groupId>
         <artifactId>velox-jpa-core</artifactId>
-        <version>1.0</version>
+        <version>1.1</version>
     </dependency>
       <dependency>
         <groupId>io.github.maxwellnie</groupId>
         <artifactId>velox-jpa-core-template</artifactId>
-        <version>1.0</version>
+        <version>1.1</version>
     </dependency>
     <dependency>
         <groupId>mysql</groupId>
@@ -44,8 +48,8 @@ VeloxJPA是一款基于Java的，符合JPA规范的数据持久化框架，扩�
     </dependency>
 </dependencies>
 ```
+
 ```java
-import com.maxwellnie.velox.jpa.core.dao.support.SqlBuilder;
 import com.maxwellnie.velox.jpa.core.dao.support.env.Environment;
 import com.maxwellnie.velox.jpa.core.cahce.impl.LRUCache;
 import com.maxwellnie.velox.jpa.core.config.simple.VeloxJpaConfig;
@@ -55,6 +59,7 @@ import com.maxwellnie.velox.jpa.core.jdbc.context.SimpleContextFactory;
 import com.maxwellnie.velox.jpa.core.jdbc.pool.impl.SimpleConnectionPool;
 import com.maxwellnie.velox.jpa.core.jdbc.transaction.impl.jdbc.JdbcTransactionFactory;
 import com.maxwellnie.velox.jpa.core.template.dao.TemplateDao;
+import com.maxwellnie.velox.jpa.framework.sql.SqlBuilder;
 
 import java.sql.SQLException;
 
@@ -89,13 +94,12 @@ public class Tests {
 }
 ```
 
-
 User实体：
+
 ```java
 import com.maxwellnie.vleox.jpa.core.annotation.Entity;
 import com.maxwellnie.vleox.jpa.core.annotation.Column;
 import com.maxwellnie.vleox.jpa.core.annotation.PrimaryKey;
-import com.maxwellnie.vleox.jpa.core.enums.PrimaryMode;
 
 import java.util.Date;
 
@@ -203,8 +207,11 @@ public  class User {
     }
 }
 ```
+
 #### spring快速上手:
+
 依赖：
+
 ```xml
  <dependencies>
         <dependency>
@@ -240,12 +247,12 @@ public  class User {
         <dependency>
             <groupId>io.github.maxwellnie</groupId>
             <artifactId>velox-jpa-spring</artifactId>
-            <version>1.0</version>
+            <version>1.1</version>
         </dependency>
         <dependency>
             <groupId>io.github.maxwellnie</groupId>
             <artifactId>velox-jpa-core-template</artifactId>
-            <version>1.0</version>
+            <version>1.1</version>
         </dependency>
         <dependency>
             <groupId>net.bytebuddy</groupId>
@@ -260,7 +267,9 @@ public  class User {
         </dependency>
     </dependencies>
 ```
+
 xml配置文件：
+
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
@@ -298,7 +307,9 @@ xml配置文件：
     </bean>
 </beans>
 ```
+
 Test类：
+
 ```java
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"classpath:spring.xml"})
@@ -316,8 +327,11 @@ public class Test {
 	}
 }
 ```
+
 #### springboot快速上手:
+
 依赖：
+
 ```xml
  <dependencies>
         <dependency>
@@ -354,7 +368,7 @@ public class Test {
             <dependency>
                 <groupId>io.github.maxwellnie</groupId>
                 <artifactId>velox-jpa-spring-boot-starer</artifactId>
-                <version>1.0</version>
+                <version>1.1</version>
             </dependency>
             <dependency>
                 <groupId>com.alibaba</groupId>
@@ -364,7 +378,7 @@ public class Test {
         <dependency>
             <groupId>io.github.maxwellnie</groupId>
             <artifactId>velox-jpa-core-template</artifactId>
-            <version>1.0</version>
+            <version>1.1</version>
         </dependency>
         <dependency>
             <groupId>net.bytebuddy</groupId>
@@ -373,7 +387,9 @@ public class Test {
         </dependency>
         </dependencies>
 ```
+
 application.yml:
+
 ```yaml
 spring:
   datasource:
@@ -391,7 +407,9 @@ velox-jpa:
   standTable : true
   standColumn: true
 ```
+
 启动类：
+
 ```java
 @SpringBootApplication
 @DaoImplConf(value = "com.example.ttdemo.po")
@@ -403,7 +421,9 @@ public class TtdemoApplication {
 
 }
 ```
+
 User实体：
+
 ```java
 package com.example.ttdemo.po;
 
@@ -428,7 +448,9 @@ public class User {
 
 }
 ```
+
 Test:
+
 ```java
 package com.example.ttdemo;
 
@@ -456,7 +478,9 @@ class TtdemoApplicationTests {
 
 }
 ```
+
 sql:
+
 ```sql
 USE DATABASE bounddatabase;
 SET NAMES utf8mb4;
@@ -494,6 +518,7 @@ CREATE TABLE `tb_user`  (
 
 SET FOREIGN_KEY_CHECKS = 1;
 ```
+
 #### 开发者
 
 如果你是一个想要丰富VeloxJpa功能的开发者，你需要了解VeloxJpa的特点、架构。
@@ -583,28 +608,31 @@ public class DeleteOneExecutor implements Executor{
     }
 }
 ```
-
+但是这种方法非常麻烦，所以我们提供了一个新的模板，存在于velox-jpa-framework模块，包含了含有基本逻辑的执行器，开发者开发对应的velox-jpa-template时只需要继承这些模板基类，在执行周期的各个阶段，修改需要修改的部分，例如修改sql查询语句以达到分页查询的目的。
+##### velox-jpa-framework
 接下来是四大管理器：ConvertorManager、KeyStrategyManager、MethodMappedManager、TransactionManager。
 
-##### ConvertorManager 
+##### ConvertorManager
 
-TypeConvertor的管理器，可以注册、或者获取对应Java数据类型的转换器，用于查询数据库数据后转换从JDBC API获取到的数据。例如将java.sql.Date转换为java.util.Date
+TypeConvertor的管理器，可以注册、或者获取对应Java数据类型的转换器，用于查询数据库数据后转换从JDBC
+API获取到的数据。例如将java.sql.Date转换为java.util.Date
 
-##### KeyStrategyManager 
+##### KeyStrategyManager
 
- KeyStrategy的管理器，可以注册、或者获取对应名字的KeyStrategy，用于添加数据时获取主键值，和返回主键值。
+KeyStrategy的管理器，可以注册、或者获取对应名字的KeyStrategy，用于添加数据时获取主键值，和返回主键值。
 
-##### MethodMappedManager 
+##### MethodMappedManager
 
 Executor和被注册方法的映射管理，最好不要在运行时注册映射到这个管理器，可能会产生未知的后果。
 
-##### TransactionManager 
+##### TransactionManager
 
-TransactionFactory的管理器，可以注册、或者获取对应名字的TransactionFactory，用于赋予操作数据库时JdbcContext的事务。可以获取到的值有JDBC_AUTO，即将被废弃，以后的版本可能就见不到它了，最好不用使用。
+已被抛弃，更新版本后请不要再使用这个类。
 
 ##### TypeConvertor<T> 类型转换器
 
-当JDBC从数据库取出数据后，会调用ResultSet的getObject方法获取数据，这个转换器的意义就在于可以将JDBC API 提供的对象转换为我们想要的对象，如果结合@Column注解，这种方式将会类似于ORM。
+当JDBC从数据库取出数据后，会调用ResultSet的getObject方法获取数据，这个转换器的意义就在于可以将JDBC API
+提供的对象转换为我们想要的对象，如果结合@Column注解，这种方式将会类似于ORM。
 
 ```java
 /**
@@ -730,3 +758,614 @@ public interface JdbcContext extends Closeable {
 }
 ```
 
+### 1.1版本
+
+#### velox-jpa-framewok
+
+velox-jpa-framework提供了Sql执行、构建、缓存、主键策略的基本逻辑，定义了Executor的执行阶段（执行周期）。
+
+##### BaseExecutor
+
+实现了方法的执行逻辑、参数的检查、实例化Statement的基本逻辑、刷新缓存的完整逻辑和sql执行的部分逻辑。
+
+```java
+package com.maxwellnie.velox.jpa.framework.proxy.executor;
+
+import com.maxwellnie.velox.jpa.core.cahce.Cache;
+import com.maxwellnie.velox.jpa.core.cahce.dirty.CacheDirtyManager;
+import com.maxwellnie.velox.jpa.core.cahce.key.CacheKey;
+import com.maxwellnie.velox.jpa.core.jdbc.context.JdbcContext;
+import com.maxwellnie.velox.jpa.core.jdbc.table.TableInfo;
+import com.maxwellnie.velox.jpa.core.proxy.executor.Executor;
+import com.maxwellnie.velox.jpa.core.proxy.executor.wrapper.StatementWrapper;
+import com.maxwellnie.velox.jpa.framework.exception.ExecutorException;
+import com.maxwellnie.velox.jpa.framework.proxy.executor.cycle.ExecuteCycle;
+import com.maxwellnie.velox.jpa.framework.sql.SimpleSqlFragment;
+import com.maxwellnie.velox.jpa.framework.utils.ErrorUtils;
+import org.slf4j.Logger;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.List;
+
+import static com.maxwellnie.velox.jpa.core.proxy.executor.wrapper.StatementWrapper.*;
+
+/**
+ * 基本的对SQL方法执行器
+ *
+ * @author Maxwell Nie
+ */
+public abstract class BaseExecutor extends ExecuteCycle implements Executor {
+    protected final Logger logger;
+
+    public BaseExecutor(Logger logger, Object errorResult) {
+        this.logger = logger;
+        this.errorResult = errorResult;
+    }
+
+    /**
+     * 所有的Executor都应该遵循这个规范。
+     * @param tableInfo
+     * @param context
+     * @param cache
+     * @param daoImplHashCode
+     * @param args
+     * @return
+     */
+    @Override
+    public Object execute(TableInfo tableInfo, JdbcContext context, Cache<Object, Object> cache, String daoImplHashCode, Object[] args) {
+        try {
+            checkArgs(args);
+            Connection connection = checkContext(context, tableInfo);
+            SimpleSqlFragment sqlFragment = getNativeSql(args, tableInfo);
+            logger.debug("SQL ### : "+sqlFragment.getNativeSql());
+            logger.debug("PARAM # : "+sqlFragment.getParams());
+            StatementWrapper statementWrapper = openStatement(sqlFragment, connection, tableInfo, args);
+            long startTime = System.currentTimeMillis();
+            SqlResult sqlResult = executeSql(statementWrapper, sqlFragment, daoImplHashCode,cache);
+            logger.debug("SQL EXECUTED | TIME: "+(System.currentTimeMillis() - startTime)+"ms.");
+            flushCache(sqlResult, cache, context.getDirtyManager(), !context.getAutoCommit());
+            return sqlResult.getResult();
+        } catch (ExecutorException e) {
+            logger.error(ErrorUtils.getSimpleExceptionLog(e));
+            return errorResult;
+        }
+    }
+
+    /**
+     * 检查Jdbc环境。
+     * @param jdbcContext
+     * @param tableInfo
+     * @return
+     * @throws ExecutorException
+     */
+    protected Connection checkContext(JdbcContext jdbcContext, TableInfo tableInfo) throws ExecutorException {
+        if (jdbcContext == null || tableInfo == null) {
+            throw new ExecutorException("JdbcContext is null or tableInfo is null!");
+        } else if (jdbcContext.isClosed()) {
+            throw new ExecutorException("JdbcContext is closed!");
+        } else {
+            try {
+                if (jdbcContext.getTransaction() == null) {
+                    throw new ExecutorException("JdbcContext is not have Transaction!");
+                } else {
+                    Connection connection = jdbcContext.getTransaction().getConnection();
+                    if (connection == null) {
+                        throw new ExecutorException("Transaction cannot open Connection!");
+                    } else
+                        return connection;
+                }
+            } catch (SQLException e) {
+                logger.error("The connection open failed\r\nmessage:" + e.getMessage() + "\r\ncause:" + e.getCause());
+                throw new ExecutorException("Transaction cannot open Connection!");
+            }
+        }
+    }
+
+    /**
+     * 检查方法参数。
+     * @param args
+     * @throws ExecutorException
+     */
+    protected abstract void checkArgs(Object[] args) throws ExecutorException;
+
+    @Override
+    protected void flushCache(SqlResult sqlResult, Cache cache, CacheDirtyManager dirtyManager, boolean isTransactional) throws ExecutorException {
+        if (isTransactional && sqlResult != null && sqlResult.getCacheKey() != null && cache != null) {
+            if (sqlResult.getFlag().equals(ExecuteCycle.FLUSH_FLAG)) {
+                doFlushCache(sqlResult, cache, dirtyManager);
+            } else {
+                doClearCache(cache, dirtyManager);
+            }
+        }
+    }
+
+    /**
+     * 更新缓存。
+     * @param sqlResult
+     * @param cache
+     * @param dirtyManager
+     */
+    protected void doFlushCache(SqlResult sqlResult, Cache cache, CacheDirtyManager dirtyManager) {
+        if (dirtyManager != null) {
+            dirtyManager.get(cache).put(sqlResult.getCacheKey(), sqlResult.getResult());
+        } else {
+            cache.put(sqlResult.getCacheKey(), sqlResult.getResult());
+        }
+    }
+
+    /**
+     * 清理缓存。
+     * @param cache
+     * @param dirtyManager
+     */
+    protected void doClearCache(Cache<?, ?> cache, CacheDirtyManager dirtyManager) {
+        if (dirtyManager != null) {
+            dirtyManager.clear();
+        } else {
+            cache.clear();
+        }
+    }
+
+    @Override
+    protected StatementWrapper openStatement(SimpleSqlFragment sqlFragment, Connection connection, TableInfo tableInfo, Object[] args) throws ExecutorException {
+        StatementWrapper statementWrapper;
+        try {
+            PreparedStatement statement = doOpenStatement(connection, tableInfo, sqlFragment.getNativeSql());
+            statement.setFetchSize(tableInfo.getFetchSize());
+            List<Object> params = sqlFragment.getParams();
+            statementWrapper = new StatementWrapper(statement);
+            statementWrapper.getMetaData().addProperty("tableInfo", tableInfo);
+            doAfterOpenStatement(statementWrapper, params, args);
+            CacheKey cacheKey=new CacheKey(tableInfo.getMappedClazz(), sqlFragment.getNativeSql(), null);
+            cacheKey.addValueCollection(sqlFragment.getParams());
+            statementWrapper.getMetaData().addProperty("cacheKey",cacheKey);
+        } catch (SQLException e) {
+            logger.error(ErrorUtils.getExceptionLog(e, sqlFragment.getNativeSql(), sqlFragment.getParams()));
+            throw new ExecutorException("Statement open failed!");
+        }
+        return statementWrapper;
+    }
+
+    /**
+     * 创建Statement对象，不同的使用场景将创建出不同的Statement。<br/>
+     * 例如安全性考虑下将创建PrepareStatement以防止SQL注入。
+     * @param connection
+     * @param tableInfo
+     * @param sql
+     * @return
+     * @throws SQLException
+     */
+    protected abstract PreparedStatement doOpenStatement(Connection connection,TableInfo tableInfo, String sql) throws SQLException;
+
+    /**
+     * 在Statement对象创建完成后，可以对prepareStatement进行设置值和修改值，对StatementWrapper添加数据，以便在执行SQL时能够使用到某些数据。
+     * @param statementWrapper
+     * @param params
+     * @param args
+     * @throws SQLException
+     */
+    protected abstract void doAfterOpenStatement(StatementWrapper statementWrapper, List<Object> params, Object[] args) throws SQLException;
+
+    /**
+     * 依据不同的模式执行不同的PreparedStatement的执行SQL操作
+     * @param preparedStatement
+     * @param mode 三种基础模式
+     * @see StatementWrapper#BATCH
+     * @see StatementWrapper#UPDATE
+     * @see StatementWrapper#QUERY
+     * @return
+     * @throws SQLException
+     * @throws ExecutorException
+     */
+    protected Object doExecuteSql(PreparedStatement preparedStatement, int mode) throws SQLException, ExecutorException {
+        switch (mode) {
+            case QUERY: return preparedStatement.executeQuery();
+            case BATCH & UPDATE: return preparedStatement.executeBatch();
+            case UPDATE:return preparedStatement.executeUpdate();
+            default:throw new ExecutorException("Unsupported PreparedStatement Mode '"+mode+"'");
+        }
+    }
+}
+
+```
+
+##### ExecuteCycle
+
+声明了执行器的4个执行周期——Sql构建阶段、Statement实例化阶段、Sql执行阶段、缓存刷新阶段，开发者可以根据这四个阶段编程，对这些阶段进行增强，构建相对于独有业务逻辑效率更高的Executor及Template。
+
+```java
+package com.maxwellnie.velox.jpa.framework.proxy.executor.cycle;
+
+import com.maxwellnie.velox.jpa.core.cahce.Cache;
+import com.maxwellnie.velox.jpa.core.cahce.dirty.CacheDirtyManager;
+import com.maxwellnie.velox.jpa.core.cahce.key.CacheKey;
+import com.maxwellnie.velox.jpa.core.jdbc.table.TableInfo;
+import com.maxwellnie.velox.jpa.core.proxy.executor.wrapper.StatementWrapper;
+import com.maxwellnie.velox.jpa.framework.exception.ExecutorException;
+import com.maxwellnie.velox.jpa.framework.sql.SimpleSqlFragment;
+
+import java.sql.Connection;
+
+/**
+ * 执行器的执行周期
+ * @since 1.1
+ * @author Maxwell Nie
+ */
+public abstract class ExecuteCycle {
+    /**
+     * 缓存清理标识。
+     */
+    public static final String CLEAR_FLAG = "1b4adf781a4ca21e";
+    /**
+     * 缓存更新标识。
+     */
+    public static final String FLUSH_FLAG = "3e5c6a74c1a9c3a1";
+    protected Object errorResult = 0;
+
+    /**
+     * 创建Sql阶段。
+     * @param args
+     * @param tableInfo
+     * @return
+     * @throws ExecutorException
+     */
+    protected abstract SimpleSqlFragment getNativeSql(Object[] args, TableInfo tableInfo) throws ExecutorException;
+
+    /**
+     * 实例化Statement阶段。
+     * @param sqlFragment
+     * @param connection
+     * @param tableInfo
+     * @param args
+     * @return
+     * @throws ExecutorException
+     */
+    protected abstract StatementWrapper openStatement(SimpleSqlFragment sqlFragment, Connection connection, TableInfo tableInfo, Object[] args) throws ExecutorException;
+
+    /**
+     * 执行Sql阶段。
+     * @param statementWrapper
+     * @param sqlFragment
+     * @param daoImplHashCode
+     * @param cache
+     * @return
+     * @throws ExecutorException
+     */
+    protected abstract SqlResult executeSql(StatementWrapper statementWrapper, SimpleSqlFragment sqlFragment, String daoImplHashCode, Cache<Object,Object> cache) throws ExecutorException;
+
+    /**
+     * 刷新缓存阶段。
+     * @param sqlResult
+     * @param cache
+     * @param dirtyManager
+     * @param isTransactional
+     * @throws ExecutorException
+     */
+    protected abstract void flushCache(SqlResult sqlResult, Cache cache, CacheDirtyManager dirtyManager, boolean isTransactional) throws ExecutorException;
+
+    /**
+     * Sql执行的返回结果（包装器）。
+     */
+    public static class SqlResult {
+        /**
+         * 缓存工作标识。
+         */
+        private String flag;
+        /**
+         * sql执行结果。
+         */
+        private Object result;
+        /**
+         * 缓存的键。
+         */
+        private CacheKey cacheKey;
+
+        public SqlResult() {
+        }
+
+        public SqlResult(String flag, Object result, CacheKey cacheKey) {
+            this.flag = flag;
+            this.result = result;
+            this.cacheKey = cacheKey;
+        }
+
+        public String getFlag() {
+            return flag;
+        }
+
+        public void setFlag(String flag) {
+            this.flag = flag;
+        }
+
+        public Object getResult() {
+            return result;
+        }
+
+        public void setResult(Object result) {
+            this.result = result;
+        }
+
+        public CacheKey getCacheKey() {
+            return cacheKey;
+        }
+
+        public void setCacheKey(CacheKey cacheKey) {
+            this.cacheKey = cacheKey;
+        }
+    }
+}
+
+```
+##### BaseUpdateExecutor
+
+```java
+package com.maxwellnie.velox.jpa.framework.proxy.executor.update;
+
+import com.maxwellnie.velox.jpa.core.cahce.Cache;
+import com.maxwellnie.velox.jpa.core.jdbc.table.TableInfo;
+import com.maxwellnie.velox.jpa.core.jdbc.table.column.ColumnInfo;
+import com.maxwellnie.velox.jpa.core.proxy.executor.wrapper.StatementWrapper;
+import com.maxwellnie.velox.jpa.framework.exception.ExecutorException;
+import com.maxwellnie.velox.jpa.framework.proxy.executor.BaseExecutor;
+import com.maxwellnie.velox.jpa.framework.sql.SimpleSqlFragment;
+import com.maxwellnie.velox.jpa.framework.utils.ErrorUtils;
+import org.slf4j.Logger;
+
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.LinkedList;
+import java.util.List;
+
+/**
+ * @author Maxwell Nie
+ */
+public abstract class BaseUpdateExecutor extends BaseExecutor {
+    public BaseUpdateExecutor(Logger logger, Object errorResult) {
+        super(logger, errorResult);
+    }
+
+    @Override
+    protected SimpleSqlFragment getNativeSql(Object[] args, TableInfo tableInfo) throws ExecutorException {
+        SimpleSqlFragment updateSql = new SimpleSqlFragment();
+        List<ColumnInfo> columns = new LinkedList<>(tableInfo.getColumnMappedMap().values());
+        doBuildUpdateSql(updateSql, columns, args, tableInfo);
+        return updateSql;
+    }
+
+    protected abstract void doBuildUpdateSql(SimpleSqlFragment updateSql, List<ColumnInfo> columns, Object[] args, TableInfo tableInfo);
+
+    @Override
+    protected SqlResult executeSql(StatementWrapper statementWrapper, SimpleSqlFragment sqlFragment, String daoImplHashCode, Cache<Object,Object> cache) throws ExecutorException {
+        try (PreparedStatement preparedStatement = statementWrapper.getPrepareStatement()) {
+            Object result = doExecuteSql(preparedStatement, statementWrapper.getMode());
+            return new SqlResult(CLEAR_FLAG, result, null);
+        } catch (SQLException e) {
+            logger.error(ErrorUtils.getExceptionLog(e, sqlFragment.getNativeSql(), sqlFragment.getParams()));
+            throw new ExecutorException("SQL error!");
+        }
+    }
+}
+
+```
+
+##### BaseQueryExecutor
+
+```java
+package com.maxwellnie.velox.jpa.framework.proxy.executor.query;
+
+import com.maxwellnie.velox.jpa.core.cahce.Cache;
+import com.maxwellnie.velox.jpa.core.cahce.key.CacheKey;
+import com.maxwellnie.velox.jpa.core.jdbc.table.TableInfo;
+import com.maxwellnie.velox.jpa.core.jdbc.table.column.ColumnInfo;
+import com.maxwellnie.velox.jpa.core.proxy.executor.wrapper.StatementWrapper;
+import com.maxwellnie.velox.jpa.core.utils.jdbc.ResultSetUtils;
+import com.maxwellnie.velox.jpa.framework.exception.ExecutorException;
+import com.maxwellnie.velox.jpa.framework.proxy.executor.BaseExecutor;
+import com.maxwellnie.velox.jpa.framework.sql.SimpleSqlFragment;
+import com.maxwellnie.velox.jpa.framework.utils.ErrorUtils;
+import com.maxwellnie.velox.jpa.framework.utils.ExecutorUtils;
+import org.slf4j.Logger;
+
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.LinkedList;
+import java.util.List;
+
+/**
+ * 基本的查询执行器
+ *
+ * @author Maxwell Nie
+ */
+public abstract class BaseQueryExecutor extends BaseExecutor {
+    public BaseQueryExecutor(Logger logger, Object errorResult) {
+        super(logger, errorResult);
+    }
+
+    @Override
+    protected SimpleSqlFragment getNativeSql(Object[] args, TableInfo tableInfo) throws ExecutorException {
+        SimpleSqlFragment selectSql = new SimpleSqlFragment();
+        List<ColumnInfo> columns = new LinkedList<>();
+        if (tableInfo.hasPk())
+            columns.add(tableInfo.getPkColumn());
+        columns.addAll(tableInfo.getColumnMappedMap().values());
+        doBuildSelectSql(selectSql, columns, args, tableInfo);
+        return selectSql;
+    }
+
+    protected abstract void doBuildSelectSql(SimpleSqlFragment sqlFragment, List<ColumnInfo> columns, Object[] args, TableInfo tableInfo);
+
+    @Override
+    protected SqlResult executeSql(StatementWrapper statementWrapper, SimpleSqlFragment sqlFragment, String daoImplHashCode, Cache<Object,Object> cache) throws ExecutorException {
+        TableInfo tableInfo = ExecutorUtils.of(statementWrapper, "tableInfo");
+        CacheKey cacheKey = ExecutorUtils.of(statementWrapper, "cacheKey");
+        cacheKey.setDaoImplHashCode(daoImplHashCode);
+        try (PreparedStatement preparedStatement = statementWrapper.getPrepareStatement()) {
+            List result= (List) cache.get(cacheKey);
+            if(result==null){
+                ResultSet resultSet = preparedStatement.executeQuery();
+                result= ResultSetUtils.convertEntity(resultSet, tableInfo);
+                resultSet.close();
+            }else
+                logger.debug("Cache Hit.");
+            return new SqlResult(FLUSH_FLAG, result, cacheKey);
+        } catch (SQLException e) {
+            logger.error(ErrorUtils.getExceptionLog(e, sqlFragment.getNativeSql(), sqlFragment.getParams()));
+            throw new ExecutorException("SQL error!");
+        }
+    }
+}
+
+```
+
+##### BaseInsertExecutor
+
+```java
+package com.maxwellnie.velox.jpa.framework.proxy.executor.insert;
+
+import com.maxwellnie.velox.jpa.core.cahce.Cache;
+import com.maxwellnie.velox.jpa.core.jdbc.table.TableInfo;
+import com.maxwellnie.velox.jpa.core.jdbc.table.column.ColumnInfo;
+import com.maxwellnie.velox.jpa.core.jdbc.table.primary.PrimaryKeyStrategy;
+import com.maxwellnie.velox.jpa.core.jdbc.table.primary.generator.KeyGenerator;
+import com.maxwellnie.velox.jpa.core.jdbc.table.primary.generator.NoKeyGenerator;
+import com.maxwellnie.velox.jpa.core.jdbc.table.primary.keyselector.KeySelector;
+import com.maxwellnie.velox.jpa.core.jdbc.table.primary.keyselector.NoKeySelector;
+import com.maxwellnie.velox.jpa.core.proxy.executor.wrapper.StatementWrapper;
+import com.maxwellnie.velox.jpa.framework.exception.ExecutorException;
+import com.maxwellnie.velox.jpa.framework.proxy.executor.BaseExecutor;
+import com.maxwellnie.velox.jpa.framework.sql.SimpleSqlFragment;
+import com.maxwellnie.velox.jpa.framework.utils.ErrorUtils;
+import com.maxwellnie.velox.jpa.framework.utils.ExecutorUtils;
+import org.slf4j.Logger;
+
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.LinkedList;
+import java.util.List;
+
+/**
+ * @author Maxwell Nie
+ */
+public abstract class BaseInsertExecutor extends BaseExecutor {
+    public BaseInsertExecutor(Logger logger, Object errorResult) {
+        super(logger, errorResult);
+    }
+
+    @Override
+    protected SimpleSqlFragment getNativeSql(Object[] args, TableInfo tableInfo) throws ExecutorException {
+        SimpleSqlFragment insertSql = new SimpleSqlFragment();
+        List<ColumnInfo> columns = new LinkedList<>();
+        if (!tableInfo.hasPk())
+            columns.add(tableInfo.getPkColumn());
+        columns.addAll(tableInfo.getColumnMappedMap().values());
+        doBuildInsertSql(insertSql, columns, args, tableInfo);
+        return insertSql;
+    }
+
+    /**
+     * 构建Sql语句
+     * @param insertSql
+     * @param columns
+     * @param args
+     * @param tableInfo
+     * @throws ExecutorException
+     */
+    protected abstract void doBuildInsertSql(SimpleSqlFragment insertSql, List<ColumnInfo> columns, Object[] args, TableInfo tableInfo) throws ExecutorException;
+
+    @Override
+    protected SqlResult executeSql(StatementWrapper statementWrapper, SimpleSqlFragment sqlFragment, String daoImplHashCode, Cache<Object,Object> cache) throws ExecutorException {
+        PrimaryKeyStrategy keyStrategy = ExecutorUtils.of(statementWrapper, "keyStrategy");
+        TableInfo tableInfo = ExecutorUtils.of(statementWrapper, "tableInfo");
+        Object[] entityInstances = ExecutorUtils.of(statementWrapper, "entityInstances");
+        try (PreparedStatement preparedStatement = statementWrapper.getPrepareStatement()) {
+            Object result = doExecuteSql(preparedStatement,statementWrapper.getMode());
+            setPrimaryKeyFormSelectedKey(keyStrategy,preparedStatement,result,entityInstances,tableInfo);
+            return new SqlResult(CLEAR_FLAG, result, null);
+        } catch (SQLException | IllegalAccessException e) {
+            logger.error(ErrorUtils.getExceptionLog(e, sqlFragment.getNativeSql(), sqlFragment.getParams()));
+            throw new ExecutorException("SQL error!");
+        }
+    }
+    protected void setPrimaryKeyFromGeneratedKey(PrimaryKeyStrategy keyStrategy,Object[] entityInstances, TableInfo tableInfo) throws IllegalAccessException {
+        if(tableInfo.hasPk()) {
+            KeyGenerator keyGenerator = keyStrategy.getKeyGenerator();
+            if(!(keyGenerator instanceof NoKeyGenerator)){
+                for (Object entityInstance:entityInstances){
+                    tableInfo.getPkColumn().getColumnMappedField().set(entityInstance, keyGenerator.nextKey());
+                }
+            }
+        }
+    }
+    protected void setPrimaryKeyFormSelectedKey(PrimaryKeyStrategy keyStrategy,PreparedStatement preparedStatement, Object result,Object[] entityInstances, TableInfo tableInfo) throws IllegalAccessException {
+        if(tableInfo.hasPk()) {
+            KeySelector keySelector = keyStrategy.getKeySelector();
+            if(keySelector instanceof NoKeySelector)
+                return;
+            Object primaryKeys = keySelector.selectGeneratorKey(preparedStatement, result);
+            if (primaryKeys != null) {
+                if (primaryKeys instanceof Object[]) {
+                    Object[] objects = (Object[]) primaryKeys;
+                    if (objects.length != 0 && objects.length == entityInstances.length)
+                        for (int index = 0; index < entityInstances.length; index++)
+                            tableInfo.getPkColumn().getColumnMappedField().set(entityInstances[index], objects[index]);
+                }
+            }
+        }
+    }
+
+}
+
+```
+
+##### BaseDeleteExecutor
+
+```java
+package com.maxwellnie.velox.jpa.framework.proxy.executor.delete;
+
+import com.maxwellnie.velox.jpa.core.cahce.Cache;
+import com.maxwellnie.velox.jpa.core.jdbc.table.TableInfo;
+import com.maxwellnie.velox.jpa.core.jdbc.table.column.ColumnInfo;
+import com.maxwellnie.velox.jpa.core.proxy.executor.wrapper.StatementWrapper;
+import com.maxwellnie.velox.jpa.framework.exception.ExecutorException;
+import com.maxwellnie.velox.jpa.framework.proxy.executor.BaseExecutor;
+import com.maxwellnie.velox.jpa.framework.sql.SimpleSqlFragment;
+import com.maxwellnie.velox.jpa.framework.utils.ErrorUtils;
+import org.slf4j.Logger;
+
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.List;
+
+/**
+ * @author Maxwell Nie
+ */
+public abstract class BaseDeleteExecutor extends BaseExecutor {
+    public BaseDeleteExecutor(Logger logger, Object errorResult) {
+        super(logger, errorResult);
+    }
+
+    @Override
+    protected SimpleSqlFragment getNativeSql(Object[] args, TableInfo tableInfo) throws ExecutorException {
+        SimpleSqlFragment deleteSql = new SimpleSqlFragment();
+        doBuildDeleteSql(deleteSql, null, args, tableInfo);
+        return deleteSql;
+    }
+
+    protected abstract void doBuildDeleteSql(SimpleSqlFragment deleteSql, List<ColumnInfo> columns, Object[] args, TableInfo tableInfo);
+
+    @Override
+    protected SqlResult executeSql(StatementWrapper statementWrapper, SimpleSqlFragment sqlFragment, String daoImplHashCode, Cache<Object,Object> cache) throws ExecutorException {
+        try (PreparedStatement preparedStatement = statementWrapper.getPrepareStatement()) {
+            Object result = doExecuteSql(preparedStatement,statementWrapper.getMode());
+            return new SqlResult(CLEAR_FLAG, result, null);
+        } catch (SQLException e) {
+            logger.error(ErrorUtils.getExceptionLog(e, sqlFragment.getNativeSql(), sqlFragment.getParams()));
+            throw new ExecutorException("SQL error!");
+        }
+    }
+}
+
+```

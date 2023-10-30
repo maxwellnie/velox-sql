@@ -56,6 +56,7 @@ public interface JdbcContext extends Closeable {
 
     /**
      * 是否被关闭
+     *
      * @return
      */
     boolean isClosed();

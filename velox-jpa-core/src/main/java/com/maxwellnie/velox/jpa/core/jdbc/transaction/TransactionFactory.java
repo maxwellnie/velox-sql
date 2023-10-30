@@ -14,6 +14,7 @@ public interface TransactionFactory {
 
     /**
      * it's mainly method,must be implemented.
+     *
      * @param dataSource
      * @param autoCommit
      * @param level

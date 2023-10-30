@@ -3,7 +3,7 @@ package com.maxwellnie.velox.jpa.core.exception;
 /**
  * @author Maxwell Nie
  */
-public class JdbcContextException extends RuntimeException{
+public class JdbcContextException extends RuntimeException {
     public JdbcContextException() {
     }
 

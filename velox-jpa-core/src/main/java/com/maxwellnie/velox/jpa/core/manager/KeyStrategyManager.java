@@ -1,7 +1,7 @@
 package com.maxwellnie.velox.jpa.core.manager;
 
 import com.maxwellnie.velox.jpa.core.jdbc.table.primary.PrimaryKeyStrategy;
-import com.maxwellnie.velox.jpa.core.jdbc.table.primary.generator.NoGenerator;
+import com.maxwellnie.velox.jpa.core.jdbc.table.primary.generator.NoKeyGenerator;
 import com.maxwellnie.velox.jpa.core.jdbc.table.primary.keyselector.JdbcSelector;
 import com.maxwellnie.velox.jpa.core.jdbc.table.primary.keyselector.NoKeySelector;
 
@@ -26,8 +26,8 @@ public class KeyStrategyManager {
     private static final Map<String, PrimaryKeyStrategy> primaryKeyStrategyMap = Collections.synchronizedMap(new LinkedHashMap<>());
 
     static {
-        registerGenerator(DEFAULT, new PrimaryKeyStrategy(new NoGenerator(), new NoKeySelector()));
-        registerGenerator(JDBC_AUTO, new PrimaryKeyStrategy(new NoGenerator(), new JdbcSelector()));
+        registerGenerator(DEFAULT, new PrimaryKeyStrategy(new NoKeyGenerator(), new NoKeySelector()));
+        registerGenerator(JDBC_AUTO, new PrimaryKeyStrategy(new NoKeyGenerator(), new JdbcSelector()));
     }
 
     /**

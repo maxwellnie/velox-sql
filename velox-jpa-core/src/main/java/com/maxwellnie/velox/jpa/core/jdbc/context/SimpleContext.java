@@ -16,7 +16,7 @@ public class SimpleContext implements JdbcContext {
     private CacheDirtyManager cacheDirtyManager = new CacheDirtyManager();
     private Transaction transaction;
     private boolean autoCommit;
-    private boolean closed=false;
+    private boolean closed = false;
 
     public SimpleContext() {
     }
@@ -41,9 +41,9 @@ public class SimpleContext implements JdbcContext {
         try {
             transaction.release();
             cacheDirtyManager.clear();
-            this.closed=true;
+            this.closed = true;
         } catch (SQLException e) {
-            logger.error(e.getMessage()+"\tt\n"+e.getCause());
+            logger.error(e.getMessage() + "\tt\n" + e.getCause());
         }
     }
 
@@ -53,7 +53,7 @@ public class SimpleContext implements JdbcContext {
 
     @Override
     public boolean isClosed() {
-        return false;
+        return this.closed;
     }
 
     public Transaction getTransaction() {
@@ -62,9 +62,9 @@ public class SimpleContext implements JdbcContext {
 
     @Override
     public void commit() {
-        if(closed){
+        if (closed) {
             cacheDirtyManager.clear();
-            throw new JdbcContextException("The JdbcContext "+this+" is closed.but it need commit data.");
+            throw new JdbcContextException("The JdbcContext " + this + " is closed.but it need commit data.");
         }
         logger.debug(cacheDirtyManager.toString());
         cacheDirtyManager.commit();
@@ -72,19 +72,19 @@ public class SimpleContext implements JdbcContext {
             transaction.commit();
             logger.debug(this + " is commit");
         } catch (SQLException e) {
-            logger.error(e.getMessage()+"\tt\n"+e.getCause());
+            logger.error(e.getMessage() + "\tt\n" + e.getCause());
         }
     }
 
     @Override
     public void rollback() {
-        if(!closed){
+        if (!closed) {
             cacheDirtyManager.rollback();
             try {
                 transaction.rollback();
                 logger.debug(this + " is rollback");
             } catch (SQLException e) {
-                logger.error(e.getMessage()+"\tt\n"+e.getCause());
+                logger.error(e.getMessage() + "\tt\n" + e.getCause());
             }
         }
     }

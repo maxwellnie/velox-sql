@@ -3,7 +3,6 @@ package com.maxwellnie.velox.jpa.core.annotation;
 import com.maxwellnie.velox.jpa.core.java.type.TypeConvertor;
 import com.maxwellnie.velox.jpa.core.java.type.impl.DefaultConvertor;
 import com.maxwellnie.velox.jpa.core.manager.KeyStrategyManager;
-import com.maxwellnie.velox.jpa.core.enums.PrimaryMode;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -30,6 +29,7 @@ public @interface PrimaryKey {
      * @return 主键名
      */
     String name() default "";
+
     /**
      * @return 类型转换器
      */

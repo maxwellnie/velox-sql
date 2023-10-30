@@ -1,7 +1,7 @@
 package com.maxwellnie.velox.jpa.core.manager;
 
-import com.maxwellnie.velox.jpa.core.java.type.impl.*;
 import com.maxwellnie.velox.jpa.core.java.type.TypeConvertor;
+import com.maxwellnie.velox.jpa.core.java.type.impl.*;
 
 import java.util.Collections;
 import java.util.Date;

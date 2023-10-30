@@ -11,7 +11,7 @@ import static org.springframework.util.Assert.notNull;
 /**
  * @author Maxwell Nie
  */
-public class DaoImplFactoryBean<T> implements FactoryBean<T>{
+public class DaoImplFactoryBean<T> implements FactoryBean<T> {
     private Type type;
     private DaoImplFactory<T> daoImplFactory;
     private Class<?> entityClass;
@@ -20,10 +20,10 @@ public class DaoImplFactoryBean<T> implements FactoryBean<T>{
 
     @Override
     public T getObject() {
-        notNull(entityClass,"DaoImplFactoryBean need an class object of entity.");
-        if(daoImplFactory==null){
+        notNull(entityClass, "DaoImplFactoryBean need an class object of entity.");
+        if (daoImplFactory == null) {
             jdbcContextFactory.getEnvironment().addDaoImpl(entityClass);
-            daoImplFactory= jdbcContextFactory.getEnvironment().getDaoImplFactory(entityClass);
+            daoImplFactory = jdbcContextFactory.getEnvironment().getDaoImplFactory(entityClass);
         }
         return daoImplFactory.produce(null);
     }

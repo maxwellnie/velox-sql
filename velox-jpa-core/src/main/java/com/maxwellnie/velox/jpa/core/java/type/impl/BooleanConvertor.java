@@ -11,7 +11,7 @@ public class BooleanConvertor implements TypeConvertor<Boolean> {
         if (original == null)
             return false;
         if (original instanceof Number) {
-            return  ((Number) original).doubleValue() > 0;
+            return ((Number) original).doubleValue() > 0;
         } else if (original instanceof Boolean) {
             return (Boolean) original;
         } else {

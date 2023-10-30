@@ -6,8 +6,8 @@ import java.util.Collection;
  * @author Maxwell Nie
  */
 public class CollectionUtils {
-    public static Class<?>[] toClassArray(Collection<Class<?>> collection){
-        assert collection!=null : "collection is null!!";
+    public static Class<?>[] toClassArray(Collection<Class<?>> collection) {
+        assert collection != null : "collection is null!!";
         return collection.toArray(new Class<?>[0]);
     }
 }

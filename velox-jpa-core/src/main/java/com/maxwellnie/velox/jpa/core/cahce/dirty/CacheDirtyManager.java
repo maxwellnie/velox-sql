@@ -12,7 +12,7 @@ import java.util.Map;
  * @author Maxwell Nie
  */
 public class CacheDirtyManager {
-    private static final Logger logger= LoggerFactory.getLogger(CacheDirtyManager.class);
+    private static final Logger logger = LoggerFactory.getLogger(CacheDirtyManager.class);
     private Map<Cache, DirtyDataManager> dirtyManagerMap = Collections.synchronizedMap(new LinkedHashMap<>());
 
     public void put(Cache cache, DirtyDataManager dirtyDataManager) {

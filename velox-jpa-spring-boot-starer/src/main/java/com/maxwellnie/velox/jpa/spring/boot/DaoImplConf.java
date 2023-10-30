@@ -12,6 +12,8 @@ import java.lang.annotation.Target;
 @Import(DaoImplRegistrar.class)
 public @interface DaoImplConf {
     String value() default "";
+
     String jdbcContextFactoryBeanName() default "jdbcContextFactoryBean";
+
     String daoImplClassName() default "com.maxwellnie.velox.jpa.core.template.dao.TemplateDao";
 }

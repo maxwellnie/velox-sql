@@ -1,7 +1,7 @@
 package com.maxwellnie.velox.jpa.core.utils.jdbc;
 
-import com.maxwellnie.velox.jpa.core.jdbc.pool.ConnectionPool;
 import com.maxwellnie.velox.jpa.core.jdbc.connection.CallBackConnection;
+import com.maxwellnie.velox.jpa.core.jdbc.pool.ConnectionPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -2,8 +2,8 @@ package com.maxwellnie.velox.jpa.spring.bean;
 
 import com.maxwellnie.velox.jpa.core.annotation.Entity;
 import com.maxwellnie.velox.jpa.core.config.BaseConfig;
-import com.maxwellnie.velox.jpa.spring.bean.factory.DaoImplFactoryBean;
 import com.maxwellnie.velox.jpa.core.utils.java.StringUtils;
+import com.maxwellnie.velox.jpa.spring.bean.factory.DaoImplFactoryBean;
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.dynamic.DynamicType;
 import net.bytebuddy.dynamic.loading.ClassLoadingStrategy;
@@ -11,7 +11,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanCreationException;
-import org.springframework.beans.factory.config.*;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
@@ -36,6 +38,7 @@ public class DaoImplRegister implements BeanDefinitionRegistryPostProcessor {
 
     public DaoImplRegister() {
     }
+
     public String getDaoImplClassName() {
         return daoImplClassName;
     }
@@ -51,12 +54,13 @@ public class DaoImplRegister implements BeanDefinitionRegistryPostProcessor {
     public void setJdbcContextFactoryBeanName(String jdbcContextFactoryBeanName) {
         this.jdbcContextFactoryBeanName = jdbcContextFactoryBeanName;
     }
+
     private Set<Class<?>> getAllMarkedClassOfPath(String packagePaths) {
         final Set<Class<?>> classSet = new HashSet<>();
         ClassPathScanningCandidateComponentProvider provider = new ClassPathScanningCandidateComponentProvider(false);
         provider.addIncludeFilter(new AnnotationTypeFilter(Entity.class));
-        for (String packagePath:packagePaths.split(",")){
-            if(StringUtils.isNullOrEmpty(packagePath))
+        for (String packagePath : packagePaths.split(",")) {
+            if (StringUtils.isNullOrEmpty(packagePath))
                 continue;
             for (BeanDefinition bd : provider.findCandidateComponents(packagePath)) {
                 try {
@@ -70,18 +74,19 @@ public class DaoImplRegister implements BeanDefinitionRegistryPostProcessor {
         }
         return classSet;
     }
+
     private void register(BeanDefinitionRegistry registry) {
-        if(!StringUtils.isNullOrEmpty(this.daoImplClassName))
+        if (!StringUtils.isNullOrEmpty(this.daoImplClassName))
             BaseConfig.setDaoImplClassName(this.daoImplClassName);
         for (Class<?> entityClass : getAllMarkedClassOfPath(packagePaths)) {
             try {
-                registerBean(entityClass,Class.forName(BaseConfig.getDaoImplClassName()),registry);
+                registerBean(entityClass, Class.forName(BaseConfig.getDaoImplClassName()), registry);
             } catch (Throwable throwable) {
                 logger.warn("The daoImplBean of entity " + entityClass.getName() + " cannot be register.");
                 try {
                     throw throwable;
                 } catch (ClassNotFoundException e) {
-                    logger.error("The daoImplClass "+ BaseConfig.getDaoImplClassName()+" is not found.");
+                    logger.error("The daoImplClass " + BaseConfig.getDaoImplClassName() + " is not found.");
                     e.printStackTrace();
                 }
             }
@@ -100,7 +105,7 @@ public class DaoImplRegister implements BeanDefinitionRegistryPostProcessor {
         notNull(entityClass, "entityClass must be not null.");
         BeanDefinitionBuilder beanDefinitionBuilder = BeanDefinitionBuilder.genericBeanDefinition(DaoImplFactoryBean.class);
         beanDefinitionBuilder.addPropertyValue("entityClass", entityClass);
-        ParameterizedType parameterizedType=new ParameterizedType() {
+        ParameterizedType parameterizedType = new ParameterizedType() {
             @Override
             public Type[] getActualTypeArguments() {
                 return new Type[]{entityClass};
@@ -123,8 +128,8 @@ public class DaoImplRegister implements BeanDefinitionRegistryPostProcessor {
                 .make()
                 .load(Thread.currentThread().getContextClassLoader(), ClassLoadingStrategy.Default.INJECTION)
                 .getLoaded();
-        beanDefinitionBuilder.addPropertyValue("daoImplClass",dynamicClass);
-        beanDefinitionBuilder.addPropertyValue("jdbcContextFactory",new RuntimeBeanReference(jdbcContextFactoryBeanName));
+        beanDefinitionBuilder.addPropertyValue("daoImplClass", dynamicClass);
+        beanDefinitionBuilder.addPropertyValue("jdbcContextFactory", new RuntimeBeanReference(jdbcContextFactoryBeanName));
         beanDefinitionBuilder.setScope(BeanDefinition.SCOPE_SINGLETON);
         String beanName = StringUtils.toFirstLowerCase(entityClass.getSimpleName()) +
                 BaseConfig.getDaoImplClassName().substring(BaseConfig.getDaoImplClassName().lastIndexOf(".") + 1);

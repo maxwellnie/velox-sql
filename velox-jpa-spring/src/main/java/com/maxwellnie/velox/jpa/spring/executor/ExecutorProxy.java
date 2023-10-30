@@ -38,16 +38,16 @@ public class ExecutorProxy implements Executor {
     @Override
     public Object execute(TableInfo tableInfo, JdbcContext context, Cache<Object, Object> cache, String daoImplHashCode, Object[] args) {
         Object result;
-        JdbcContext springJdbcContext= JdbcContextUtils.getJdbcContext(this.jdbcContextFactory);
-        try{
-            result=executor.execute(tableInfo,springJdbcContext,cache,daoImplHashCode,args);
-            if(!JdbcContextUtils.isJdbcContextTransactional(springJdbcContext,this.jdbcContextFactory))
+        JdbcContext springJdbcContext = JdbcContextUtils.getJdbcContext(this.jdbcContextFactory);
+        try {
+            result = executor.execute(tableInfo, springJdbcContext, cache, daoImplHashCode, args);
+            if (!JdbcContextUtils.isJdbcContextTransactional(springJdbcContext, this.jdbcContextFactory))
                 springJdbcContext.commit();
-        }catch (Throwable throwable){
-            JdbcContextUtils.releaseJdbcContext(springJdbcContext,this.jdbcContextFactory);
+        } catch (Throwable throwable) {
+            JdbcContextUtils.releaseJdbcContext(springJdbcContext, this.jdbcContextFactory);
             throw throwable;
-        }finally {
-            JdbcContextUtils.releaseJdbcContext(springJdbcContext,this.jdbcContextFactory);
+        } finally {
+            JdbcContextUtils.releaseJdbcContext(springJdbcContext, this.jdbcContextFactory);
         }
         return result;
     }

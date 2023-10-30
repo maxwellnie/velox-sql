@@ -1,9 +1,9 @@
 package com.maxwellnie.velox.jpa.spring.resource;
 
-import com.maxwellnie.velox.jpa.spring.transaction.SpringTransactionFactory;
 import com.maxwellnie.velox.jpa.core.dao.support.env.Environment;
 import com.maxwellnie.velox.jpa.core.jdbc.context.JdbcContext;
 import com.maxwellnie.velox.jpa.core.jdbc.context.JdbcContextFactory;
+import com.maxwellnie.velox.jpa.spring.transaction.SpringTransactionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.TransientDataAccessResourceException;
@@ -13,19 +13,18 @@ import org.springframework.transaction.support.TransactionSynchronizationAdapter
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import javax.sql.DataSource;
-
 import java.sql.Connection;
 
 import static org.springframework.util.Assert.notNull;
 
 /**
  * 用于配合Spring事务管理
- *
  * @author Maxwell Nie
  */
 public abstract class JdbcContextUtils {
     /**
      * Order value for TransactionSynchronization objects that clean up JdbcContext.
+     *
      * @see DataSourceUtils#CONNECTION_SYNCHRONIZATION_ORDER
      */
     public static final int JDBC_CONTEXT_SYNCHRONIZATION_ORDER = DataSourceUtils.CONNECTION_SYNCHRONIZATION_ORDER - 0x14;
@@ -33,6 +32,7 @@ public abstract class JdbcContextUtils {
 
     /**
      * 当JdbcContext需要被spring管理时，获取一个被spring管理的JdbcContext，否则则返回未被管理的JdbcContext。
+     *
      * @param jdbcContextFactory
      * @return JdbcContext实例
      * @see DataSourceUtils#getConnection(DataSource)
@@ -52,6 +52,7 @@ public abstract class JdbcContextUtils {
 
     /**
      * 请求一个被spring管理的JdbcContext
+     *
      * @param holder
      * @return 被spring管理的JdbcContext
      * @see PlatformTransactionManager
@@ -66,6 +67,7 @@ public abstract class JdbcContextUtils {
 
     /**
      * 释放JdbcContext在spring的资源
+     *
      * @param jdbcContext
      * @param jdbcContextFactory
      */
@@ -85,6 +87,7 @@ public abstract class JdbcContextUtils {
 
     /**
      * 注册JdbcContext资源到spring
+     *
      * @param jdbcContextFactory
      * @param jdbcContext
      * @see DataSourceUtils#doGetConnection(DataSource)
@@ -101,7 +104,7 @@ public abstract class JdbcContextUtils {
                         .registerSynchronization(new JdbcContextSynchronization(holder, jdbcContextFactory));
                 holder.setSynchronizedWithTransaction(true);
                 holder.requested();
-                logger.debug("The JdbcContext "+jdbcContext+" is transactional.");
+                logger.debug("The JdbcContext " + jdbcContext + " is transactional.");
             } else {
                 if (TransactionSynchronizationManager.getResource(environment.getDataSource()) == null) {
                     logger.warn("Registered failed,DataSource is not transactional");
@@ -118,6 +121,7 @@ public abstract class JdbcContextUtils {
 
     /**
      * 检测JdbcContext是否支持spring事务管理
+     *
      * @param jdbcContext
      * @param contextFactory
      * @return Boolean
@@ -134,6 +138,7 @@ public abstract class JdbcContextUtils {
 
     /**
      * JdbcContext事务同步适配器
+     *
      * @see TransactionSynchronizationAdapter
      * @see DataSourceUtils.ConnectionSynchronization
      */

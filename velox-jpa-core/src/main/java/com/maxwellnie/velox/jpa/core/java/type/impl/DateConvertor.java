@@ -15,13 +15,13 @@ public class DateConvertor implements TypeConvertor<Date> {
     public Date convert(Object original) {
         if (original == null)
             return null;
-        else if (original instanceof Time){
-            throw new TypeNotEqualsException("You want to get type of java.util.Date,but "+original+" is type of Time");
-        }else if(original instanceof Timestamp){
+        else if (original instanceof Time) {
+            throw new TypeNotEqualsException("You want to get type of java.util.Date,but " + original + " is type of Time");
+        } else if (original instanceof Timestamp) {
             return new Date(((Timestamp) original).getTime());
-        }else if(original instanceof java.sql.Date){
+        } else if (original instanceof java.sql.Date) {
             return new Date(((java.sql.Date) original).getTime());
-        }else
-            throw new TypeNotEqualsException("You want to get type of java.util.Date,but "+original+" is "+original.getClass().getName());
+        } else
+            throw new TypeNotEqualsException("You want to get type of java.util.Date,but " + original + " is " + original.getClass().getName());
     }
 }

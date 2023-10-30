@@ -11,10 +11,11 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
+ * 可转换为某个Java对象的元数据
  * @author Maxwell Nie
  */
 public class MetaData {
-    private static final Logger logger= LoggerFactory.getLogger(MetaData.class);
+    private static final Logger logger = LoggerFactory.getLogger(MetaData.class);
     private final Map<String, Object> meta;
 
     private MetaData(Map<String, Object> meta) {
@@ -28,7 +29,7 @@ public class MetaData {
             try {
                 return field.get(o);
             } catch (IllegalAccessException e) {
-                logger.error(e.getMessage()+"\t\n"+e.getCause());
+                logger.error(e.getMessage() + "\t\n" + e.getCause());
                 return null;
             }
         })));

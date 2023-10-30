@@ -15,7 +15,7 @@ public class CacheKey implements Serializable {
     public CacheKey(Class<?> clazz, String sql, String daoImplHashCode) {
         this.clazz = clazz;
         this.sql = sql;
-        this.daoImplHashCode=daoImplHashCode;
+        this.daoImplHashCode = daoImplHashCode;
     }
 
     public String getDaoImplHashCode() {

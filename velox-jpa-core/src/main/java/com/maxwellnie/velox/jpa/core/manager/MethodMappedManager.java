@@ -9,6 +9,7 @@ import java.util.Map;
 /**
  * DaoImpl方法映射管理器，注册映射和获取映射<br/>
  * 注册时需要一个完整的方法名：example[class java.lang.Object, class java.lang.String]作为key，这个方法的处理器Executor作为value
+ *
  * @author Maxwell Nie
  */
 public class MethodMappedManager {
@@ -33,7 +34,8 @@ public class MethodMappedManager {
     public static void registeredMapped(String name, Executor executor) {
         methodMappedMap.put(name, executor);
     }
-    public static Map<String,Executor> getAllExecutorMap(){
+
+    public static Map<String, Executor> getAllExecutorMap() {
         return MethodMappedManager.methodMappedMap;
     }
 }

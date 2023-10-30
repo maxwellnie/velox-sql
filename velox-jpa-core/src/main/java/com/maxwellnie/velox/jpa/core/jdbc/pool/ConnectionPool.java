@@ -4,8 +4,6 @@ import javax.sql.DataSource;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.SQLFeatureNotSupportedException;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -13,6 +11,7 @@ import java.util.logging.Logger;
 
 /**
  * 连接池
+ *
  * @deprecated 我们提供的连接池是很基本的连接池，我们并不建议使用这个连接池，可能会带来一些问题，将会在2.x版本彻底弃用。
  */
 @Deprecated

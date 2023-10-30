@@ -3,6 +3,7 @@ package com.maxwellnie.velox.jpa.core.utils.reflect;
 import com.maxwellnie.velox.jpa.core.annotation.Column;
 import com.maxwellnie.velox.jpa.core.annotation.Entity;
 import com.maxwellnie.velox.jpa.core.annotation.PrimaryKey;
+import com.maxwellnie.velox.jpa.core.annotation.RegisterMethod;
 import com.maxwellnie.velox.jpa.core.config.BaseConfig;
 import com.maxwellnie.velox.jpa.core.exception.RegisterMethodException;
 import com.maxwellnie.velox.jpa.core.java.type.TypeConvertor;
@@ -11,10 +12,9 @@ import com.maxwellnie.velox.jpa.core.jdbc.table.TableInfo;
 import com.maxwellnie.velox.jpa.core.jdbc.table.column.ColumnInfo;
 import com.maxwellnie.velox.jpa.core.jdbc.table.column.PrimaryInfo;
 import com.maxwellnie.velox.jpa.core.manager.ConvertorManager;
-import com.maxwellnie.velox.jpa.core.utils.java.StringUtils;
-import com.maxwellnie.velox.jpa.core.annotation.RegisterMethod;
 import com.maxwellnie.velox.jpa.core.manager.MethodMappedManager;
 import com.maxwellnie.velox.jpa.core.proxy.executor.Executor;
+import com.maxwellnie.velox.jpa.core.utils.java.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -155,6 +155,7 @@ public abstract class TableInfoUtils {
             tableInfo.putColumnInfo(f.getName(), new ColumnInfo(columnName, f, convertor));
         }
     }
+
     /**
      * 获取列名
      *

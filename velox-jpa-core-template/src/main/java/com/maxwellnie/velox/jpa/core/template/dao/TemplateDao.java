@@ -1,11 +1,13 @@
 package com.maxwellnie.velox.jpa.core.template.dao;
 
 import com.maxwellnie.velox.jpa.core.annotation.RegisterMethod;
-import com.maxwellnie.velox.jpa.core.template.proxy.executor.impl.*;
+import com.maxwellnie.velox.jpa.core.template.proxy.executor.impl.DeleteOneExecutor;
+import com.maxwellnie.velox.jpa.core.template.proxy.executor.impl.InsertOneExecutor;
+import com.maxwellnie.velox.jpa.core.template.proxy.executor.impl.QueryExecutor;
+import com.maxwellnie.velox.jpa.core.template.proxy.executor.impl.UpdateOneExecutor;
+import com.maxwellnie.velox.jpa.framework.sql.SqlBuilder;
 
-import java.io.Serializable;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -18,26 +20,16 @@ public interface TemplateDao<T> {
      * @param t
      * @return
      */
-    @RegisterMethod(InsertExecutor.class)
-    public int insert(T t);
-
-    /**
-     * 批量添加
-     *
-     * @param collection
-     * @return
-     */
-    @RegisterMethod(BatchInsertExecutor.class)
-    public int[] batchInsert(Collection<T> collection);
-
+    @RegisterMethod(InsertOneExecutor.class)
+    int insert(T t);
     /**
      * 修改一条数据
      *
      * @param sqlBuilder
      * @return
      */
-    @RegisterMethod(UpdateExecutor.class)
-    public int update(T t, SqlBuilder<T> sqlBuilder);
+    @RegisterMethod(UpdateOneExecutor.class)
+    int update(T t, SqlBuilder<T> sqlBuilder);
 
     /**
      * 删除一条数据
@@ -45,18 +37,8 @@ public interface TemplateDao<T> {
      * @param sqlBuilder
      * @return
      */
-    @RegisterMethod(DeleteExecutor.class)
-    public int delete(SqlBuilder<T> sqlBuilder);
-
-    /**
-     * 批量删除
-     *
-     * @param collection
-     * @return
-     */
-    @RegisterMethod(BatchDeleteByIdsExecutor.class)
-    public int[] batchDeleteByIds(Collection<Serializable> collection);
-
+    @RegisterMethod(DeleteOneExecutor.class)
+    int delete(SqlBuilder<T> sqlBuilder);
     /**
      * 查询数据
      *
@@ -64,7 +46,7 @@ public interface TemplateDao<T> {
      * @return
      * @throws SQLException
      */
-    public default T queryOne(SqlBuilder<T> sqlBuilder) throws SQLException {
+    default T queryOne(SqlBuilder<T> sqlBuilder){
         List<T> result = queryAll(sqlBuilder);
         if (result != null && !result.isEmpty())
             return result.get(0);
@@ -77,14 +59,6 @@ public interface TemplateDao<T> {
      *
      * @return
      */
-    @RegisterMethod(QueryAllExecutor.class)
-    public List<T> queryAll(SqlBuilder<T> sqlBuilder);
-
-    /**
-     * 获取表数据长度
-     *
-     * @return
-     */
-    @RegisterMethod(SizeExecutor.class)
-    public long size(SqlBuilder<T> sqlBuilder);
+    @RegisterMethod(QueryExecutor.class)
+    List<T> queryAll(SqlBuilder<T> sqlBuilder);
 }

@@ -9,6 +9,7 @@
         <module>velox-jpa-spring</module>
         <module>velox-jpa-core-template</module>
         <module>velox-jpa-spring-boot-starer</module>
+        <module>velox-jpa-framework</module>
     </modules>
     <parent>
         <groupId>org.sonatype.oss</groupId>
@@ -18,7 +19,7 @@
 
     <groupId>io.github.maxwellnie</groupId>
     <artifactId>velox-jpa</artifactId>
-    <version>1.0</version>
+    <version>1.1</version>
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
