@@ -8,6 +8,7 @@ import java.util.List;
 
 /**
  * 更易于使用的SqlFragment
+ *
  * @author Maxwell Nie
  */
 public class SimpleSqlFragment implements SqlFragment {
@@ -22,16 +23,30 @@ public class SimpleSqlFragment implements SqlFragment {
     public void setNativeSql(String nativeSql) {
         this.nativeSql = new StringBuffer(nativeSql);
     }
-    public void addSql(String sql,Object... params){
+
+    public void setNativeSql(StringBuffer nativeSql) {
+        this.nativeSql = nativeSql;
+    }
+
+    /**
+     * 向Sql尾部添加Sql片段
+     *
+     * @param sql
+     * @param params
+     */
+    public void addSql(String sql, Object... params) {
         this.nativeSql.append(" ").append(sql);
         this.params.addAll(Arrays.asList(params));
     }
+
     public List<Object> getParams() {
         return params;
     }
-    public void addParam(Object param){
+
+    public void addParam(Object param) {
         this.params.add(param);
     }
+
     public void setParam(List<Object> params) {
         this.params = params;
     }

@@ -10,6 +10,7 @@ import com.maxwellnie.velox.jpa.framework.sql.SimpleSqlFragment;
 import com.maxwellnie.velox.jpa.framework.utils.ErrorUtils;
 import org.slf4j.Logger;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
@@ -29,12 +30,26 @@ public abstract class BaseDeleteExecutor extends BaseExecutor {
         return deleteSql;
     }
 
-    protected abstract void doBuildDeleteSql(SimpleSqlFragment deleteSql, List<ColumnInfo> columns, Object[] args, TableInfo tableInfo);
+    protected void doBuildDeleteSql(SimpleSqlFragment deleteSql, List<ColumnInfo> columns, Object[] args, TableInfo tableInfo) {
+        StringBuffer sqlStr = new StringBuffer("DELETE ")
+                .append(" FROM ").append(tableInfo.getTableName());
+        deleteSql.setNativeSql(sqlStr.toString());
+    }
 
     @Override
-    protected SqlResult executeSql(StatementWrapper statementWrapper, SimpleSqlFragment sqlFragment, String daoImplHashCode, Cache<Object,Object> cache) throws ExecutorException {
+    protected PreparedStatement doOpenStatement(Connection connection, TableInfo tableInfo, String sql) throws SQLException {
+        return connection.prepareStatement(sql);
+    }
+
+    @Override
+    protected void doAfterOpenStatement(StatementWrapper statementWrapper, List<Object> params, Object[] args) throws SQLException {
+        statementWrapper.setMode(StatementWrapper.UPDATE);
+    }
+
+    @Override
+    protected SqlResult executeSql(StatementWrapper statementWrapper, SimpleSqlFragment sqlFragment, String daoImplHashCode, Cache<Object, Object> cache) throws ExecutorException {
         try (PreparedStatement preparedStatement = statementWrapper.getPrepareStatement()) {
-            Object result = doExecuteSql(preparedStatement,statementWrapper.getMode());
+            Object result = doExecuteSql(preparedStatement, statementWrapper.getMode());
             return new SqlResult(CLEAR_FLAG, result, null);
         } catch (SQLException e) {
             logger.error(ErrorUtils.getExceptionLog(e, sqlFragment.getNativeSql(), sqlFragment.getParams()));

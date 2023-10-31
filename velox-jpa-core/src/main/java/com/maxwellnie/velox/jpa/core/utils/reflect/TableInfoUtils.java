@@ -3,24 +3,19 @@ package com.maxwellnie.velox.jpa.core.utils.reflect;
 import com.maxwellnie.velox.jpa.core.annotation.Column;
 import com.maxwellnie.velox.jpa.core.annotation.Entity;
 import com.maxwellnie.velox.jpa.core.annotation.PrimaryKey;
-import com.maxwellnie.velox.jpa.core.annotation.RegisterMethod;
 import com.maxwellnie.velox.jpa.core.config.BaseConfig;
-import com.maxwellnie.velox.jpa.core.exception.RegisterMethodException;
 import com.maxwellnie.velox.jpa.core.java.type.TypeConvertor;
 import com.maxwellnie.velox.jpa.core.java.type.impl.DefaultConvertor;
 import com.maxwellnie.velox.jpa.core.jdbc.table.TableInfo;
 import com.maxwellnie.velox.jpa.core.jdbc.table.column.ColumnInfo;
 import com.maxwellnie.velox.jpa.core.jdbc.table.column.PrimaryInfo;
 import com.maxwellnie.velox.jpa.core.manager.ConvertorManager;
-import com.maxwellnie.velox.jpa.core.manager.MethodMappedManager;
-import com.maxwellnie.velox.jpa.core.proxy.executor.Executor;
 import com.maxwellnie.velox.jpa.core.utils.java.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -41,7 +36,7 @@ public abstract class TableInfoUtils {
      * @param clazz
      * @return 表信息
      */
-    public static TableInfo getTableInfo(Class<?> clazz, BaseConfig baseConfig) {
+    public TableInfo getTableInfo(Class<?> clazz, BaseConfig baseConfig) {
         if (clazz == null)
             return null;
         else {
@@ -61,7 +56,7 @@ public abstract class TableInfoUtils {
      * @param clazz
      * @return 表信息
      */
-    private static TableInfo initTableInfo(Class<?> clazz, BaseConfig baseConfig) {
+    private TableInfo initTableInfo(Class<?> clazz, BaseConfig baseConfig) {
         TableInfo tableInfo = new TableInfo();
         handleTable(clazz, tableInfo, baseConfig.getTablePrefix(), baseConfig.isStandTable());
         tableInfo.setMappedClazz(clazz);
@@ -77,7 +72,7 @@ public abstract class TableInfoUtils {
      * @param prefix             前缀
      * @param openStandTableName 标准名是否开启
      */
-    private static void handleTable(Class<?> clazz, TableInfo tableInfo, String prefix, boolean openStandTableName) {
+    private void handleTable(Class<?> clazz, TableInfo tableInfo, String prefix, boolean openStandTableName) {
         String name;
         int fetchSize;
         if (clazz.isAnnotationPresent(Entity.class)) {
@@ -104,7 +99,7 @@ public abstract class TableInfoUtils {
      * @param clazz           实体
      * @param openStandColumn 标准名是否开启
      */
-    private static void initFieldMapped(TableInfo tableInfo, Class<?> clazz, boolean openStandColumn) {
+    private void initFieldMapped(TableInfo tableInfo, Class<?> clazz, boolean openStandColumn) {
         assert tableInfo != null;
         Field[] fields = clazz.getDeclaredFields();
         for (Field f : fields) {
@@ -164,7 +159,7 @@ public abstract class TableInfoUtils {
      * @param openStandColumn
      * @return
      */
-    private static String getColumnName(String name, Field field, boolean openStandColumn) {
+    private String getColumnName(String name, Field field, boolean openStandColumn) {
         String result = "";
         if (!StringUtils.isNullOrEmpty(name))
             result = name;
@@ -175,32 +170,4 @@ public abstract class TableInfoUtils {
         }
         return result;
     }
-
-    /**
-     * 获取被映射方法的处理器
-     *
-     * @param method
-     * @return
-     */
-    public static Executor getMethodMapped(Method method) {
-        assert method != null;
-        return MethodMappedManager.getRegisteredMapped(StringUtils.getMethodDeclaredName(method));
-    }
-
-    public static void registerDaoImpl(Class<?> clazz) {
-        assert clazz != null;
-        for (Method method : clazz.getMethods()) {
-            if (method.isAnnotationPresent(RegisterMethod.class)) {
-                RegisterMethod registerMethod = method.getDeclaredAnnotation(RegisterMethod.class);
-                if (registerMethod.value() != null) {
-                    try {
-                        MethodMappedManager.registeredMapped(StringUtils.getMethodDeclaredName(method), registerMethod.value().newInstance());
-                    } catch (InstantiationException | IllegalAccessException e) {
-                        throw new RegisterMethodException("The executor " + registerMethod.value() + " of method " + method + "  cannot be instantiated.", e);
-                    }
-                }
-            }
-        }
-    }
-
 }

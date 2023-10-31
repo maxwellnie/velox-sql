@@ -8,7 +8,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * 标识访问器方法的执行器
+ * 标识接口中操作数据库方法的执行器
  *
  * @author Maxwell Nie
  */
@@ -16,7 +16,8 @@ import java.lang.annotation.Target;
 @Target({ElementType.METHOD})
 public @interface RegisterMethod {
     /**
-     * @return 被指定的执行器
+     * @return 被指定的执行器，参数，等等。
      */
     Class<? extends Executor> value();
+
 }

@@ -71,4 +71,5 @@ public abstract class BaseConfig {
     public void setCacheClassName(String cacheClassName) {
         this.cacheClassName = cacheClassName;
     }
+
 }

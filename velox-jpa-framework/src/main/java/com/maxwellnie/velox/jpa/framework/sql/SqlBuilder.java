@@ -2,8 +2,6 @@ package com.maxwellnie.velox.jpa.framework.sql;
 
 import com.maxwellnie.velox.jpa.core.enums.QueryCondition;
 import com.maxwellnie.velox.jpa.core.enums.RelationShip;
-import com.maxwellnie.velox.jpa.core.jdbc.sql.SqlFragment;
-import com.maxwellnie.velox.jpa.core.utils.java.StringUtils;
 import com.maxwellnie.velox.jpa.framework.sql.condition.*;
 
 import java.util.Arrays;
@@ -29,12 +27,12 @@ public class SqlBuilder<T> {
 
     public ConditionBuilder<T> where() {
         whereFragment = new WhereFragment();
-        return new ConditionBuilder<>(whereFragment,this);
+        return new ConditionBuilder<>(whereFragment, this);
     }
 
     public ConditionBuilder<T> having() {
         havingFragment = new HavingFragment();
-        return new ConditionBuilder<>(havingFragment,this);
+        return new ConditionBuilder<>(havingFragment, this);
     }
 
     public SqlBuilder<T> groupBy(String... columns) {
@@ -45,7 +43,7 @@ public class SqlBuilder<T> {
 
     public OrderByBuilder<T> orderBy() {
         orderByFragment = new OrderByFragment();
-        return new OrderByBuilder<>(orderByFragment,this);
+        return new OrderByBuilder<>(orderByFragment, this);
     }
 
     public SqlBuilder<T> limit(long start, long offset) {
@@ -98,9 +96,9 @@ public class SqlBuilder<T> {
         private SqlBuilder<T> parent;
         private OrderByFragment orderByFragment;
 
-        public OrderByBuilder(OrderByFragment orderByFragment,SqlBuilder<T> parent) {
+        public OrderByBuilder(OrderByFragment orderByFragment, SqlBuilder<T> parent) {
             this.orderByFragment = orderByFragment;
-            this.parent=parent;
+            this.parent = parent;
         }
 
         public OrderByBuilder<T> asc(String column) {
@@ -122,9 +120,9 @@ public class SqlBuilder<T> {
         private HasConditionFragment hasConditionFragment;
         private SqlBuilder<T> parent;
 
-        public ConditionBuilder(HasConditionFragment hasConditionFragment,SqlBuilder<T> parent) {
+        public ConditionBuilder(HasConditionFragment hasConditionFragment, SqlBuilder<T> parent) {
             this.hasConditionFragment = hasConditionFragment;
-            this.parent=parent;
+            this.parent = parent;
         }
 
         public ConditionBuilder<T> eq(String column, Object value) {
@@ -191,10 +189,12 @@ public class SqlBuilder<T> {
             this.hasConditionFragment.addConditionFragment(new LikeFragment(column, value, mode));
             return this;
         }
+
         public ConditionBuilder<T> exists(String column) {
             this.hasConditionFragment.addConditionFragment(new ExistsFragment(column));
             return this;
         }
+
         public SqlBuilder<T> build() {
             return parent;
         }

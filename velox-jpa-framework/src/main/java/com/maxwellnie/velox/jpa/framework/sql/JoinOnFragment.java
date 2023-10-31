@@ -1,8 +1,8 @@
 package com.maxwellnie.velox.jpa.framework.sql;
 
+import com.maxwellnie.velox.jpa.core.enums.JoinType;
 import com.maxwellnie.velox.jpa.core.jdbc.sql.SqlFragment;
 import com.maxwellnie.velox.jpa.core.utils.java.StringUtils;
-import com.maxwellnie.velox.jpa.core.enums.JoinType;
 import com.maxwellnie.velox.jpa.framework.sql.condition.ConditionFragment;
 
 import java.util.LinkedList;

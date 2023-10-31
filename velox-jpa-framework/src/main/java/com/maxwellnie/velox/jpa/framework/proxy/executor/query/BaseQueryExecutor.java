@@ -13,6 +13,7 @@ import com.maxwellnie.velox.jpa.framework.utils.ErrorUtils;
 import com.maxwellnie.velox.jpa.framework.utils.ExecutorUtils;
 import org.slf4j.Logger;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -40,20 +41,37 @@ public abstract class BaseQueryExecutor extends BaseExecutor {
         return selectSql;
     }
 
-    protected abstract void doBuildSelectSql(SimpleSqlFragment sqlFragment, List<ColumnInfo> columns, Object[] args, TableInfo tableInfo);
+    protected void doBuildSelectSql(SimpleSqlFragment sqlFragment, List<ColumnInfo> columns, Object[] args, TableInfo tableInfo) {
+        StringBuffer sqlStr = new StringBuffer("SELECT ");
+        for (ColumnInfo columnInfo : columns) {
+            sqlStr.append(columnInfo.getColumnName()).append(",");
+        }
+        sqlStr.deleteCharAt(sqlStr.length() - 1).append(" FROM ").append(tableInfo.getTableName());
+        sqlFragment.setNativeSql(sqlStr);
+    }
 
     @Override
-    protected SqlResult executeSql(StatementWrapper statementWrapper, SimpleSqlFragment sqlFragment, String daoImplHashCode, Cache<Object,Object> cache) throws ExecutorException {
+    protected PreparedStatement doOpenStatement(Connection connection, TableInfo tableInfo, String sql) throws SQLException {
+        return connection.prepareStatement(sql);
+    }
+
+    @Override
+    protected void doAfterOpenStatement(StatementWrapper statementWrapper, List<Object> params, Object[] args) throws SQLException {
+        statementWrapper.setMode(StatementWrapper.QUERY);
+    }
+
+    @Override
+    protected SqlResult executeSql(StatementWrapper statementWrapper, SimpleSqlFragment sqlFragment, String daoImplHashCode, Cache<Object, Object> cache) throws ExecutorException {
         TableInfo tableInfo = ExecutorUtils.of(statementWrapper, "tableInfo");
         CacheKey cacheKey = ExecutorUtils.of(statementWrapper, "cacheKey");
         cacheKey.setDaoImplHashCode(daoImplHashCode);
         try (PreparedStatement preparedStatement = statementWrapper.getPrepareStatement()) {
-            List result= (List) cache.get(cacheKey);
-            if(result==null){
+            List result = (List) cache.get(cacheKey);
+            if (result == null) {
                 ResultSet resultSet = preparedStatement.executeQuery();
-                result= ResultSetUtils.convertEntity(resultSet, tableInfo);
+                result = ResultSetUtils.convertEntity(resultSet, tableInfo);
                 resultSet.close();
-            }else
+            } else
                 logger.debug("Cache Hit.");
             return new SqlResult(FLUSH_FLAG, result, cacheKey);
         } catch (SQLException e) {

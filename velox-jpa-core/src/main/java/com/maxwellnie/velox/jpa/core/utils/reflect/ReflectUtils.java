@@ -1,24 +1,44 @@
 package com.maxwellnie.velox.jpa.core.utils.reflect;
 
+import com.maxwellnie.velox.jpa.core.annotation.DaoImplDeclared;
+import com.maxwellnie.velox.jpa.core.exception.ClassTypeException;
+import com.maxwellnie.velox.jpa.core.exception.DaoImplClassException;
+import com.maxwellnie.velox.jpa.core.exception.RegisterMethodException;
+import com.maxwellnie.velox.jpa.core.manager.MethodMappedManager;
+import com.maxwellnie.velox.jpa.core.proxy.executor.DaoImplRegister;
+import com.maxwellnie.velox.jpa.core.proxy.executor.Executor;
+import com.maxwellnie.velox.jpa.core.utils.java.StringUtils;
+
+import java.lang.reflect.Method;
+
 /**
  * @author Maxwell Nie
  */
 public abstract class ReflectUtils {
     /**
-     * <pre class="code">
-     *  !test unit
-     *   public static void main(String[] args) {
-     *        &#064;Entity
-     *        class User{
-     *            &#064;PrimaryKey(value  = "user_id",primaryMode =PrimaryMode.OTHER,strategyKey = "other")
-     *            long userId;
-     *            String password;
-     *        }
-     *        System.out.println(getTableInfo(User.class));
-     *    }
-     * </pre>
-     **/
-    public static String getClassName(Class<?> clazz) {
-        return clazz.getName();
+     * 获取被映射方法的处理器
+     *
+     * @param method
+     * @return
+     */
+    public static Executor getMethodMapped(Method method) {
+        assert method != null;
+        return MethodMappedManager.getRegisteredMapped(StringUtils.getMethodDeclaredName(method));
+    }
+
+    public static void registerDaoImpl(Class<?> clazz) throws ClassTypeException, RegisterMethodException {
+        assert clazz != null : "DaoImplInterface must not be null!";
+        if (clazz.isAnnotationPresent(DaoImplDeclared.class)) {
+            DaoImplDeclared daoImplDeclared = clazz.getDeclaredAnnotation(DaoImplDeclared.class);
+            if (daoImplDeclared.value() != null) {
+                try {
+                    DaoImplRegister daoImplRegister = daoImplDeclared.value().newInstance();
+                    daoImplRegister.registerDaoImpl(clazz);
+                } catch (InstantiationException | IllegalAccessException e) {
+                    throw new RegisterMethodException(e);
+                }
+            } else
+                throw new DaoImplClassException("Your supported DaoImplInterface not cover DaoImplDeclared annotation.");
+        }
     }
 }

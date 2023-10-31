@@ -19,6 +19,7 @@ import static org.springframework.util.Assert.notNull;
 
 /**
  * 用于配合Spring事务管理
+ *
  * @author Maxwell Nie
  */
 public abstract class JdbcContextUtils {

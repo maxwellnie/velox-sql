@@ -3,17 +3,20 @@ package com.maxwellnie.velox.jpa.framework.proxy.executor.cycle;
 import com.maxwellnie.velox.jpa.core.cahce.Cache;
 import com.maxwellnie.velox.jpa.core.cahce.dirty.CacheDirtyManager;
 import com.maxwellnie.velox.jpa.core.cahce.key.CacheKey;
+import com.maxwellnie.velox.jpa.core.jdbc.context.JdbcContext;
 import com.maxwellnie.velox.jpa.core.jdbc.table.TableInfo;
 import com.maxwellnie.velox.jpa.core.proxy.executor.wrapper.StatementWrapper;
 import com.maxwellnie.velox.jpa.framework.exception.ExecutorException;
 import com.maxwellnie.velox.jpa.framework.sql.SimpleSqlFragment;
+import org.slf4j.Logger;
 
 import java.sql.Connection;
 
 /**
  * 执行器的执行周期
- * @since 1.1
+ *
  * @author Maxwell Nie
+ * @since 1.1
  */
 public abstract class ExecuteCycle {
     /**
@@ -26,8 +29,32 @@ public abstract class ExecuteCycle {
     public static final String FLUSH_FLAG = "3e5c6a74c1a9c3a1";
     protected Object errorResult = 0;
 
+    protected abstract Logger getLogger();
+
+    /**
+     * 检查参数阶段。
+     *
+     * @param tableInfo
+     * @param context
+     * @param cache
+     * @param daoImplHashCode
+     * @param args
+     * @throws ExecutorException
+     */
+    protected abstract void checkExecuteCondition(TableInfo tableInfo, JdbcContext context, Cache<Object, Object> cache, String daoImplHashCode, Object[] args) throws ExecutorException;
+
+    /**
+     * 获取连接阶段。
+     *
+     * @param jdbcContext
+     * @return
+     * @throws ExecutorException
+     */
+    protected abstract Connection doConnection(JdbcContext jdbcContext) throws ExecutorException;
+
     /**
      * 创建Sql阶段。
+     *
      * @param args
      * @param tableInfo
      * @return
@@ -37,6 +64,7 @@ public abstract class ExecuteCycle {
 
     /**
      * 实例化Statement阶段。
+     *
      * @param sqlFragment
      * @param connection
      * @param tableInfo
@@ -48,6 +76,7 @@ public abstract class ExecuteCycle {
 
     /**
      * 执行Sql阶段。
+     *
      * @param statementWrapper
      * @param sqlFragment
      * @param daoImplHashCode
@@ -55,10 +84,11 @@ public abstract class ExecuteCycle {
      * @return
      * @throws ExecutorException
      */
-    protected abstract SqlResult executeSql(StatementWrapper statementWrapper, SimpleSqlFragment sqlFragment, String daoImplHashCode, Cache<Object,Object> cache) throws ExecutorException;
+    protected abstract SqlResult executeSql(StatementWrapper statementWrapper, SimpleSqlFragment sqlFragment, String daoImplHashCode, Cache<Object, Object> cache) throws ExecutorException;
 
     /**
      * 刷新缓存阶段。
+     *
      * @param sqlResult
      * @param cache
      * @param dirtyManager

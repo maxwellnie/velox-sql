@@ -11,7 +11,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class SqlFragmentUtils {
-    private static final Logger logger= LoggerFactory.getLogger(SqlFragmentUtils.class);
+    private static final Logger logger = LoggerFactory.getLogger(SqlFragmentUtils.class);
 
     public static List<Object> getValues(List<ConditionFragment> conditionFragments) {
         List<Object> list = new LinkedList<>();

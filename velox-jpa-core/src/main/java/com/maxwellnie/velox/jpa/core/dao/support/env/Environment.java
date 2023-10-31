@@ -2,10 +2,13 @@ package com.maxwellnie.velox.jpa.core.dao.support.env;
 
 import com.maxwellnie.velox.jpa.core.cahce.Cache;
 import com.maxwellnie.velox.jpa.core.config.BaseConfig;
+import com.maxwellnie.velox.jpa.core.exception.ClassTypeException;
 import com.maxwellnie.velox.jpa.core.exception.EnvironmentInitException;
+import com.maxwellnie.velox.jpa.core.exception.RegisterMethodException;
 import com.maxwellnie.velox.jpa.core.jdbc.transaction.TransactionFactory;
 import com.maxwellnie.velox.jpa.core.proxy.DaoImplFactory;
 import com.maxwellnie.velox.jpa.core.utils.java.StringUtils;
+import com.maxwellnie.velox.jpa.core.utils.reflect.ReflectUtils;
 import com.maxwellnie.velox.jpa.core.utils.reflect.TableInfoUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,7 +68,8 @@ public class Environment {
      * @see TableInfoUtils
      * @see com.maxwellnie.velox.jpa.core.jdbc.table.TableInfo
      */
-    private TableInfoUtils tableInfoUtils;
+    private TableInfoUtils tableInfoUtils = new TableInfoUtils() {
+    };
 
     public Environment(TransactionFactory transactionFactory, DataSource dataSource, BaseConfig baseConfig, TableInfoUtils tableInfoUtils) {
         this.baseConfig = baseConfig;
@@ -85,9 +89,9 @@ public class Environment {
         else {
             try {
                 this.daoImplClazz = Class.forName(BaseConfig.getDaoImplClassName());
-                TableInfoUtils.registerDaoImpl(this.daoImplClazz);
+                ReflectUtils.registerDaoImpl(daoImplClazz);
                 this.daoImplManager = new DaoImplFactoryManager();
-            } catch (ClassNotFoundException e) {
+            } catch (ClassNotFoundException | ClassTypeException | RegisterMethodException e) {
                 throw new EnvironmentInitException("Not found class " + BaseConfig.getDaoImplClassName() + ".", e.getCause());
             }
         }
@@ -102,8 +106,7 @@ public class Environment {
     }
 
     public Environment(TransactionFactory transactionFactory, DataSource dataSource, BaseConfig baseConfig) {
-        this(transactionFactory, dataSource, baseConfig, new TableInfoUtils() {
-        });
+        this(transactionFactory, dataSource, baseConfig, null);
     }
 
     public TransactionFactory getTransactionFactory() {

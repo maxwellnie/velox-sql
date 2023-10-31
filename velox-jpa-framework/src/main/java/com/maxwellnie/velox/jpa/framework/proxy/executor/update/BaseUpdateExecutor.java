@@ -7,9 +7,12 @@ import com.maxwellnie.velox.jpa.core.proxy.executor.wrapper.StatementWrapper;
 import com.maxwellnie.velox.jpa.framework.exception.ExecutorException;
 import com.maxwellnie.velox.jpa.framework.proxy.executor.BaseExecutor;
 import com.maxwellnie.velox.jpa.framework.sql.SimpleSqlFragment;
+import com.maxwellnie.velox.jpa.framework.sql.SqlBuilder;
 import com.maxwellnie.velox.jpa.framework.utils.ErrorUtils;
+import com.maxwellnie.velox.jpa.framework.utils.SqlUtils;
 import org.slf4j.Logger;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.LinkedList;
@@ -31,10 +34,33 @@ public abstract class BaseUpdateExecutor extends BaseExecutor {
         return updateSql;
     }
 
-    protected abstract void doBuildUpdateSql(SimpleSqlFragment updateSql, List<ColumnInfo> columns, Object[] args, TableInfo tableInfo);
+    @Override
+    protected PreparedStatement doOpenStatement(Connection connection, TableInfo tableInfo, String sql) throws SQLException {
+        return connection.prepareStatement(sql);
+    }
 
     @Override
-    protected SqlResult executeSql(StatementWrapper statementWrapper, SimpleSqlFragment sqlFragment, String daoImplHashCode, Cache<Object,Object> cache) throws ExecutorException {
+    protected void doAfterOpenStatement(StatementWrapper statementWrapper, List<Object> params, Object[] args) throws SQLException {
+        statementWrapper.setMode(StatementWrapper.UPDATE);
+    }
+
+    protected void doBuildUpdateSql(SimpleSqlFragment updateSql, List<ColumnInfo> columns, Object[] args, TableInfo tableInfo) {
+        SqlBuilder<?> sqlBuilder = (SqlBuilder<?>) args[1];
+        StringBuffer sqlStr = new StringBuffer("UPDATE ").append(tableInfo.getTableName()).append(" SET ");
+        for (ColumnInfo columnInfo : columns) {
+            sqlStr.append(columnInfo.getColumnName()).append("=?,");
+            try {
+                updateSql.addParam(columnInfo.getColumnMappedField().get(args[0]));
+            } catch (IllegalAccessException e) {
+                throw new ExecutorException(e);
+            }
+        }
+        sqlStr.deleteCharAt(sqlStr.length() - 1).append(SqlUtils.buildSql(sqlBuilder, updateSql.getParams()));
+        updateSql.setNativeSql(sqlStr.toString());
+    }
+
+    @Override
+    protected SqlResult executeSql(StatementWrapper statementWrapper, SimpleSqlFragment sqlFragment, String daoImplHashCode, Cache<Object, Object> cache) throws ExecutorException {
         try (PreparedStatement preparedStatement = statementWrapper.getPrepareStatement()) {
             Object result = doExecuteSql(preparedStatement, statementWrapper.getMode());
             return new SqlResult(CLEAR_FLAG, result, null);

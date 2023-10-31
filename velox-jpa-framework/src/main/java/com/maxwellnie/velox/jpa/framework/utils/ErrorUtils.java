@@ -1,7 +1,5 @@
 package com.maxwellnie.velox.jpa.framework.utils;
 
-import java.sql.Time;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -17,14 +15,15 @@ public class ErrorUtils {
         for (Object param : objects) {
             stringBuffer.append(param.toString()).append(" | ");
         }
-        if(throwable.getCause()!=null)
+        if (throwable.getCause() != null)
             stringBuffer.append("\nCAUSE: ").append(throwable.getCause());
         return stringBuffer.toString();
     }
-    public static String getSimpleExceptionLog(Throwable throwable){
-        StringBuffer stringBuffer = new StringBuffer("ERROR MESSAGE: "+throwable.getMessage());
-        if(throwable.getCause()!=null)
-            stringBuffer.append("ERROR CAUSE: "+throwable.getCause());
+
+    public static String getSimpleExceptionLog(Throwable throwable) {
+        StringBuffer stringBuffer = new StringBuffer("ERROR MESSAGE: " + throwable.getMessage());
+        if (throwable.getCause() != null)
+            stringBuffer.append("ERROR CAUSE: " + throwable.getCause());
         return stringBuffer.toString();
     }
 }

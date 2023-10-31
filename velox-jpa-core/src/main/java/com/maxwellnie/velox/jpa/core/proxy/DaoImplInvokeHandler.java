@@ -6,7 +6,7 @@ import com.maxwellnie.velox.jpa.core.exception.NotMappedMethodException;
 import com.maxwellnie.velox.jpa.core.jdbc.context.JdbcContext;
 import com.maxwellnie.velox.jpa.core.jdbc.table.TableInfo;
 import com.maxwellnie.velox.jpa.core.proxy.executor.Executor;
-import com.maxwellnie.velox.jpa.core.utils.reflect.TableInfoUtils;
+import com.maxwellnie.velox.jpa.core.utils.reflect.ReflectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,11 +30,13 @@ public class DaoImplInvokeHandler implements InvocationHandler {
     private static final Logger logger = LoggerFactory.getLogger(DaoImplInvokeHandler.class);
     /**
      * JDK9+ introduces a novel method named "privateLookupIn" to handle PRIVATE and PROTECTED methods.
+     *
      * @since 1.0
      */
     private static final Method highJavaVersionLookUpMethod;
     /**
      * JDK8 it is necessary to use a invisible constructor to instantiate the LookUp class to handle PRIVATE and PROTECTED methods.
+     *
      * @since 1.0
      */
     private static final Constructor<MethodHandles.Lookup> java8LookupConstructor;
@@ -83,12 +85,12 @@ public class DaoImplInvokeHandler implements InvocationHandler {
     }
 
     /**
-     * @since 1.0
      * @param method
      * @return
      * @throws NoSuchMethodException
      * @throws IllegalAccessException
      * @throws InvocationTargetException
+     * @since 1.0
      */
     private MethodHandle getHighJavaVersionMethodHandle(Method method)
             throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
@@ -99,12 +101,12 @@ public class DaoImplInvokeHandler implements InvocationHandler {
     }
 
     /**
-     * @since 1.0
      * @param method
      * @return
      * @throws IllegalAccessException
      * @throws InstantiationException
      * @throws InvocationTargetException
+     * @since 1.0
      */
     private MethodHandle getJava8MethodHandle(Method method)
             throws IllegalAccessException, InstantiationException, InvocationTargetException {
@@ -139,7 +141,7 @@ public class DaoImplInvokeHandler implements InvocationHandler {
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         logger.debug("Method - " + method.getName() + " invoke ");
-        Executor executor = TableInfoUtils.getMethodMapped(method);
+        Executor executor = ReflectUtils.getMethodMapped(method);
 
         /**
          * 判断处理器是否被获取到，被获取到就开始执行，反之就判断是否Object的方法，是则执行代理类的对应方法，如果都不是则抛出异常
