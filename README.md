@@ -539,7 +539,7 @@ public interface Executor {
 
 你需要实现对应的逻辑，例如，编写一个可以根据SqlBuilder创建的条件删除实体对应数据表中的条目：
 
-
+@DaoImplDeclared
 public interface MyDao<T>{
 	@RegisterMethod(DeleteOneExecutor.class)
 	int deleteOne(SqlBuilder<T> sqlbuilder);
@@ -942,7 +942,7 @@ public abstract class BaseExecutor extends ExecuteCycle implements Executor {
 
 ##### ExecuteCycle
 
-声明了执行器的4个执行周期——Sql构建阶段、Statement实例化阶段、Sql执行阶段、缓存刷新阶段，开发者可以根据这四个阶段编程，对这些阶段进行增强，构建相对于独有业务逻辑效率更高的Executor及Template。
+声明了执行器的6个执行周期——参数检查阶段、连接打开阶段、Sql构建阶段、Statement实例化阶段、Sql执行阶段、缓存刷新阶段，开发者可以根据这六个阶段编程，对这些阶段进行增强，构建相对于独有业务逻辑效率更高的Executor及Template。
 
 ```java
 package com.maxwellnie.velox.jpa.framework.proxy.executor.cycle;
@@ -950,17 +950,20 @@ package com.maxwellnie.velox.jpa.framework.proxy.executor.cycle;
 import com.maxwellnie.velox.jpa.core.cahce.Cache;
 import com.maxwellnie.velox.jpa.core.cahce.dirty.CacheDirtyManager;
 import com.maxwellnie.velox.jpa.core.cahce.key.CacheKey;
+import com.maxwellnie.velox.jpa.core.jdbc.context.JdbcContext;
 import com.maxwellnie.velox.jpa.core.jdbc.table.TableInfo;
 import com.maxwellnie.velox.jpa.core.proxy.executor.wrapper.StatementWrapper;
 import com.maxwellnie.velox.jpa.framework.exception.ExecutorException;
 import com.maxwellnie.velox.jpa.framework.sql.SimpleSqlFragment;
+import org.slf4j.Logger;
 
 import java.sql.Connection;
 
 /**
  * 执行器的执行周期
- * @since 1.1
+ *
  * @author Maxwell Nie
+ * @since 1.1
  */
 public abstract class ExecuteCycle {
     /**
@@ -973,8 +976,32 @@ public abstract class ExecuteCycle {
     public static final String FLUSH_FLAG = "3e5c6a74c1a9c3a1";
     protected Object errorResult = 0;
 
+    protected abstract Logger getLogger();
+
+    /**
+     * 检查参数阶段。
+     *
+     * @param tableInfo
+     * @param context
+     * @param cache
+     * @param daoImplHashCode
+     * @param args
+     * @throws ExecutorException
+     */
+    protected abstract void checkExecuteCondition(TableInfo tableInfo, JdbcContext context, Cache<Object, Object> cache, String daoImplHashCode, Object[] args) throws ExecutorException;
+
+    /**
+     * 获取连接阶段。
+     *
+     * @param jdbcContext
+     * @return
+     * @throws ExecutorException
+     */
+    protected abstract Connection doConnection(JdbcContext jdbcContext) throws ExecutorException;
+
     /**
      * 创建Sql阶段。
+     *
      * @param args
      * @param tableInfo
      * @return
@@ -984,6 +1011,7 @@ public abstract class ExecuteCycle {
 
     /**
      * 实例化Statement阶段。
+     *
      * @param sqlFragment
      * @param connection
      * @param tableInfo
@@ -995,6 +1023,7 @@ public abstract class ExecuteCycle {
 
     /**
      * 执行Sql阶段。
+     *
      * @param statementWrapper
      * @param sqlFragment
      * @param daoImplHashCode
@@ -1002,10 +1031,11 @@ public abstract class ExecuteCycle {
      * @return
      * @throws ExecutorException
      */
-    protected abstract SqlResult executeSql(StatementWrapper statementWrapper, SimpleSqlFragment sqlFragment, String daoImplHashCode, Cache<Object,Object> cache) throws ExecutorException;
+    protected abstract SqlResult executeSql(StatementWrapper statementWrapper, SimpleSqlFragment sqlFragment, String daoImplHashCode, Cache<Object, Object> cache) throws ExecutorException;
 
     /**
      * 刷新缓存阶段。
+     *
      * @param sqlResult
      * @param cache
      * @param dirtyManager
@@ -1066,6 +1096,7 @@ public abstract class ExecuteCycle {
     }
 }
 
+
 ```
 ##### BaseUpdateExecutor
 
@@ -1079,9 +1110,12 @@ import com.maxwellnie.velox.jpa.core.proxy.executor.wrapper.StatementWrapper;
 import com.maxwellnie.velox.jpa.framework.exception.ExecutorException;
 import com.maxwellnie.velox.jpa.framework.proxy.executor.BaseExecutor;
 import com.maxwellnie.velox.jpa.framework.sql.SimpleSqlFragment;
+import com.maxwellnie.velox.jpa.framework.sql.SqlBuilder;
 import com.maxwellnie.velox.jpa.framework.utils.ErrorUtils;
+import com.maxwellnie.velox.jpa.framework.utils.SqlUtils;
 import org.slf4j.Logger;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.LinkedList;
@@ -1103,10 +1137,33 @@ public abstract class BaseUpdateExecutor extends BaseExecutor {
         return updateSql;
     }
 
-    protected abstract void doBuildUpdateSql(SimpleSqlFragment updateSql, List<ColumnInfo> columns, Object[] args, TableInfo tableInfo);
+    @Override
+    protected PreparedStatement doOpenStatement(Connection connection, TableInfo tableInfo, String sql) throws SQLException {
+        return connection.prepareStatement(sql);
+    }
 
     @Override
-    protected SqlResult executeSql(StatementWrapper statementWrapper, SimpleSqlFragment sqlFragment, String daoImplHashCode, Cache<Object,Object> cache) throws ExecutorException {
+    protected void doAfterOpenStatement(StatementWrapper statementWrapper, List<Object> params, Object[] args) throws SQLException {
+        statementWrapper.setMode(StatementWrapper.UPDATE);
+    }
+
+    protected void doBuildUpdateSql(SimpleSqlFragment updateSql, List<ColumnInfo> columns, Object[] args, TableInfo tableInfo) {
+        SqlBuilder<?> sqlBuilder = (SqlBuilder<?>) args[1];
+        StringBuffer sqlStr = new StringBuffer("UPDATE ").append(tableInfo.getTableName()).append(" SET ");
+        for (ColumnInfo columnInfo : columns) {
+            sqlStr.append(columnInfo.getColumnName()).append("=?,");
+            try {
+                updateSql.addParam(columnInfo.getColumnMappedField().get(args[0]));
+            } catch (IllegalAccessException e) {
+                throw new ExecutorException(e);
+            }
+        }
+        sqlStr.deleteCharAt(sqlStr.length() - 1).append(SqlUtils.buildSql(sqlBuilder, updateSql.getParams()));
+        updateSql.setNativeSql(sqlStr.toString());
+    }
+
+    @Override
+    protected SqlResult executeSql(StatementWrapper statementWrapper, SimpleSqlFragment sqlFragment, String daoImplHashCode, Cache<Object, Object> cache) throws ExecutorException {
         try (PreparedStatement preparedStatement = statementWrapper.getPrepareStatement()) {
             Object result = doExecuteSql(preparedStatement, statementWrapper.getMode());
             return new SqlResult(CLEAR_FLAG, result, null);
@@ -1117,75 +1174,6 @@ public abstract class BaseUpdateExecutor extends BaseExecutor {
     }
 }
 
-```
-
-##### BaseQueryExecutor
-
-```java
-package com.maxwellnie.velox.jpa.framework.proxy.executor.query;
-
-import com.maxwellnie.velox.jpa.core.cahce.Cache;
-import com.maxwellnie.velox.jpa.core.cahce.key.CacheKey;
-import com.maxwellnie.velox.jpa.core.jdbc.table.TableInfo;
-import com.maxwellnie.velox.jpa.core.jdbc.table.column.ColumnInfo;
-import com.maxwellnie.velox.jpa.core.proxy.executor.wrapper.StatementWrapper;
-import com.maxwellnie.velox.jpa.core.utils.jdbc.ResultSetUtils;
-import com.maxwellnie.velox.jpa.framework.exception.ExecutorException;
-import com.maxwellnie.velox.jpa.framework.proxy.executor.BaseExecutor;
-import com.maxwellnie.velox.jpa.framework.sql.SimpleSqlFragment;
-import com.maxwellnie.velox.jpa.framework.utils.ErrorUtils;
-import com.maxwellnie.velox.jpa.framework.utils.ExecutorUtils;
-import org.slf4j.Logger;
-
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.LinkedList;
-import java.util.List;
-
-/**
- * 基本的查询执行器
- *
- * @author Maxwell Nie
- */
-public abstract class BaseQueryExecutor extends BaseExecutor {
-    public BaseQueryExecutor(Logger logger, Object errorResult) {
-        super(logger, errorResult);
-    }
-
-    @Override
-    protected SimpleSqlFragment getNativeSql(Object[] args, TableInfo tableInfo) throws ExecutorException {
-        SimpleSqlFragment selectSql = new SimpleSqlFragment();
-        List<ColumnInfo> columns = new LinkedList<>();
-        if (tableInfo.hasPk())
-            columns.add(tableInfo.getPkColumn());
-        columns.addAll(tableInfo.getColumnMappedMap().values());
-        doBuildSelectSql(selectSql, columns, args, tableInfo);
-        return selectSql;
-    }
-
-    protected abstract void doBuildSelectSql(SimpleSqlFragment sqlFragment, List<ColumnInfo> columns, Object[] args, TableInfo tableInfo);
-
-    @Override
-    protected SqlResult executeSql(StatementWrapper statementWrapper, SimpleSqlFragment sqlFragment, String daoImplHashCode, Cache<Object,Object> cache) throws ExecutorException {
-        TableInfo tableInfo = ExecutorUtils.of(statementWrapper, "tableInfo");
-        CacheKey cacheKey = ExecutorUtils.of(statementWrapper, "cacheKey");
-        cacheKey.setDaoImplHashCode(daoImplHashCode);
-        try (PreparedStatement preparedStatement = statementWrapper.getPrepareStatement()) {
-            List result= (List) cache.get(cacheKey);
-            if(result==null){
-                ResultSet resultSet = preparedStatement.executeQuery();
-                result= ResultSetUtils.convertEntity(resultSet, tableInfo);
-                resultSet.close();
-            }else
-                logger.debug("Cache Hit.");
-            return new SqlResult(FLUSH_FLAG, result, cacheKey);
-        } catch (SQLException e) {
-            logger.error(ErrorUtils.getExceptionLog(e, sqlFragment.getNativeSql(), sqlFragment.getParams()));
-            throw new ExecutorException("SQL error!");
-        }
-    }
-}
 
 ```
 
@@ -1200,8 +1188,10 @@ import com.maxwellnie.velox.jpa.core.jdbc.table.column.ColumnInfo;
 import com.maxwellnie.velox.jpa.core.jdbc.table.primary.PrimaryKeyStrategy;
 import com.maxwellnie.velox.jpa.core.jdbc.table.primary.generator.KeyGenerator;
 import com.maxwellnie.velox.jpa.core.jdbc.table.primary.generator.NoKeyGenerator;
+import com.maxwellnie.velox.jpa.core.jdbc.table.primary.keyselector.JdbcSelector;
 import com.maxwellnie.velox.jpa.core.jdbc.table.primary.keyselector.KeySelector;
 import com.maxwellnie.velox.jpa.core.jdbc.table.primary.keyselector.NoKeySelector;
+import com.maxwellnie.velox.jpa.core.manager.KeyStrategyManager;
 import com.maxwellnie.velox.jpa.core.proxy.executor.wrapper.StatementWrapper;
 import com.maxwellnie.velox.jpa.framework.exception.ExecutorException;
 import com.maxwellnie.velox.jpa.framework.proxy.executor.BaseExecutor;
@@ -1210,8 +1200,10 @@ import com.maxwellnie.velox.jpa.framework.utils.ErrorUtils;
 import com.maxwellnie.velox.jpa.framework.utils.ExecutorUtils;
 import org.slf4j.Logger;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -1236,42 +1228,78 @@ public abstract class BaseInsertExecutor extends BaseExecutor {
 
     /**
      * 构建Sql语句
+     *
      * @param insertSql
      * @param columns
      * @param args
      * @param tableInfo
      * @throws ExecutorException
      */
-    protected abstract void doBuildInsertSql(SimpleSqlFragment insertSql, List<ColumnInfo> columns, Object[] args, TableInfo tableInfo) throws ExecutorException;
+    protected void doBuildInsertSql(SimpleSqlFragment insertSql, List<ColumnInfo> columns, Object[] args, TableInfo tableInfo) throws ExecutorException {
+        StringBuffer insertStr = new StringBuffer("INSERT INTO ")
+                .append(tableInfo.getTableName()).append(" (");
+        for (ColumnInfo columnInfo : columns) {
+            insertStr.append(columnInfo.getColumnName()).append(",");
+        }
+        insertStr.deleteCharAt(insertStr.length() - 1).append(")")
+                .append(" VALUES(");
+        for (ColumnInfo columnInfo : columns) {
+            insertStr.append("?").append(",");
+        }
+        insertSql.setNativeSql(insertStr.deleteCharAt(insertStr.length() - 1).append(");").toString());
+    }
 
     @Override
-    protected SqlResult executeSql(StatementWrapper statementWrapper, SimpleSqlFragment sqlFragment, String daoImplHashCode, Cache<Object,Object> cache) throws ExecutorException {
+    protected PreparedStatement doOpenStatement(Connection connection, TableInfo tableInfo, String sql) throws SQLException {
+        if (KeyStrategyManager.getPrimaryKeyStrategy(tableInfo.getPkColumn().getStrategyName()).getKeySelector() instanceof JdbcSelector)
+            return connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+        else
+            return connection.prepareStatement(sql);
+    }
+
+    @Override
+    protected SqlResult executeSql(StatementWrapper statementWrapper, SimpleSqlFragment sqlFragment, String daoImplHashCode, Cache<Object, Object> cache) throws ExecutorException {
         PrimaryKeyStrategy keyStrategy = ExecutorUtils.of(statementWrapper, "keyStrategy");
         TableInfo tableInfo = ExecutorUtils.of(statementWrapper, "tableInfo");
         Object[] entityInstances = ExecutorUtils.of(statementWrapper, "entityInstances");
         try (PreparedStatement preparedStatement = statementWrapper.getPrepareStatement()) {
-            Object result = doExecuteSql(preparedStatement,statementWrapper.getMode());
-            setPrimaryKeyFormSelectedKey(keyStrategy,preparedStatement,result,entityInstances,tableInfo);
+            Object result = doExecuteSql(preparedStatement, statementWrapper.getMode());
+            setPrimaryKeyFormSelectedKey(keyStrategy, preparedStatement, result, entityInstances, tableInfo);
             return new SqlResult(CLEAR_FLAG, result, null);
         } catch (SQLException | IllegalAccessException e) {
             logger.error(ErrorUtils.getExceptionLog(e, sqlFragment.getNativeSql(), sqlFragment.getParams()));
             throw new ExecutorException("SQL error!");
         }
     }
-    protected void setPrimaryKeyFromGeneratedKey(PrimaryKeyStrategy keyStrategy,Object[] entityInstances, TableInfo tableInfo) throws IllegalAccessException {
-        if(tableInfo.hasPk()) {
+
+    @Override
+    protected void doAfterOpenStatement(StatementWrapper statementWrapper, List<Object> params, Object[] args) throws SQLException {
+        try {
+            TableInfo tableInfo = ExecutorUtils.of(statementWrapper, "tableInfo");
+            PrimaryKeyStrategy keyStrategy = ExecutorUtils.of(statementWrapper, "keyStrategy");
+            Object[] entityInstances = ExecutorUtils.of(statementWrapper, "entityInstances");
+            setPrimaryKeyFromGeneratedKey(keyStrategy, entityInstances, tableInfo);
+            statementWrapper.setMode(StatementWrapper.UPDATE);
+        } catch (IllegalAccessException e) {
+            throw new ExecutorException(e);
+        }
+    }
+
+    protected void setPrimaryKeyFromGeneratedKey(PrimaryKeyStrategy keyStrategy, Object[] entityInstances, TableInfo tableInfo) throws IllegalAccessException {
+        if (tableInfo.hasPk()) {
             KeyGenerator keyGenerator = keyStrategy.getKeyGenerator();
-            if(!(keyGenerator instanceof NoKeyGenerator)){
-                for (Object entityInstance:entityInstances){
+            if (!(keyGenerator instanceof NoKeyGenerator)) {
+                for (Object entityInstance : entityInstances) {
                     tableInfo.getPkColumn().getColumnMappedField().set(entityInstance, keyGenerator.nextKey());
                 }
             }
         }
     }
-    protected void setPrimaryKeyFormSelectedKey(PrimaryKeyStrategy keyStrategy,PreparedStatement preparedStatement, Object result,Object[] entityInstances, TableInfo tableInfo) throws IllegalAccessException {
-        if(tableInfo.hasPk()) {
+
+    protected void setPrimaryKeyFormSelectedKey(PrimaryKeyStrategy keyStrategy, PreparedStatement preparedStatement, Object result, Object[] entityInstances, TableInfo tableInfo) throws IllegalAccessException {
+        if (tableInfo.hasPk()) {
             KeySelector keySelector = keyStrategy.getKeySelector();
-            if(keySelector instanceof NoKeySelector)
+            if (keySelector instanceof NoKeySelector)
                 return;
             Object primaryKeys = keySelector.selectGeneratorKey(preparedStatement, result);
             if (primaryKeys != null) {
@@ -1286,6 +1314,7 @@ public abstract class BaseInsertExecutor extends BaseExecutor {
     }
 
 }
+
 
 ```
 
@@ -1304,6 +1333,7 @@ import com.maxwellnie.velox.jpa.framework.sql.SimpleSqlFragment;
 import com.maxwellnie.velox.jpa.framework.utils.ErrorUtils;
 import org.slf4j.Logger;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
@@ -1323,12 +1353,26 @@ public abstract class BaseDeleteExecutor extends BaseExecutor {
         return deleteSql;
     }
 
-    protected abstract void doBuildDeleteSql(SimpleSqlFragment deleteSql, List<ColumnInfo> columns, Object[] args, TableInfo tableInfo);
+    protected void doBuildDeleteSql(SimpleSqlFragment deleteSql, List<ColumnInfo> columns, Object[] args, TableInfo tableInfo) {
+        StringBuffer sqlStr = new StringBuffer("DELETE ")
+                .append(" FROM ").append(tableInfo.getTableName());
+        deleteSql.setNativeSql(sqlStr.toString());
+    }
 
     @Override
-    protected SqlResult executeSql(StatementWrapper statementWrapper, SimpleSqlFragment sqlFragment, String daoImplHashCode, Cache<Object,Object> cache) throws ExecutorException {
+    protected PreparedStatement doOpenStatement(Connection connection, TableInfo tableInfo, String sql) throws SQLException {
+        return connection.prepareStatement(sql);
+    }
+
+    @Override
+    protected void doAfterOpenStatement(StatementWrapper statementWrapper, List<Object> params, Object[] args) throws SQLException {
+        statementWrapper.setMode(StatementWrapper.UPDATE);
+    }
+
+    @Override
+    protected SqlResult executeSql(StatementWrapper statementWrapper, SimpleSqlFragment sqlFragment, String daoImplHashCode, Cache<Object, Object> cache) throws ExecutorException {
         try (PreparedStatement preparedStatement = statementWrapper.getPrepareStatement()) {
-            Object result = doExecuteSql(preparedStatement,statementWrapper.getMode());
+            Object result = doExecuteSql(preparedStatement, statementWrapper.getMode());
             return new SqlResult(CLEAR_FLAG, result, null);
         } catch (SQLException e) {
             logger.error(ErrorUtils.getExceptionLog(e, sqlFragment.getNativeSql(), sqlFragment.getParams()));
@@ -1336,5 +1380,6 @@ public abstract class BaseDeleteExecutor extends BaseExecutor {
         }
     }
 }
+
 
 ```
