@@ -5,7 +5,7 @@ import com.maxwellnie.velox.jpa.core.exception.ClassTypeException;
 import com.maxwellnie.velox.jpa.core.exception.DaoImplClassException;
 import com.maxwellnie.velox.jpa.core.exception.RegisterMethodException;
 import com.maxwellnie.velox.jpa.core.manager.MethodMappedManager;
-import com.maxwellnie.velox.jpa.core.proxy.executor.DaoImplRegister;
+import com.maxwellnie.velox.jpa.core.proxy.executor.MethodMapRegister;
 import com.maxwellnie.velox.jpa.core.proxy.executor.Executor;
 import com.maxwellnie.velox.jpa.core.utils.java.StringUtils;
 
@@ -32,8 +32,8 @@ public abstract class ReflectUtils {
             DaoImplDeclared daoImplDeclared = clazz.getDeclaredAnnotation(DaoImplDeclared.class);
             if (daoImplDeclared.value() != null) {
                 try {
-                    DaoImplRegister daoImplRegister = daoImplDeclared.value().newInstance();
-                    daoImplRegister.registerDaoImpl(clazz);
+                    MethodMapRegister methodMapRegister = daoImplDeclared.value().newInstance();
+                    methodMapRegister.registerDaoImpl(clazz);
                 } catch (InstantiationException | IllegalAccessException e) {
                     throw new RegisterMethodException(e);
                 }

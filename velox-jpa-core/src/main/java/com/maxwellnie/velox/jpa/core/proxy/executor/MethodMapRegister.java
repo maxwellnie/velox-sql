@@ -3,6 +3,6 @@ package com.maxwellnie.velox.jpa.core.proxy.executor;
 /**
  * @author Maxwell Nie
  */
-public interface DaoImplRegister {
+public interface MethodMapRegister {
     void registerDaoImpl(Class<?> clazz);
 }

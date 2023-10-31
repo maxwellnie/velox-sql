@@ -293,7 +293,7 @@ xml配置文件：
         <property name="standTable" value="true"/>
         <property name="tablePrefix" value="tb_"/>
     </bean>
-    <bean id="daoImplRegister" class="com.velox.jpa.spring.bean.DaoImplRegister">
+    <bean id="methodMapRegister" class="com.velox.jpa.spring.bean.DaoImplRegister">
         <property name="packagePaths" value="com.example.po"/>
     </bean>
 </beans>

@@ -3,7 +3,7 @@ package com.maxwellnie.velox.jpa.framework.proxy.executor;
 import com.maxwellnie.velox.jpa.core.annotation.RegisterMethod;
 import com.maxwellnie.velox.jpa.core.exception.RegisterMethodException;
 import com.maxwellnie.velox.jpa.core.manager.MethodMappedManager;
-import com.maxwellnie.velox.jpa.core.proxy.executor.DaoImplRegister;
+import com.maxwellnie.velox.jpa.core.proxy.executor.MethodMapRegister;
 import com.maxwellnie.velox.jpa.core.proxy.executor.Executor;
 import com.maxwellnie.velox.jpa.core.utils.java.StringUtils;
 import com.maxwellnie.velox.jpa.framework.proxy.executor.cycle.ExecuteCycle;
@@ -14,7 +14,7 @@ import java.lang.reflect.Method;
 /**
  * @author Maxwell Nie
  */
-public class FrameworkDaoImplRegister implements DaoImplRegister {
+public class FrameworkMethodMapRegister implements MethodMapRegister {
     @Override
     public void registerDaoImpl(Class<?> clazz) {
         assert clazz != null;

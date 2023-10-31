@@ -10,7 +10,7 @@ import java.lang.reflect.Method;
 /**
  * @author Maxwell Nie
  */
-public class DefaultDaoImplRegister implements DaoImplRegister {
+public class DefaultMethodMapRegister implements MethodMapRegister {
     @Override
     public void registerDaoImpl(Class<?> clazz) {
         assert clazz != null;

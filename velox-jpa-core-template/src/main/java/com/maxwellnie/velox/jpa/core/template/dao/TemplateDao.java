@@ -6,7 +6,7 @@ import com.maxwellnie.velox.jpa.core.template.proxy.executor.impl.DeleteOneExecu
 import com.maxwellnie.velox.jpa.core.template.proxy.executor.impl.InsertOneExecutor;
 import com.maxwellnie.velox.jpa.core.template.proxy.executor.impl.QueryExecutor;
 import com.maxwellnie.velox.jpa.core.template.proxy.executor.impl.UpdateOneExecutor;
-import com.maxwellnie.velox.jpa.framework.proxy.executor.FrameworkDaoImplRegister;
+import com.maxwellnie.velox.jpa.framework.proxy.executor.FrameworkMethodMapRegister;
 import com.maxwellnie.velox.jpa.framework.sql.SqlBuilder;
 
 import java.sql.SQLException;
@@ -15,7 +15,7 @@ import java.util.List;
 /**
  * @author Maxwell Nie
  */
-@DaoImplDeclared(FrameworkDaoImplRegister.class)
+@DaoImplDeclared(FrameworkMethodMapRegister.class)
 public interface TemplateDao<T> {
     /**
      * 添加一条数据
