@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 
 /**
  * 元数据
+ *
  * @author Maxwell Nie
  */
 public class MetaData {

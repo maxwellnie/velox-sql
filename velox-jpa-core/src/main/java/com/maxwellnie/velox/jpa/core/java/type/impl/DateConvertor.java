@@ -1,12 +1,10 @@
 package com.maxwellnie.velox.jpa.core.java.type.impl;
 
-import com.maxwellnie.velox.jpa.core.exception.TypeNotEqualsException;
 import com.maxwellnie.velox.jpa.core.java.type.TypeConvertor;
 
-import java.sql.Timestamp;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Time;
+import java.sql.Timestamp;
 import java.util.Date;
 
 /**
@@ -16,7 +14,7 @@ public class DateConvertor implements TypeConvertor<Date> {
     @Override
     public Date convert(ResultSet resultSet, String column) throws SQLException {
         Timestamp timestamp = resultSet.getTimestamp(column);
-        if(timestamp!=null)
+        if (timestamp != null)
             return new Date(timestamp.getTime());
         else
             return null;
@@ -25,7 +23,7 @@ public class DateConvertor implements TypeConvertor<Date> {
     @Override
     public Date convert(ResultSet resultSet, int columnIndex) throws SQLException {
         Timestamp timestamp = resultSet.getTimestamp(columnIndex);
-        if(timestamp!=null)
+        if (timestamp != null)
             return new Date(timestamp.getTime());
         else
             return null;

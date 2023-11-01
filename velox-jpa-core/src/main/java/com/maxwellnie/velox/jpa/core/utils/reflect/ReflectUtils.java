@@ -5,8 +5,8 @@ import com.maxwellnie.velox.jpa.core.exception.ClassTypeException;
 import com.maxwellnie.velox.jpa.core.exception.DaoImplClassException;
 import com.maxwellnie.velox.jpa.core.exception.RegisterMethodException;
 import com.maxwellnie.velox.jpa.core.manager.MethodMappedManager;
-import com.maxwellnie.velox.jpa.core.proxy.executor.MethodMapRegister;
 import com.maxwellnie.velox.jpa.core.proxy.executor.Executor;
+import com.maxwellnie.velox.jpa.core.proxy.executor.MethodMapRegister;
 import com.maxwellnie.velox.jpa.core.utils.java.StringUtils;
 
 import java.lang.reflect.Method;

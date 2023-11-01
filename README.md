@@ -3,6 +3,7 @@
 ### 什么是VeloxJPA？
 
 VeloxJPA是一款基于Java的，符合JPA规范的数据持久化框架，扩展性很强，可以无需书写SQL语句和声明Dao接口，由VeloxJPA为你实现Dao层的功能，VeloxJPA核心提供基本的框架，你可以根据自身需要，自定义或者是优化SQL，以此增强JPA的功能，通过自定义开发产生的模块称之为velox-jpa-xxx-template。
+
 ### 适配性
 
 目前velox-jpa只适配了mysql5+ & Java8+ & spring 5+，你可以根据自身需求编写新的，以适配不同的数据库。
@@ -10,15 +11,18 @@ VeloxJPA是一款基于Java的，符合JPA规范的数据持久化框架，扩�
 ### 使用文档
 
 #### java原生快速上手:
+
 导入依赖：
+
 ```xml
+
 <dependencies>
     <dependency>
         <groupId>io.github.maxwellnie</groupId>
         <artifactId>velox-jpa-core</artifactId>
         <version>1.1</version>
     </dependency>
-      <dependency>
+    <dependency>
         <groupId>io.github.maxwellnie</groupId>
         <artifactId>velox-jpa-core-template</artifactId>
         <version>1.1</version>
@@ -40,6 +44,7 @@ VeloxJPA是一款基于Java的，符合JPA规范的数据持久化框架，扩�
     </dependency>
 </dependencies>
 ```
+
 ```java
 import com.maxwellnie.velox.jpa.core.dao.support.SqlBuilder;
 import com.maxwellnie.velox.jpa.core.dao.support.env.Environment;
@@ -70,23 +75,23 @@ public class Tests {
         veloxJpaConfig.setStandColumn(true);
         veloxJpaConfig.setStandTable(true);
         //初始化JdbcContext生产环境环境
-        Environment environment=new Environment(new JdbcTransactionFactory(),simpleConnectionPool, veloxJpaConfig);
+        Environment environment = new Environment(new JdbcTransactionFactory(), simpleConnectionPool, veloxJpaConfig);
         environment.addDaoImpl(User.class);
         //JdbcContext工厂
-        JdbcContextFactory jdbcContextFactory=new SimpleContextFactory(environment);
-        JdbcContext jdbcContext= jdbcContextFactory.produce(false);
+        JdbcContextFactory jdbcContextFactory = new SimpleContextFactory(environment);
+        JdbcContext jdbcContext = jdbcContextFactory.produce(false);
         //获取实例
         TemplateDao<User> daoImpl = (TemplateDao<User>) environment.getDaoImplFactory(User.class).produce(jdbcContext);
         //查询数据
-        System.out.println(daoImpl.queryAll(new SqlBuilder<User>().where().eq("user_id",32).build()));
+        System.out.println(daoImpl.queryAll(new SqlBuilder<User>().where().eq("user_id", 32).build()));
         jdbcContext.commit();
-        System.out.println(daoImpl.queryAll(new SqlBuilder<User>().where().eq("user_id",32).build()));
+        System.out.println(daoImpl.queryAll(new SqlBuilder<User>().where().eq("user_id", 32).build()));
     }
 }
 ```
 
-
 User实体：
+
 ```java
 import com.maxwellnie.vleox.jpa.core.annotation.Entity;
 import com.maxwellnie.vleox.jpa.core.annotation.Column;
@@ -99,7 +104,7 @@ import java.util.Date;
  * @author Maxwell Nie
  */
 @Entity("tb_user")
-public  class User {
+public class User {
     @PrimaryKey(strategyKey = "jdbc_auto")//KeyStrateyManager.JDBC_AUTO
     public int userId;
     public String loginName;
@@ -199,64 +204,70 @@ public  class User {
     }
 }
 ```
+
 #### spring快速上手:
+
 依赖：
+
 ```xml
- <dependencies>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context</artifactId>
-            <version>5.3.20</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-jdbc</artifactId>
-            <version>5.3.20</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-test</artifactId>
-            <version>5.3.20</version>
-        </dependency>
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>5.1.8</version>
-        </dependency>
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>1.1.2</version>
-        </dependency>
-        <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>druid</artifactId>
-            <version>1.2.16</version>
-        </dependency>
-        <dependency>
-            <groupId>io.github.maxwellnie</groupId>
-            <artifactId>velox-jpa-spring</artifactId>
-            <version>1.0</version>
-        </dependency>
-        <dependency>
-            <groupId>io.github.maxwellnie</groupId>
-            <artifactId>velox-jpa-core-template</artifactId>
-            <version>1.1</version>
-        </dependency>
-        <dependency>
-            <groupId>net.bytebuddy</groupId>
-            <artifactId>byte-buddy</artifactId>
-            <version>1.14.5</version>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.13.2</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
+
+<dependencies>
+    <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-context</artifactId>
+        <version>5.3.20</version>
+    </dependency>
+    <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-jdbc</artifactId>
+        <version>5.3.20</version>
+    </dependency>
+    <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-test</artifactId>
+        <version>5.3.20</version>
+    </dependency>
+    <dependency>
+        <groupId>mysql</groupId>
+        <artifactId>mysql-connector-java</artifactId>
+        <version>5.1.8</version>
+    </dependency>
+    <dependency>
+        <groupId>ch.qos.logback</groupId>
+        <artifactId>logback-classic</artifactId>
+        <version>1.1.2</version>
+    </dependency>
+    <dependency>
+        <groupId>com.alibaba</groupId>
+        <artifactId>druid</artifactId>
+        <version>1.2.16</version>
+    </dependency>
+    <dependency>
+        <groupId>io.github.maxwellnie</groupId>
+        <artifactId>velox-jpa-spring</artifactId>
+        <version>1.0</version>
+    </dependency>
+    <dependency>
+        <groupId>io.github.maxwellnie</groupId>
+        <artifactId>velox-jpa-core-template</artifactId>
+        <version>1.1</version>
+    </dependency>
+    <dependency>
+        <groupId>net.bytebuddy</groupId>
+        <artifactId>byte-buddy</artifactId>
+        <version>1.14.5</version>
+    </dependency>
+    <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>4.13.2</version>
+        <scope>test</scope>
+    </dependency>
+</dependencies>
 ```
+
 xml配置文件：
+
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
@@ -278,7 +289,8 @@ xml配置文件：
    		http://www.springframework.org/schema/task/spring-task-5.0.xsd">
     <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-        <property name="url" value="jdbc:mysql://localhost:3307/bounddatabase?useUnicode=true&amp;characterEncoding=UTF8"/>
+        <property name="url"
+                  value="jdbc:mysql://localhost:3307/bounddatabase?useUnicode=true&amp;characterEncoding=UTF8"/>
         <property name="username" value="root"/>
         <property name="password" value="123456"/>
     </bean>
@@ -294,82 +306,93 @@ xml配置文件：
     </bean>
 </beans>
 ```
+
 Test类：
+
 ```java
+
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations={"classpath:spring.xml"})
+@ContextConfiguration(locations = {"classpath:spring.xml"})
 public class Test {
 
-	public Test() {
-		// TODO Auto-generated constructor stub
-	}
-	@Resource
-	private TemplateDao<User> userTemplateDao;
-	@org.junit.Test
-	public void test(){
-		boolean b;
-		System.out.println(userTemplateDao.queryAll(new SqlBuilder<User>().where().eq("user_id",98).build()));
-	}
+    public Test() {
+        // TODO Auto-generated constructor stub
+    }
+
+    @Resource
+    private TemplateDao<User> userTemplateDao;
+
+    @org.junit.Test
+    public void test() {
+        boolean b;
+        System.out.println(userTemplateDao.queryAll(new SqlBuilder<User>().where().eq("user_id", 98).build()));
+    }
 }
 ```
+
 #### springboot快速上手:
+
 依赖：
+
 ```xml
- <dependencies>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-jdbc</artifactId>
-            <version>${spring-boot.version}</version>
 
-        </dependency>
+<dependencies>
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-jdbc</artifactId>
+        <version>${spring-boot.version}</version>
 
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <version>${spring-boot.version}</version>
-            <scope>test</scope>
-        </dependency>
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-dependencies</artifactId>
-                <version>${spring-boot.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-            <dependency>
-                <groupId>mysql</groupId>
-                <artifactId>mysql-connector-java</artifactId>
-                <version>5.1.8</version>
-            </dependency>
-            <dependency>
-                <groupId>org.projectlombok</groupId>
-                <artifactId>lombok</artifactId>
-                <optional>true</optional>
-                <version>1.18.28</version>
-            </dependency>
-            <dependency>
-                <groupId>io.github.maxwellnie</groupId>
-                <artifactId>velox-jpa-spring-boot-starer</artifactId>
-                <version>1.1</version>
-            </dependency>
-            <dependency>
-                <groupId>com.alibaba</groupId>
-                <artifactId>druid</artifactId>
-                <version>1.2.16</version>
-            </dependency>
-        <dependency>
-            <groupId>io.github.maxwellnie</groupId>
-            <artifactId>velox-jpa-core-template</artifactId>
-            <version>1.1</version>
-        </dependency>
-        <dependency>
-            <groupId>net.bytebuddy</groupId>
-            <artifactId>byte-buddy</artifactId>
-            <version>1.14.5</version>
-        </dependency>
-        </dependencies>
+    </dependency>
+
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-test</artifactId>
+        <version>${spring-boot.version}</version>
+        <scope>test</scope>
+    </dependency>
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-dependencies</artifactId>
+        <version>${spring-boot.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+    </dependency>
+    <dependency>
+        <groupId>mysql</groupId>
+        <artifactId>mysql-connector-java</artifactId>
+        <version>5.1.8</version>
+    </dependency>
+    <dependency>
+        <groupId>org.projectlombok</groupId>
+        <artifactId>lombok</artifactId>
+        <optional>true</optional>
+        <version>1.18.28</version>
+    </dependency>
+    <dependency>
+        <groupId>io.github.maxwellnie</groupId>
+        <artifactId>velox-jpa-spring-boot-starer</artifactId>
+        <version>1.1</version>
+    </dependency>
+    <dependency>
+        <groupId>com.alibaba</groupId>
+        <artifactId>druid</artifactId>
+        <version>1.2.16</version>
+    </dependency>
+    <dependency>
+        <groupId>io.github.maxwellnie</groupId>
+        <artifactId>velox-jpa-core-template</artifactId>
+        <version>1.1</version>
+    </dependency>
+    <dependency>
+        <groupId>net.bytebuddy</groupId>
+        <artifactId>byte-buddy</artifactId>
+        <version>1.14.5</version>
+    </dependency>
+</dependencies>
 ```
+
 application.yml:
+
 ```yaml
 spring:
   datasource:
@@ -384,11 +407,14 @@ logging:
 velox-jpa:
   tablePrefix: tb_
   cache: true
-  standTable : true
+  standTable: true
   standColumn: true
 ```
+
 启动类：
+
 ```java
+
 @SpringBootApplication
 @DaoImplConf(value = "com.example.ttdemo.po")
 public class TtdemoApplication {
@@ -399,7 +425,9 @@ public class TtdemoApplication {
 
 }
 ```
+
 User实体：
+
 ```java
 package com.example.ttdemo.po;
 
@@ -424,7 +452,9 @@ public class User {
 
 }
 ```
+
 Test:
+
 ```java
 package com.example.ttdemo;
 
@@ -441,55 +471,64 @@ import java.sql.SQLException;
 class TtdemoApplicationTests {
     @Resource
     TemplateDao<User> userTemplateDao;
+
     @Test
     void contextLoads() throws SQLException {
         System.out.println(userTemplateDao);
-        User user= userTemplateDao.queryOne(new SqlBuilder<User>().where().eq("user_id",49).build());
-        System.out.println(userTemplateDao.queryOne(new SqlBuilder<User>().where().eq("user_id",49).build()));
-        System.out.println(userTemplateDao.queryOne(new SqlBuilder<User>().where().eq("user_id",490).build()));
-        System.out.println(userTemplateDao.queryOne(new SqlBuilder<User>().where().eq("user_id",234).build()));
+        User user = userTemplateDao.queryOne(new SqlBuilder<User>().where().eq("user_id", 49).build());
+        System.out.println(userTemplateDao.queryOne(new SqlBuilder<User>().where().eq("user_id", 49).build()));
+        System.out.println(userTemplateDao.queryOne(new SqlBuilder<User>().where().eq("user_id", 490).build()));
+        System.out.println(userTemplateDao.queryOne(new SqlBuilder<User>().where().eq("user_id", 234).build()));
     }
 
 }
 ```
+
 sql:
+
 ```sql
-USE DATABASE bounddatabase;
+USE
+DATABASE bounddatabase;
 SET NAMES utf8mb4;
-SET FOREIGN_KEY_CHECKS = 0;
+SET
+FOREIGN_KEY_CHECKS = 0;
 
 -- ----------------------------
 -- Table structure for tb_bound
 -- ----------------------------
 DROP TABLE IF EXISTS `tb_bound`;
-CREATE TABLE `tb_bound`  (
-  `bound_id` int(11) NOT NULL AUTO_INCREMENT,
-  `bound_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `detail` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `count` int(11) NOT NULL,
-  PRIMARY KEY (`bound_id`) USING BTREE
+CREATE TABLE `tb_bound`
+(
+    `bound_id`   int(11) NOT NULL AUTO_INCREMENT,
+    `bound_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+    `detail`     varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+    `count`      int(11) NOT NULL,
+    PRIMARY KEY (`bound_id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 21 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Compact;
 
 -- ----------------------------
 -- Table structure for tb_user
 -- ----------------------------
 DROP TABLE IF EXISTS `tb_user`;
-CREATE TABLE `tb_user`  (
-  `user_id` int(11) NOT NULL AUTO_INCREMENT,
-  `login_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `user_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `role_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `rights` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `icon_path` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `sex` tinyint(255) NULL DEFAULT NULL,
-  `last_time` datetime NULL DEFAULT NULL,
-  PRIMARY KEY (`user_id`) USING BTREE,
-  INDEX `a`(`user_id`) USING BTREE
+CREATE TABLE `tb_user`
+(
+    `user_id`    int(11) NOT NULL AUTO_INCREMENT,
+    `login_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+    `password`   varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+    `user_name`  varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+    `role_name`  varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+    `rights`     varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+    `icon_path`  varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+    `sex`        tinyint(255) NULL DEFAULT NULL,
+    `last_time`  datetime NULL DEFAULT NULL,
+    PRIMARY KEY (`user_id`) USING BTREE,
+    INDEX        `a`(`user_id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 0 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Compact;
 
-SET FOREIGN_KEY_CHECKS = 1;
+SET
+FOREIGN_KEY_CHECKS = 1;
 ```
+
 #### 开发者
 
 如果你是一个想要丰富VeloxJpa功能的开发者，你需要了解VeloxJpa的特点、架构。
@@ -536,16 +575,16 @@ public interface Executor {
 你需要实现对应的逻辑，例如，编写一个可以根据SqlBuilder创建的条件删除实体对应数据表中的条目：
 
 @DaoImplDeclared
-public interface MyDao<T>{
-	@RegisterMethod(DeleteOneExecutor.class)
-	int deleteOne(SqlBuilder<T> sqlbuilder);
+public interface MyDao<T> {
+    @RegisterMethod(DeleteOneExecutor.class)
+    int deleteOne(SqlBuilder<T> sqlbuilder);
 }
 
 
 那么需要编写对应的DeleteOneExecutor：
 
 
-public class DeleteOneExecutor implements Executor{
+public class DeleteOneExecutor implements Executor {
     @Override
     public Object execute(TableInfo tableInfo, JdbcContext context, Cache<Object, Object> cache, String daoImplHashCode, Object[] args) {
         /**
@@ -568,33 +607,40 @@ public class DeleteOneExecutor implements Executor{
             return 0;
         }
     }
-    openStatement(....){
-    	//处理sql
+
+    openStatement(....) {
+        //处理sql
     }
-    flushCache(....){
-    	//刷新缓存
+
+    flushCache(....) {
+        //刷新缓存
     }
-    getDeleteSqlStatement(....){
-    	//获取完整的sql语句
+
+    getDeleteSqlStatement(....) {
+        //获取完整的sql语句
     }
 }
 ```
+
 1.1版本后，强烈建议使用velox-jpa-framework提供的基础框架开发Executor。
-##### ConvertorManager 
 
-TypeConvertor的管理器，可以注册、或者获取对应Java数据类型的转换器，用于查询数据库数据后转换从JDBC API获取到的数据。例如将java.sql.Date转换为java.util.Date
+##### ConvertorManager
 
-##### KeyStrategyManager 
+TypeConvertor的管理器，可以注册、或者获取对应Java数据类型的转换器，用于查询数据库数据后转换从JDBC
+API获取到的数据。例如将java.sql.Date转换为java.util.Date
 
- KeyStrategy的管理器，可以注册、或者获取对应名字的KeyStrategy，用于添加数据时获取主键值，和返回主键值。
+##### KeyStrategyManager
 
-##### MethodMappedManager 
+KeyStrategy的管理器，可以注册、或者获取对应名字的KeyStrategy，用于添加数据时获取主键值，和返回主键值。
+
+##### MethodMappedManager
 
 Executor和被注册方法的映射管理，最好不要在运行时注册映射到这个管理器，可能会产生未知的后果。
 
 ##### TypeConvertor<T> 类型转换器
 
-当JDBC从数据库取出数据后，会调用ResultSet的getObject方法获取数据，这个转换器的意义就在于可以将JDBC API 提供的对象转换为我们想要的对象，如果结合@Column注解，这种方式将会类似于ORM。
+当JDBC从数据库取出数据后，会调用ResultSet的getObject方法获取数据，这个转换器的意义就在于可以将JDBC API
+提供的对象转换为我们想要的对象，如果结合@Column注解，这种方式将会类似于ORM。
 
 ```java
 /**
@@ -602,10 +648,12 @@ Executor和被注册方法的映射管理，最好不要在运行时注册映射
  */
 public interface TypeConvertor<T> {
     T convert(ResultSet resultSet, String column) throws SQLException;
+
     T convert(ResultSet resultSet, int columnIndex) throws SQLException;
 }
 
 例如，我们需要将JDBC API查询出的Date转换，从类型java.sql.TimeStamp转换为java.util.Date，我们可以编写DateConvertor：
+
 /**
  * @author Maxwell Nie
  */
@@ -613,7 +661,7 @@ public class DateConvertor implements TypeConvertor<Date> {
     @Override
     public Date convert(ResultSet resultSet, String column) throws SQLException {
         Timestamp timestamp = resultSet.getTimestamp(column);
-        if(timestamp!=null)
+        if (timestamp != null)
             return new Date(timestamp.getTime());
         else
             return null;
@@ -622,7 +670,7 @@ public class DateConvertor implements TypeConvertor<Date> {
     @Override
     public Date convert(ResultSet resultSet, int columnIndex) throws SQLException {
         Timestamp timestamp = resultSet.getTimestamp(columnIndex);
-        if(timestamp!=null)
+        if (timestamp != null)
             return new Date(timestamp.getTime());
         else
             return null;
@@ -637,6 +685,7 @@ public class DateConvertor implements TypeConvertor<Date> {
 
 ```java
 例如没有生成器的实例
+
 public class NoGenerator implements KeyGenerator {
 
     @Override
@@ -652,6 +701,7 @@ public class NoGenerator implements KeyGenerator {
 
 ```java
 Jdbc自增方式的主键值查询器
+
 public class JdbcSelector implements KeySelector {
     @Override
     public Object selectGeneratorKey(Object param) {
@@ -722,6 +772,7 @@ public interface JdbcContext extends Closeable {
     CacheDirtyManager getDirtyManager();
 }
 ```
+
 ### 1.1版本
 
 #### velox-jpa-framewok
@@ -868,12 +919,12 @@ public abstract class BaseExecutor extends ExecuteCycle implements Executor {
             checkArgs(args);
             Connection connection = checkContext(context, tableInfo);
             SimpleSqlFragment sqlFragment = getNativeSql(args, tableInfo);
-            logger.debug("SQL ### : "+sqlFragment.getNativeSql());
-            logger.debug("PARAM # : "+sqlFragment.getParams());
+            logger.debug("SQL ### : " + sqlFragment.getNativeSql());
+            logger.debug("PARAM # : " + sqlFragment.getParams());
             StatementWrapper statementWrapper = openStatement(sqlFragment, connection, tableInfo, args);
             long startTime = System.currentTimeMillis();
-            SqlResult sqlResult = executeSql(statementWrapper, sqlFragment, daoImplHashCode,cache);
-            logger.debug("SQL EXECUTED | TIME: "+(System.currentTimeMillis() - startTime)+"ms.");
+            SqlResult sqlResult = executeSql(statementWrapper, sqlFragment, daoImplHashCode, cache);
+            logger.debug("SQL EXECUTED | TIME: " + (System.currentTimeMillis() - startTime) + "ms.");
             flushCache(sqlResult, cache, context.getDirtyManager(), !context.getAutoCommit());
             return sqlResult.getResult();
         } catch (ExecutorException e) {
@@ -967,9 +1018,9 @@ public abstract class BaseExecutor extends ExecuteCycle implements Executor {
             statementWrapper = new StatementWrapper(statement);
             statementWrapper.getMetaData().addProperty("tableInfo", tableInfo);
             doAfterOpenStatement(statementWrapper, params, args);
-            CacheKey cacheKey=new CacheKey(tableInfo.getMappedClazz(), sqlFragment.getNativeSql(), null);
+            CacheKey cacheKey = new CacheKey(tableInfo.getMappedClazz(), sqlFragment.getNativeSql(), null);
             cacheKey.addValueCollection(sqlFragment.getParams());
-            statementWrapper.getMetaData().addProperty("cacheKey",cacheKey);
+            statementWrapper.getMetaData().addProperty("cacheKey", cacheKey);
         } catch (SQLException e) {
             logger.error(ErrorUtils.getExceptionLog(e, sqlFragment.getNativeSql(), sqlFragment.getParams()));
             throw new ExecutorException("Statement open failed!");
@@ -986,7 +1037,7 @@ public abstract class BaseExecutor extends ExecuteCycle implements Executor {
      * @return
      * @throws SQLException
      */
-    protected abstract PreparedStatement doOpenStatement(Connection connection,TableInfo tableInfo, String sql) throws SQLException;
+    protected abstract PreparedStatement doOpenStatement(Connection connection, TableInfo tableInfo, String sql) throws SQLException;
 
     /**
      * 在Statement对象创建完成后，可以对prepareStatement进行设置值和修改值，对StatementWrapper添加数据，以便在执行SQL时能够使用到某些数据。
@@ -1010,10 +1061,14 @@ public abstract class BaseExecutor extends ExecuteCycle implements Executor {
      */
     protected Object doExecuteSql(PreparedStatement preparedStatement, int mode) throws SQLException, ExecutorException {
         switch (mode) {
-            case QUERY: return preparedStatement.executeQuery();
-            case BATCH & UPDATE: return preparedStatement.executeBatch();
-            case UPDATE:return preparedStatement.executeUpdate();
-            default:throw new ExecutorException("Unsupported PreparedStatement Mode '"+mode+"'");
+            case QUERY:
+                return preparedStatement.executeQuery();
+            case BATCH & UPDATE:
+                return preparedStatement.executeBatch();
+            case UPDATE:
+                return preparedStatement.executeUpdate();
+            default:
+                throw new ExecutorException("Unsupported PreparedStatement Mode '" + mode + "'");
         }
     }
 }
@@ -1178,6 +1233,7 @@ public abstract class ExecuteCycle {
 
 
 ```
+
 ##### BaseUpdateExecutor
 
 ```java
@@ -1465,7 +1521,6 @@ public abstract class BaseDeleteExecutor extends BaseExecutor {
 ```
 
 ##### BaseQueryExecutor
-
 
 ```java
 package com.maxwellnie.velox.jpa.framework.proxy.executor.query;
