@@ -2,17 +2,20 @@ package com.maxwellnie.velox.jpa.core.java.type.impl;
 
 import com.maxwellnie.velox.jpa.core.java.type.TypeConvertor;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 /**
  * @author Maxwell Nie
  */
 public class FloatConvertor implements TypeConvertor<Float> {
     @Override
-    public Float convert(Object original) {
-        if (original == null)
-            return 0.0f;
-        if (original instanceof Number)
-            return ((Number) original).floatValue();
-        else
-            return 0.0f;
+    public Float convert(ResultSet resultSet, String column) throws SQLException {
+        return resultSet.getFloat(column);
+    }
+
+    @Override
+    public Float convert(ResultSet resultSet, int columnIndex) throws SQLException {
+        return resultSet.getFloat(columnIndex);
     }
 }

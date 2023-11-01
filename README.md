@@ -579,7 +579,7 @@ public class DeleteOneExecutor implements Executor{
     }
 }
 ```
-强烈建议使用velox-jpa-framework提供的基础框架开发Executor。
+1.1版本后，强烈建议使用velox-jpa-framework提供的基础框架开发Executor。
 ##### ConvertorManager 
 
 TypeConvertor的管理器，可以注册、或者获取对应Java数据类型的转换器，用于查询数据库数据后转换从JDBC API获取到的数据。例如将java.sql.Date转换为java.util.Date
@@ -601,28 +601,34 @@ Executor和被注册方法的映射管理，最好不要在运行时注册映射
  * @author Maxwell Nie
  */
 public interface TypeConvertor<T> {
-    public T convert(Object original);
+    T convert(ResultSet resultSet, String column) throws SQLException;
+    T convert(ResultSet resultSet, int columnIndex) throws SQLException;
 }
 
-例如，我们需要将JDBC API查询出的Date转换，从类型java.sql.Date,java.sql.TimeStamp转换为java.util.Date，我们可以编写DateConvertor：
+例如，我们需要将JDBC API查询出的Date转换，从类型java.sql.TimeStamp转换为java.util.Date，我们可以编写DateConvertor：
 /**
  * @author Maxwell Nie
  */
 public class DateConvertor implements TypeConvertor<Date> {
     @Override
-    public Date convert(Object original) {
-        if (original == null)
+    public Date convert(ResultSet resultSet, String column) throws SQLException {
+        Timestamp timestamp = resultSet.getTimestamp(column);
+        if(timestamp!=null)
+            return new Date(timestamp.getTime());
+        else
             return null;
-        else if (original instanceof Time){
-            throw new TypeNotEqualsException("You want to get type of java.util.Date,but "+original+" is type of Time");
-        }else if(original instanceof Timestamp){
-            return new Date(((Timestamp) original).getTime());
-        }else if(original instanceof java.sql.Date){
-            return new Date(((java.sql.Date) original).getTime());
-        }else 
-            throw new TypeNotEqualsException("You want to get type of java.util.Date,but "+original+" is "+original.getClass().getName());
+    }
+
+    @Override
+    public Date convert(ResultSet resultSet, int columnIndex) throws SQLException {
+        Timestamp timestamp = resultSet.getTimestamp(columnIndex);
+        if(timestamp!=null)
+            return new Date(timestamp.getTime());
+        else
+            return null;
     }
 }
+
 ```
 
 ##### Generator主键值生成器

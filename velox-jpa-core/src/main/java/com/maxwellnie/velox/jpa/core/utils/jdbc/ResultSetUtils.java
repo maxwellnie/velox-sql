@@ -58,10 +58,10 @@ public class ResultSetUtils {
             try {
                 if (tableInfo.hasPk()) {
                     PrimaryInfo primaryInfo = tableInfo.getPkColumn();
-                    primaryInfo.getColumnMappedField().set(result, primaryInfo.getTypeConvertor().convert(resultSet.getObject(primaryInfo.getColumnName())));
+                    primaryInfo.getColumnMappedField().set(result, primaryInfo.getTypeConvertor().convert(resultSet,primaryInfo.getColumnName()));
                 }
                 for (ColumnInfo columnInfo : columnInfos) {
-                    columnInfo.getColumnMappedField().set(result, columnInfo.getTypeConvertor().convert(resultSet.getObject(columnInfo.getColumnName())));
+                    columnInfo.getColumnMappedField().set(result, columnInfo.getTypeConvertor().convert(resultSet,columnInfo.getColumnName()));
                 }
             } catch (IllegalAccessException | IllegalArgumentException e) {
                 throw new NotMappedFieldException("Your entity has a not mapped field,Please check your code!\t\n" + e.getCause());

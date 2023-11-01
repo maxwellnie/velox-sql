@@ -11,8 +11,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * 可转换为某个Java对象的元数据
- *
+ * 元数据
  * @author Maxwell Nie
  */
 public class MetaData {

@@ -3,8 +3,10 @@ package com.maxwellnie.velox.jpa.core.java.type.impl;
 import com.maxwellnie.velox.jpa.core.exception.TypeNotEqualsException;
 import com.maxwellnie.velox.jpa.core.java.type.TypeConvertor;
 
-import java.sql.Time;
 import java.sql.Timestamp;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Time;
 import java.util.Date;
 
 /**
@@ -12,16 +14,20 @@ import java.util.Date;
  */
 public class DateConvertor implements TypeConvertor<Date> {
     @Override
-    public Date convert(Object original) {
-        if (original == null)
+    public Date convert(ResultSet resultSet, String column) throws SQLException {
+        Timestamp timestamp = resultSet.getTimestamp(column);
+        if(timestamp!=null)
+            return new Date(timestamp.getTime());
+        else
             return null;
-        else if (original instanceof Time) {
-            throw new TypeNotEqualsException("You want to get type of java.util.Date,but " + original + " is type of Time");
-        } else if (original instanceof Timestamp) {
-            return new Date(((Timestamp) original).getTime());
-        } else if (original instanceof java.sql.Date) {
-            return new Date(((java.sql.Date) original).getTime());
-        } else
-            throw new TypeNotEqualsException("You want to get type of java.util.Date,but " + original + " is " + original.getClass().getName());
+    }
+
+    @Override
+    public Date convert(ResultSet resultSet, int columnIndex) throws SQLException {
+        Timestamp timestamp = resultSet.getTimestamp(columnIndex);
+        if(timestamp!=null)
+            return new Date(timestamp.getTime());
+        else
+            return null;
     }
 }

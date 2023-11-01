@@ -2,24 +2,20 @@ package com.maxwellnie.velox.jpa.core.java.type.impl;
 
 import com.maxwellnie.velox.jpa.core.java.type.TypeConvertor;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 /**
  * @author Maxwell Nie
  */
 public class BooleanConvertor implements TypeConvertor<Boolean> {
     @Override
-    public Boolean convert(Object original) {
-        if (original == null)
-            return false;
-        if (original instanceof Number) {
-            return ((Number) original).doubleValue() > 0;
-        } else if (original instanceof Boolean) {
-            return (Boolean) original;
-        } else {
-            try {
-                return Boolean.valueOf(original.toString());
-            } catch (NumberFormatException e) {
-                return false; // 转换失败，返回默认值
-            }
-        }
+    public Boolean convert(ResultSet resultSet, String column) throws SQLException {
+        return resultSet.getBoolean(column);
+    }
+
+    @Override
+    public Boolean convert(ResultSet resultSet, int columnIndex) throws SQLException {
+        return resultSet.getBoolean(columnIndex);
     }
 }
