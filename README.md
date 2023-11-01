@@ -2,14 +2,10 @@
 
 ### 什么是VeloxJPA？
 
-VeloxJPA是一款基于Java的，符合JPA规范的数据持久化框架，扩展性很强，可以无需书写SQL语句和声明Dao接口，由VeloxJPA为你实现Dao层的功能，VeloxJPA核心提供基本的框架，你可以根据自身需要，自定义或者是优化SQL来生产出符合业务场景的VeloxJPATemplate（数据持久化抽象模板），进而提升原Dao层的性能。
+VeloxJPA是一款基于Java的，符合JPA规范的数据持久化框架，扩展性很强，可以无需书写SQL语句和声明Dao接口，由VeloxJPA为你实现Dao层的功能，VeloxJPA核心提供基本的框架，你可以根据自身需要，自定义或者是优化SQL，以此增强JPA的功能，通过自定义开发产生的模块称之为velox-jpa-xxx-template。
 ### 适配性
 
-目前VeloxJPATemplate只适配了mysql5+ & Java8+ & spring 5+，你可以根据自身需求编写新的VeloxJPAOtherTemplate，以适配不同的数据库。
-
-### 安全漏洞警告
-
-由于 0.2.original 及以前的版本含有重大安全漏洞，进行了下架处理。
+目前velox-jpa只适配了mysql5+ & Java8+ & spring 5+，你可以根据自身需求编写新的，以适配不同的数据库。
 
 ### 使用文档
 
@@ -20,12 +16,12 @@ VeloxJPA是一款基于Java的，符合JPA规范的数据持久化框架，扩�
     <dependency>
         <groupId>io.github.maxwellnie</groupId>
         <artifactId>velox-jpa-core</artifactId>
-        <version>1.0</version>
+        <version>1.1</version>
     </dependency>
       <dependency>
         <groupId>io.github.maxwellnie</groupId>
         <artifactId>velox-jpa-core-template</artifactId>
-        <version>1.0</version>
+        <version>1.1</version>
     </dependency>
     <dependency>
         <groupId>mysql</groupId>
@@ -245,7 +241,7 @@ public  class User {
         <dependency>
             <groupId>io.github.maxwellnie</groupId>
             <artifactId>velox-jpa-core-template</artifactId>
-            <version>1.0</version>
+            <version>1.1</version>
         </dependency>
         <dependency>
             <groupId>net.bytebuddy</groupId>
@@ -354,7 +350,7 @@ public class Test {
             <dependency>
                 <groupId>io.github.maxwellnie</groupId>
                 <artifactId>velox-jpa-spring-boot-starer</artifactId>
-                <version>1.0</version>
+                <version>1.1</version>
             </dependency>
             <dependency>
                 <groupId>com.alibaba</groupId>
@@ -364,7 +360,7 @@ public class Test {
         <dependency>
             <groupId>io.github.maxwellnie</groupId>
             <artifactId>velox-jpa-core-template</artifactId>
-            <version>1.0</version>
+            <version>1.1</version>
         </dependency>
         <dependency>
             <groupId>net.bytebuddy</groupId>
@@ -583,7 +579,7 @@ public class DeleteOneExecutor implements Executor{
     }
 }
 ```
-
+强烈建议使用velox-jpa-framework提供的基础框架开发Executor。
 ##### ConvertorManager 
 
 TypeConvertor的管理器，可以注册、或者获取对应Java数据类型的转换器，用于查询数据库数据后转换从JDBC API获取到的数据。例如将java.sql.Date转换为java.util.Date
@@ -595,10 +591,6 @@ TypeConvertor的管理器，可以注册、或者获取对应Java数据类型的
 ##### MethodMappedManager 
 
 Executor和被注册方法的映射管理，最好不要在运行时注册映射到这个管理器，可能会产生未知的后果。
-
-##### TransactionManager 
-
-TransactionFactory的管理器，可以注册、或者获取对应名字的TransactionFactory，用于赋予操作数据库时JdbcContext的事务。可以获取到的值有JDBC_AUTO，即将被废弃，以后的版本可能就见不到它了，最好不用使用。
 
 ##### TypeConvertor<T> 类型转换器
 
@@ -639,15 +631,12 @@ public class DateConvertor implements TypeConvertor<Date> {
 
 ```java
 例如没有生成器的实例
-public class NoGenerator implements Generator {
-	private long seed=1; 
+public class NoGenerator implements KeyGenerator {
+
     @Override
     public Object nextKey() {
-        return nextKey(192939293L);
+        return null;
     }
-  	public long nextKey(long time){
-    	return time * seed;
-  	}
 }
 ```
 
