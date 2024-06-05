@@ -2,13 +2,23 @@
 
 ### 什么是VeloxSql？
 
-VeloxSql是一款基于Java的ORM框架，扩展性很强，可以使用少量SQL语句代码实现crud操作。
+VeloxSql是一款基于Java的ORM框架，扩展性很强，可以使用少量SQL语句、少量代码实现crud操作。
 
 ### 适配性
 
 Java8+ & spring 5+，需要实现方言接口适配数据库。
 
-### 使用文档
+### 示例
+
+Gitee仓库：<a href="https://gitee.com/maxwellnie/velox-sql-demo.git">示例代码<a/><br/>
+Github仓库：<a href="https://github.com/maxwellnie/velox-sql-demo.git">示例代码<a/>
+
+### Api文档
+
+Gitee仓库：<a href="https://gitee.com/maxwellnie/velox-sql-demo.git/apidocs/index.html">示例代码<a/><br/>
+Github仓库：<a href="https://github.com/maxwellnie/velox-sql-demo.git/apidocs/index.html">示例代码<a/>
+
+### 使用教程
 
 pom.xml添加依赖
 ```
