@@ -1,21 +1,21 @@
 # VeloxSql
 
-### 什么是VeloxSql？
+### What is VeloxSql？
 
-VeloxSql是一款基于Java的ORM框架，扩展性很强，可以使用少量SQL语句、少量代码实现crud操作。
+VeloxSql is a Java-based ORM framework with strong extensibility, which can use a small number of SQL statements and a small amount of code to achieve crud operations.
 
-### 适配性
+### Suitability
 
-Java8+ & spring 5+，需要实现方言接口适配数据库。
+Java8+ & spring 5+. The dialect interface adaptation database needs to be implemented.
 
-### 示例
+### Example
 
-Gitee仓库：<a href="https://gitee.com/maxwellnie/velox-sql-demo.git">示例代码<a/><br/>
-Github仓库：<a href="https://github.com/maxwellnie/velox-sql-demo.git">示例代码<a/>
+Gitee：<a href="https://gitee.com/maxwellnie/velox-sql-demo.git">example<a/><br/>
+Github：<a href="https://github.com/maxwellnie/velox-sql-demo.git">example<a/>
 
-### 使用教程
+### Tutorials
 
-pom.xml添加依赖
+pom.xml Add dependencies
 ```
 <dependencies>
     <dependency>
@@ -35,7 +35,7 @@ pom.xml添加依赖
     </dependency>
 </dependencies>
 ```
-配置文件application.yml添加velox-sql配置
+In application.yml you must add velox-sql configuration
 ```
 velox-sql:
   global:
@@ -45,7 +45,7 @@ velox-sql:
     cache: true
     is-task-queue: true
 ```
-编写实体类代码：
+Entity：
 ```
 @Getter
 @Setter
@@ -63,7 +63,7 @@ public class User extends Base implements Serializable {
     @PrimaryKey(strategyKey = KeyStrategyManager.JDBC_AUTO, convertor = IntegerConvertor.class)
     private int userId;
     /**
-     * 不排除这个数据库中没有的字段将报错。
+     * If you don't want to use the column, you can set it to exclusion
      */
     @Column(isExclusion = true)
     private Object voidColumn;
@@ -81,18 +81,18 @@ public class User extends Base implements Serializable {
     }
 }
 ```
-启动类设置扫描包：
+Set entities package path：
 ```
 @SpringBootApplication
-@DaoImplConf(value = "com.example.ttdemo.po")
-public class TtdemoApplication {
+@DaoImplConf(value = "com.example.demo.po")
+public class DemoApplication {
     public static void main(String[] args) {
-        SpringApplication.run(TtdemoApplication.class, args);
+        SpringApplication.run(DemoApplication.class, args);
     }
 
 }
 ```
-直接使用创建好的代理Dao对象：
+Use proxy object to access the database：
 ```
 @Controller("/")
 public class UserController {
@@ -105,7 +105,7 @@ public class UserController {
     }
 }
 ```
-测试用例：
+Test case：
 ```
 @SpringBootTest
 class TtdemoApplicationTests {
@@ -114,37 +114,37 @@ class TtdemoApplicationTests {
     @org.junit.jupiter.api.Test
     void test(){
         /**
-         * 测试查询
+         * Test query
          */
-        System.err.println("查询结果:"+userBaseDao.select(null).size());
+        System.err.println("query result:"+userBaseDao.select(null).size());
         /**
-         * 测试分页查询
+         * Test page
          */
-        System.err.println("分页结果:"+userBaseDao.selectPage(null, null).getResult());
+        System.err.println("page result:"+userBaseDao.selectPage(null, null).getResult());
         /**
-         * 测试插入
+         * Test insert
          */
         User user = new User();
         user.setLoginName("maxwell");
         user.setPassword("123456");
-        System.err.println("添加结果:"+userBaseDao.insert(user));
+        System.err.println("insert result:"+userBaseDao.insert(user));
         SqlDecorator<User> sqlDecorator = new SqlDecorator<User>().where().eq("user_id", user.getUserId()).build();
-        System.err.println("该条目:"+userBaseDao.select(sqlDecorator));
+        System.err.println("added entity:"+userBaseDao.select(sqlDecorator));
         /**
-         * 测试更新
+         * Test update
          */
         user.setLoginName("????sdjks");
-        System.err.println("更新结果:"+userBaseDao.update(user, sqlDecorator));
-        System.err.println("被更新条目:"+userBaseDao.select(sqlDecorator));
+        System.err.println("update result:"+userBaseDao.update(user, sqlDecorator));
+        System.err.println("query result:"+userBaseDao.select(sqlDecorator));
         /**
-         * 测试删除
+         * Test delete
          */
-        System.err.println("删除结果:"+userBaseDao.delete(sqlDecorator));
-        System.err.println("该条目:"+userBaseDao.select(sqlDecorator));
+        System.err.println("delete result:"+userBaseDao.delete(sqlDecorator));
+        System.err.println("query result:"+userBaseDao.select(sqlDecorator));
         /**
-         * 测试查询条目
+         * Test count
          */
-        System.err.println("总数据量:"+userBaseDao.count(null));
+        System.err.println("count:"+userBaseDao.count(null));
 
     }
 }
