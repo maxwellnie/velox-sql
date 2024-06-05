@@ -1,0 +1,43 @@
+{
+  "groups": [
+    {
+      "name": "velox-sql",
+      "type": "com.maxwellnie.velox.sql.spring.boot.VeloxSqlBootConfiguration",
+      "sourceType": "com.maxwellnie.velox.sql.spring.boot.VeloxSqlBootConfiguration"
+    }
+  ],
+  "properties": [
+    {
+      "name": "velox-sql.cache",
+      "type": "java.lang.Boolean",
+      "sourceType": "com.maxwellnie.velox.sql.spring.boot.VeloxSqlBootConfiguration"
+    },
+    {
+      "name": "velox-sql.level",
+      "type": "java.lang.Integer",
+      "sourceType": "com.maxwellnie.velox.sql.spring.boot.VeloxSqlBootConfiguration"
+    },
+    {
+      "name": "velox-sql.stand-column",
+      "type": "java.lang.Boolean",
+      "sourceType": "com.maxwellnie.velox.sql.spring.boot.VeloxSqlBootConfiguration"
+    },
+    {
+      "name": "velox-sql.stand-table",
+      "type": "java.lang.Boolean",
+      "sourceType": "com.maxwellnie.velox.sql.spring.boot.VeloxSqlBootConfiguration"
+    },
+    {
+      "name": "velox-sql.table-prefix",
+      "type": "java.lang.String",
+      "sourceType": "com.maxwellnie.velox.sql.spring.boot.VeloxSqlBootConfiguration"
+    },
+    {
+      "name": "velox-sql.table-info-utils-class",
+      "type": "java.lang.String",
+      "sourceType": "com.maxwellnie.velox.sql.spring.boot.VeloxSqlBootConfiguration"
+    }
+  ],
+  "hints": [
+  ]
+}

@@ -5,11 +5,9 @@
     <modelVersion>4.0.0</modelVersion>
     <packaging>pom</packaging>
     <modules>
-        <module>velox-jpa-core</module>
-        <module>velox-jpa-spring</module>
-        <module>velox-jpa-core-template</module>
-        <module>velox-jpa-spring-boot-starer</module>
-        <module>velox-jpa-framework</module>
+        <module>velox-sql-core</module>
+        <module>velox-sql-spring</module>
+        <module>velox-sql-spring-boot-starter</module>
     </modules>
     <parent>
         <groupId>org.sonatype.oss</groupId>
@@ -18,8 +16,8 @@
     </parent>
 
     <groupId>io.github.maxwellnie</groupId>
-    <artifactId>velox-jpa</artifactId>
-    <version>1.1</version>
+    <artifactId>velox-sql</artifactId>
+    <version>1.1.1</version>
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
@@ -58,9 +56,9 @@
         </dependency>
     </dependencies>
     <scm>
-        <connection>scm:git@github.com:maxwellnie/velox-jpa.git</connection>
-        <developerConnection>scm:git@github.com:maxwellnie/velox-jpa.git</developerConnection>
-        <url>git@github.com:maxwellnie/velox-jpa.git</url>
+        <connection>scm:git@github.com:maxwellnie/velox-sql.git</connection>
+        <developerConnection>scm:git@github.com:maxwellnie/velox-sql.git</developerConnection>
+        <url>git@github.com:maxwellnie/velox-sql.git</url>
     </scm>
     <distributionManagement>
         <snapshotRepository>
