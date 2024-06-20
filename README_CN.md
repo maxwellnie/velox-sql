@@ -323,5 +323,65 @@ public class VeloxSqlConfig {
     }
 }
 ```
-# 写给正在找选题的你
-    不要抄袭这个项目偶，这个项目是毕设，当心院校库查重过不去。
+### 适配新的类型
+我们可以通过实现Convertor接口，将自定义类型转换为数据库类型：
+```java
+public class BigDecimalConvertor implements TypeConvertor<BigDecimal> {
+    @Override
+    public BigDecimal convert(ResultSet resultSet, String column) throws SQLException {
+        BigDecimal value = resultSet.getBigDecimal(column);
+        if (value == null)
+            return new BigDecimal("0");
+        else
+            return value;
+    }
+    //数据库数据转换到Java类型
+    @Override
+    public BigDecimal convert(ResultSet resultSet, int columnIndex) throws SQLException {
+        BigDecimal value = resultSet.getBigDecimal(columnIndex);
+        if (value == null)
+            return new BigDecimal("0");
+        else
+            return value;
+    }
+    //Java对象设置到数据库
+    @Override
+    public void addParam(PreparedStatement preparedStatement, int index, Object param) throws SQLException {
+        if(param == null)
+            preparedStatement.setBigDecimal(index, null);
+        else if (param instanceof String)
+            preparedStatement.setBigDecimal(index, new BigDecimal((String) param));
+        else if (param instanceof Number)
+            preparedStatement.setBigDecimal(index, new BigDecimal(param.toString()));
+        else
+            throw new TypeConvertException("The param ["+param+"] is not convert to java.math.BigDecimal");
+    }
+    //空值
+    @Override
+    public BigDecimal getEmpty() {
+        return new BigDecimal("0");
+    }
+}
+```
+然后在需要这个类型转换器的列指定类型转换器：
+```java
+@Getter
+@Setter
+@Entity("tb_user")
+@JoinTable(slaveTableName = "tb_role", masterTableField = "roleId", slaveTableColumn = "role_id", joinType = JoinType.LEFT, isManyToMany = false)
+public class User implements Serializable {
+    //指定类型转换器
+    @PrimaryKey(strategyKey = KeyStrategyManager.JDBC_AUTO, convertor = IntegerConvertor.class)
+    private int userId;
+    private String loginName;
+    private String password;
+    @SlaveField(slaveTableName = "tb_role")//标记为从表字段
+    private int roleId;
+    @SlaveField(slaveTableName = "tb_role")//标记为从表字段
+    private String roleName;
+}
+```
+# 致谢
+这是我大学毕设答辩的题目，并且它获得了一个很高的分数，我希望这个项目能逐渐成长为更适合主流网站的ORM框架，如果你愿意为此项目做贡献，我将不胜感激。
+# 联系我们
+邮箱：maxwellnie@qq.com
