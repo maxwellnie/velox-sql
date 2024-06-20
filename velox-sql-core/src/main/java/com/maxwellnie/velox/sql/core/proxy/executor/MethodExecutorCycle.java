@@ -11,6 +11,7 @@ import com.maxwellnie.velox.sql.core.natives.jdbc.sql.row.RowSql;
 import com.maxwellnie.velox.sql.core.natives.jdbc.statement.StatementWrapper;
 import com.maxwellnie.velox.sql.core.natives.jdbc.table.TableInfo;
 import com.maxwellnie.velox.sql.core.natives.task.TaskQueue;
+import com.maxwellnie.velox.sql.core.natives.type.Empty;
 import com.maxwellnie.velox.sql.core.proxy.executor.aspect.AbstractMethodHandler;
 import com.maxwellnie.velox.sql.core.proxy.executor.aspect.MethodHandler;
 import com.maxwellnie.velox.sql.core.proxy.executor.aspect.SimpleInvocation;
@@ -27,8 +28,8 @@ import java.util.concurrent.atomic.AtomicReference;
  * @author Maxwell Nie
  */
 public class MethodExecutorCycle {
-    public static Object start(MethodExecutor executor, Logger logger, TableInfo tableInfo, JdbcSession context, Cache cache, String daoImplHashCode, ReturnTypeMapping returnTypeMapping, Object[] args) throws ExecutorException {
-        executor.check(tableInfo, context, args);
+    public static Object start(MethodExecutor executor, Logger logger, TableInfo tableInfo, JdbcSession jdbcSession, Cache cache, String daoImplHashCode, ReturnTypeMapping returnTypeMapping, Object[] args) throws ExecutorException {
+        executor.check(tableInfo, jdbcSession, args);
         // 元数据
         MetaData metaData = executor.prepared(tableInfo, args);
         // 构建SQL
@@ -36,45 +37,51 @@ public class MethodExecutorCycle {
         if (rowSql != null) {
             long startTime = SystemClock.now();
             // 打开Statement
-            StatementWrapper statementWrapper = executor.openStatement(rowSql, context, tableInfo, args);
+            StatementWrapper statementWrapper = executor.openStatement(rowSql, jdbcSession, tableInfo, args);
             // 绑定元数据
             statementWrapper.getMetaData().addFromMetaData(metaData);
             logger.debug("SQL ### : " + rowSql.getNativeSql());
             logger.debug("PARAM # : " + rowSql.getParams());
             // 缓存Key
-            CacheKey cacheKey = new CacheKey(tableInfo.getMappedClazz(), rowSql.getNativeSql(), daoImplHashCode);
+            CacheKey cacheKey = new CacheKey(tableInfo.getMappedClazz(), rowSql.getNativeSql(), jdbcSession.getTransaction().getHolderObject(), daoImplHashCode);
             // 缓存Key添加参数
             for (List<Object> params : rowSql.getParams())
                 cacheKey.addParams(params);
             // 缓存Key添加Statement
             statementWrapper.addProperty("cacheKey", cacheKey);
             AtomicReference<Object> result = new AtomicReference<>();
-            TaskQueue taskQueue = context.getTaskQueue();
+            TaskQueue taskQueue = jdbcSession.getTaskQueue();
             if (rowSql.getSqlType().equals(SqlType.QUERY) && cache != null) {
                 result.set(cache.get(cacheKey));
                 if (result.get() != null) {
                     logger.debug("Cache hit.");
-                    return result.get();
+                    Object value = result.get();
+                    if (value == Empty.EMPTY)
+                        return null;
+                    return value;
                 } else if(taskQueue != null) {
                     taskQueue.require(daoImplHashCode, cacheKey, () -> {
-                        if (rowSql.getSqlType().equals(SqlType.QUERY) && cache != null) {
+                        if (rowSql.getSqlType().equals(SqlType.QUERY)) {
                             result.set(cache.get(cacheKey));
                             if (result.get() == null) {
                                 result.set(executor.runSql(statementWrapper, rowSql));
-                                result.set(handleResult(executor, logger, tableInfo, context, cache, returnTypeMapping, startTime, statementWrapper, result));
+                                result.set(handleResult(executor, logger, tableInfo, jdbcSession, cache, returnTypeMapping, startTime, statementWrapper, result));
                             }else
                                 logger.debug("Cache hit.");
                         } else {
                             result.set(executor.runSql(statementWrapper, rowSql));
-                            result.set(handleResult(executor, logger, tableInfo, context, cache, returnTypeMapping, startTime, statementWrapper, result));
+                            result.set(handleResult(executor, logger, tableInfo, jdbcSession, cache, returnTypeMapping, startTime, statementWrapper, result));
                         }
                     });
-                    return result.get();
+                    Object value = result.get();
+                    if (value == Empty.EMPTY)
+                        return null;
+                    return value;
                 }else
                     result.set(executor.runSql(statementWrapper, rowSql));
             }else
                 result.set(executor.runSql(statementWrapper, rowSql));
-            return handleResult(executor, logger, tableInfo, context, cache, returnTypeMapping, startTime, statementWrapper, result);
+            return handleResult(executor, logger, tableInfo, jdbcSession, cache, returnTypeMapping, startTime, statementWrapper, result);
         }
         throw new ExecutorException("rowSql build failed,rowSql is null.");
     }

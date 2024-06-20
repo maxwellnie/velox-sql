@@ -2,6 +2,7 @@ package com.maxwellnie.velox.sql.core.cache.key;
 
 import com.maxwellnie.velox.sql.core.utils.common.CollectionUtils;
 
+import javax.sql.DataSource;
 import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.util.*;
@@ -11,12 +12,14 @@ public class CacheKey implements Serializable {
     private final List<Object> values = Collections.synchronizedList(new LinkedList<>());
     private Class<?> clazz;
     private String sql;
+    private DataSource dataSource;
     private String daoImplHashCode;
 
-    public CacheKey(Class<?> clazz, String sql, String daoImplHashCode) {
+    public CacheKey(Class<?> clazz, String sql, DataSource dataSource, String daoImplHashCode) {
         this.clazz = clazz;
         this.sql = sql;
         this.daoImplHashCode = daoImplHashCode;
+        this.dataSource = dataSource;
     }
 
     public String getDaoImplHashCode() {
@@ -42,6 +45,15 @@ public class CacheKey implements Serializable {
     public void setSql(String sql) {
         this.sql = sql;
     }
+
+    public DataSource getDataSource() {
+        return dataSource;
+    }
+
+    public void setDataSource(DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
+
     /**
      * 增加参数
      * @param value 可以是数组，也可以是集合
@@ -64,7 +76,7 @@ public class CacheKey implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         CacheKey key = (CacheKey) o;
-        if (!(Objects.equals(clazz, key.clazz) && Objects.equals(sql, key.sql) && Objects.equals(daoImplHashCode, key.daoImplHashCode)))
+        if (!(Objects.equals(clazz, key.clazz) && Objects.equals(sql, key.sql) && Objects.equals(daoImplHashCode, key.daoImplHashCode) && Objects.equals(dataSource, key.dataSource)))
             return false;
         if (this.values.size() != key.values.size())
             return false;
@@ -77,7 +89,7 @@ public class CacheKey implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(clazz, sql, daoImplHashCode, values);
+        return Objects.hash(clazz, sql, daoImplHashCode, dataSource, values);
     }
 
     @Override
@@ -85,6 +97,8 @@ public class CacheKey implements Serializable {
         StringJoiner joiner = new StringJoiner(":");
         joiner.add(clazz.getName())
                 .add(daoImplHashCode)
+                .add(dataSource.getClass().getName())
+                .add(String.valueOf(dataSource.hashCode()))
                 .add(sql);
         for (Object value : values)
             if (value != null)
@@ -93,4 +107,5 @@ public class CacheKey implements Serializable {
                 joiner.add("null");
         return joiner.toString();
     }
+
 }
