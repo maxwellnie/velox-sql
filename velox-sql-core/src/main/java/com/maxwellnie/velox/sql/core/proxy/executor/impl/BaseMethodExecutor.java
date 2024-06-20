@@ -16,6 +16,7 @@ import com.maxwellnie.velox.sql.core.natives.jdbc.sql.runner.SqlExecutor;
 import com.maxwellnie.velox.sql.core.natives.jdbc.statement.StatementWrapper;
 import com.maxwellnie.velox.sql.core.natives.jdbc.table.TableInfo;
 import com.maxwellnie.velox.sql.core.natives.task.TaskQueue;
+import com.maxwellnie.velox.sql.core.natives.type.Empty;
 import com.maxwellnie.velox.sql.core.proxy.executor.MethodExecutor;
 import com.maxwellnie.velox.sql.core.proxy.executor.result.SqlResult;
 import com.maxwellnie.velox.sql.core.utils.common.MetaWrapperUtils;
@@ -100,7 +101,10 @@ public abstract class BaseMethodExecutor implements MethodExecutor {
      */
     protected void doFlushCache(SqlResult sqlResult, Cache cache, CacheTransactional dirtyManager, boolean isTransactional) {
         if (dirtyManager != null && isTransactional) {
-            dirtyManager.get(cache).put(sqlResult.getCacheKey(), sqlResult.getResult());
+            Object value = sqlResult.getResult();
+            if(value == null)
+                value = Empty.EMPTY;
+            dirtyManager.get(cache).put(sqlResult.getCacheKey(), value);
         } else {
             cache.put(sqlResult.getCacheKey(), sqlResult.getResult());
         }

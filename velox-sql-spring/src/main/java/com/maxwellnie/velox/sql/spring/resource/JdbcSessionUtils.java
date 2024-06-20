@@ -97,7 +97,7 @@ public abstract class JdbcSessionUtils {
     private static void registerJdbcContextHolder(JdbcSessionFactory jdbcSessionFactory, JdbcSession jdbcSession) {
         JdbcSessionHolder holder;
         if (TransactionSynchronizationManager.isSynchronizationActive()) {
-            Context context = jdbcSessionFactory.getContext();
+            Context context = jdbcSessionFactory.getHolderObject();
 
             if (context.getTransactionFactory() instanceof SpringTransactionFactory) {
                 holder = new JdbcSessionHolder(jdbcSession);
@@ -108,7 +108,7 @@ public abstract class JdbcSessionUtils {
                 holder.requested();
                 logger.debug("The JdbcSession " + jdbcSession + " is transactional.");
             } else {
-                if (TransactionSynchronizationManager.getResource(context.getDataSource()) == null) {
+                if (TransactionSynchronizationManager.getResource(context.getTransactionFactory().getDefaultDataSource()) == null) {
                     logger.warn("Registered failed,DataSource is not transactional");
                 } else {
                     throw new TransientDataAccessResourceException(
@@ -150,7 +150,7 @@ public abstract class JdbcSessionUtils {
         private boolean isActive = true;
 
         public JdbcSessionSynchronization(JdbcSessionHolder jdbcSessionHolder, JdbcSessionFactory jdbcSessionFactory) {
-            notNull(jdbcSessionHolder, "JdbcSessionHolder must be not null");
+            notNull(jdbcSessionHolder, "ConnectionHolder must be not null");
             notNull(jdbcSessionFactory, "JdbcSessionFactory must be not null");
             this.jdbcSessionHolder = jdbcSessionHolder;
             this.jdbcSessionFactory = jdbcSessionFactory;

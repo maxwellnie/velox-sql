@@ -10,21 +10,22 @@ import java.util.Map;
  * @author Maxwell Nie
  */
 public interface TransactionFactory {
-    Transaction produce(DataSource dataSource);
+    Transaction produce();
 
     /**
      * it's mainly method,must be implemented.
      *
-     * @param dataSource
      * @param autoCommit
      * @param level
      * @return Transaction Object
      */
-    Transaction produce(DataSource dataSource, boolean autoCommit, int level);
+    Transaction produce(boolean autoCommit, int level);
 
     Transaction produce(Connection connection);
 
     Transaction produce(Map<?, ?> map);
 
     Transaction produce(Object[] param);
+
+    DataSource getDefaultDataSource();
 }

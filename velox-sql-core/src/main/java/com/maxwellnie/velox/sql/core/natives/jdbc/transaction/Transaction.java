@@ -1,7 +1,10 @@
 package com.maxwellnie.velox.sql.core.natives.jdbc.transaction;
 
-import com.maxwellnie.velox.sql.core.natives.jdbc.session.JdbcSessionHolder;
+import com.maxwellnie.velox.sql.core.natives.jdbc.session.ConnectionHolder;
+import com.maxwellnie.velox.sql.core.natives.resource.ResourceHolder;
 
+import javax.sql.DataSource;
+import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
@@ -9,7 +12,7 @@ import java.sql.SQLException;
  *
  * @author Maxwell Nie
  */
-public interface Transaction extends JdbcSessionHolder {
+public interface Transaction extends ConnectionHolder, ResourceHolder<DataSource> {
     /**
      * 数据回滚
      *

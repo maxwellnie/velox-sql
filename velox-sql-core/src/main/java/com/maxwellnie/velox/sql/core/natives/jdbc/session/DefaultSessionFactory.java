@@ -24,11 +24,11 @@ public class DefaultSessionFactory implements JdbcSessionFactory {
     public JdbcSession produce(boolean autoCommit) {
         return new DefaultJdbcSession(
                         context.getTransactionFactory().
-                        produce(context.getDataSource(), autoCommit, context.getLevel()), autoCommit, context.getTaskQueue());
+                        produce(autoCommit, context.getLevel()), autoCommit, context.getTaskQueue());
     }
 
     @Override
-    public Context getContext() {
+    public Context getHolderObject() {
         return this.context;
     }
 }

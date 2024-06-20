@@ -12,7 +12,7 @@ import com.maxwellnie.velox.sql.core.natives.jdbc.transaction.TransactionFactory
 import com.maxwellnie.velox.sql.core.natives.task.TaskQueue;
 import com.maxwellnie.velox.sql.core.utils.java.StringUtils;
 import com.maxwellnie.velox.sql.core.utils.reflect.ReflectionUtils;
-import com.maxwellnie.velox.sql.core.utils.reflect.TableInfoUtils;
+import com.maxwellnie.velox.sql.core.natives.jdbc.table.TableInfoManager;
 import com.maxwellnie.velox.sql.spring.Version;
 import com.maxwellnie.velox.sql.spring.listener.event.ContextCreationEvent;
 import com.maxwellnie.velox.sql.spring.listener.event.PostContextCreationEvent;
@@ -85,15 +85,15 @@ public class JdbcSessionFactoryBean extends SpringStyleConfiguration implements 
             throw new VeloxImplConfigException("The datasource must be not null.");
         }
         Context context;
-        TransactionFactory transactionFactory = new SpringTransactionFactory();
+        TransactionFactory transactionFactory = new SpringTransactionFactory(dataSource);
         pushEvent(new ContextCreationEvent(configuration, dataSource, transactionFactory));
         if (StringUtils.isNullOrEmpty(tableInfoUtilsClass)){
-            context = new Context(transactionFactory, dataSource, configuration);
+            context = new Context(transactionFactory, configuration);
         } else {
             try {
-                Class<? extends TableInfoUtils> clazz = (Class<? extends TableInfoUtils>) Class.forName(tableInfoUtilsClass);
-                TableInfoUtils tableInfoUtils = clazz.getConstructor().newInstance();
-                context = new Context(new SpringTransactionFactory(), dataSource, configuration, tableInfoUtils);
+                Class<? extends TableInfoManager> clazz = (Class<? extends TableInfoManager>) Class.forName(tableInfoUtilsClass);
+                TableInfoManager tableInfoManager = clazz.getConstructor().newInstance();
+                context = new Context(new SpringTransactionFactory(dataSource), configuration, tableInfoManager);
             } catch (ClassNotFoundException | ClassCastException | NoSuchMethodException | InstantiationException |
                      IllegalAccessException | InvocationTargetException e) {
                 logger.error("The tableInfoUtils class not found or not cast.\t\nmessage:" + e.getMessage() + "\t\ncause:" + e.getCause());
