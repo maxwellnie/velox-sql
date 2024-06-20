@@ -4,6 +4,16 @@
 
 VeloxSql is a Java-based ORM framework with strong extensibility, which can use a small number of SQL statements and a small amount of code to achieve crud operations.
 
+### Features
+* Lightweight
+* Strong scalability
+* Cache support, to ensure data consistency, buffer penetration and buffer avalanches
+* Support a variety of databases, only need to write dialect adaptation classes
+* Multi-data source real-time switching, the ability to dynamically switch data sources while the application is running
+* Supports associated query of multiple tables
+* Support paging query
+* Batch processing
+
 ### Suitability
 
 Java8+ & spring 5+. The dialect interface adaptation database needs to be implemented.

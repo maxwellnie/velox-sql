@@ -131,7 +131,7 @@
                 <configuration>
                     <publishingServerId>ossrh</publishingServerId>
                     <tokenAuth>true</tokenAuth>
-                    <deploymentName>velox-sql-1.1.1</deploymentName>
+                    <deploymentName>velox-sql</deploymentName>
                 </configuration>
             </plugin>
         </plugins>
