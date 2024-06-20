@@ -1,6 +1,6 @@
 package com.maxwellnie.velox.sql.core.natives.jdbc.resultset.parser;
 
-import com.maxwellnie.velox.sql.core.manager.ConvertorManager;
+import com.maxwellnie.velox.sql.core.natives.type.convertor.ConvertorManager;
 import com.maxwellnie.velox.sql.core.meta.MetaData;
 import com.maxwellnie.velox.sql.core.meta.MetaObject;
 import com.maxwellnie.velox.sql.core.natives.exception.TypeMappingException;
@@ -18,7 +18,7 @@ import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static com.maxwellnie.velox.sql.core.manager.ConvertorManager.DEFAULT_CONVERTOR;
+import static com.maxwellnie.velox.sql.core.natives.type.convertor.ConvertorManager.DEFAULT_CONVERTOR;
 
 
 /**

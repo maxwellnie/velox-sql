@@ -6,6 +6,6 @@ import java.sql.SQLException;
 /**
  * @author Maxwell Nie
  */
-public interface JdbcSessionHolder {
+public interface ConnectionHolder {
     Connection getConnection() throws SQLException;
 }

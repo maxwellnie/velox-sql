@@ -1,6 +1,6 @@
 package com.maxwellnie.velox.sql.core.natives.jdbc.sql.row;
 
-import com.maxwellnie.velox.sql.core.manager.ConvertorManager;
+import com.maxwellnie.velox.sql.core.natives.type.convertor.ConvertorManager;
 import com.maxwellnie.velox.sql.core.meta.MetaData;
 import com.maxwellnie.velox.sql.core.natives.dao.SqlDecorator;
 import com.maxwellnie.velox.sql.core.natives.exception.ExecutorException;

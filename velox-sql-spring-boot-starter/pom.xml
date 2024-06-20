@@ -5,7 +5,7 @@
     <parent>
         <artifactId>velox-sql</artifactId>
         <groupId>io.github.maxwellnie</groupId>
-        <version>1.1.1</version>
+        <version>1.2.1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <description>Spring boot support</description>
@@ -31,7 +31,7 @@
         <dependency>
             <groupId>io.github.maxwellnie</groupId>
             <artifactId>velox-sql-spring</artifactId>
-            <version>1.1.1</version>
+            <version>1.2.1</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>

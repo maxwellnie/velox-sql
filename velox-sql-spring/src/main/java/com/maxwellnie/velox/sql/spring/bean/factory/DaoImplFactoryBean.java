@@ -19,10 +19,10 @@ public class DaoImplFactoryBean<T> implements FactoryBean<T> {
     public T getObject() {
         notNull(entityClass, "DaoImplFactoryBean need an class object of entity.");
         if (daoImplFactory == null) {
-            jdbcSessionFactory.getContext().addDaoImpl(entityClass);
-            daoImplFactory = jdbcSessionFactory.getContext().getDaoImplFactory(entityClass);
+            jdbcSessionFactory.getHolderObject().addDaoImpl(entityClass);
+            daoImplFactory = jdbcSessionFactory.getHolderObject().getDaoImplFactory(entityClass);
         }
-        return daoImplFactory.produce(null, jdbcSessionFactory.getContext().getMethodMappedManager());
+        return daoImplFactory.produce(null, jdbcSessionFactory.getHolderObject().getMethodMappedManager());
     }
 
     @Override

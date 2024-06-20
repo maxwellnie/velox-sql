@@ -1,7 +1,7 @@
 package com.maxwellnie.velox.sql.core.natives.jdbc.sql.row;
 
 import com.maxwellnie.velox.sql.core.config.simple.SingletonConfiguration;
-import com.maxwellnie.velox.sql.core.manager.ConvertorManager;
+import com.maxwellnie.velox.sql.core.natives.type.convertor.ConvertorManager;
 import com.maxwellnie.velox.sql.core.meta.MetaData;
 import com.maxwellnie.velox.sql.core.natives.dao.SqlDecorator;
 import com.maxwellnie.velox.sql.core.natives.exception.ExecutorException;
@@ -13,7 +13,7 @@ import com.maxwellnie.velox.sql.core.natives.jdbc.table.column.ColumnInfo;
 import com.maxwellnie.velox.sql.core.natives.jdbc.table.join.JoinInfo;
 import com.maxwellnie.velox.sql.core.natives.type.convertor.TypeConvertor;
 import com.maxwellnie.velox.sql.core.utils.java.StringUtils;
-import com.maxwellnie.velox.sql.core.utils.reflect.TableInfoUtils;
+import com.maxwellnie.velox.sql.core.natives.jdbc.table.TableInfoManager;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -123,14 +123,14 @@ public class QueryRowSqlFactory implements RowSqlFactory {
             TableInfo joinedTableInfo;
             boolean needAs = StringUtils.isNotNullOrEmpty(aliasSlaveTable);
             if(joinInfo.isNotNested()){
-                joinedTableInfo = TableInfoUtils.getTableInfo(tableInfo.getMappedClazz().getName() + " - " + joinInfo.getSlaveTableName());
+                joinedTableInfo = TableInfoManager.getTableInfo(tableInfo.getMappedClazz().getName() + " - " + joinInfo.getSlaveTableName());
                 if (!needAs) {
                     aliasSlaveTable = joinInfo.getSlaveTableName();
                 }
                 slaveTableName = joinInfo.getSlaveTableName();
                 slaveTableColumn = joinInfo.getSlaveTableColumn();
             }else {
-                joinedTableInfo = TableInfoUtils.getTableInfo(joinInfo.getSlaveTable());
+                joinedTableInfo = TableInfoManager.getTableInfo(joinInfo.getSlaveTable());
                 if (!needAs) {
                     aliasSlaveTable = joinedTableInfo.getTableName();
                 }

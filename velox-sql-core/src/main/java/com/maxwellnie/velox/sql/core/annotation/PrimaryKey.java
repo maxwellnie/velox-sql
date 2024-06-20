@@ -2,7 +2,7 @@ package com.maxwellnie.velox.sql.core.annotation;
 
 import com.maxwellnie.velox.sql.core.natives.type.convertor.TypeConvertor;
 import com.maxwellnie.velox.sql.core.natives.type.convertor.impl.DefaultConvertor;
-import com.maxwellnie.velox.sql.core.manager.KeyStrategyManager;
+import com.maxwellnie.velox.sql.core.natives.jdbc.table.primary.KeyStrategyManager;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

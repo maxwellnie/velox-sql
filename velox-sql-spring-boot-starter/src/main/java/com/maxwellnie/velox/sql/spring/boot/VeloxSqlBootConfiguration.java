@@ -10,11 +10,11 @@ import org.springframework.boot.context.properties.NestedConfigurationProperty;
  */
 @ConfigurationProperties(prefix = "velox-sql")
 public class VeloxSqlBootConfiguration {
-    private String tableInfoUtilsClass;
+    private String tableInfoManagerClass;
     @NestedConfigurationProperty
     private Configuration global = SingletonConfiguration.getInstance();
-    public String getTableInfoUtilsClass() {
-        return tableInfoUtilsClass;
+    public String getTableInfoManagerClass() {
+        return tableInfoManagerClass;
     }
 
     public Configuration getGlobal() {
@@ -25,7 +25,7 @@ public class VeloxSqlBootConfiguration {
         this.global = configuration;
     }
 
-    public void setTableInfoUtilsClass(String tableInfoUtilsClass) {
-        this.tableInfoUtilsClass = tableInfoUtilsClass;
+    public void setTableInfoManagerClass(String tableInfoManagerClass) {
+        this.tableInfoManagerClass = tableInfoManagerClass;
     }
 }

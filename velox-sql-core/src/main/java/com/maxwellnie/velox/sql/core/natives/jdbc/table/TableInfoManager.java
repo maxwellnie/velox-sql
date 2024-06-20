@@ -1,19 +1,19 @@
-package com.maxwellnie.velox.sql.core.utils.reflect;
+package com.maxwellnie.velox.sql.core.natives.jdbc.table;
 
 import com.maxwellnie.velox.sql.core.annotation.*;
 import com.maxwellnie.velox.sql.core.config.Configuration;
-import com.maxwellnie.velox.sql.core.manager.ConvertorManager;
+import com.maxwellnie.velox.sql.core.natives.type.convertor.ConvertorManager;
 import com.maxwellnie.velox.sql.core.meta.MetaData;
 import com.maxwellnie.velox.sql.core.natives.concurrent.ThreadLock;
 import com.maxwellnie.velox.sql.core.natives.exception.EntityObjectException;
 import com.maxwellnie.velox.sql.core.natives.exception.TableException;
-import com.maxwellnie.velox.sql.core.natives.jdbc.table.TableInfo;
 import com.maxwellnie.velox.sql.core.natives.jdbc.table.column.ColumnInfo;
 import com.maxwellnie.velox.sql.core.natives.jdbc.table.column.PrimaryInfo;
 import com.maxwellnie.velox.sql.core.natives.jdbc.table.join.JoinInfo;
 import com.maxwellnie.velox.sql.core.natives.type.convertor.TypeConvertor;
 import com.maxwellnie.velox.sql.core.natives.type.convertor.impl.DefaultConvertor;
 import com.maxwellnie.velox.sql.core.utils.java.StringUtils;
+import com.maxwellnie.velox.sql.core.utils.reflect.ReflectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,8 +27,8 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * 表信息工具类
  * @author Maxwell Nie
  */
-public abstract class TableInfoUtils {
-    private static final Logger logger = LoggerFactory.getLogger(TableInfoUtils.class);
+public abstract class TableInfoManager {
+    private static final Logger logger = LoggerFactory.getLogger(TableInfoManager.class);
     /**
      * 缓存表信息
      */

@@ -1,17 +1,17 @@
 package com.maxwellnie.velox.sql.core.natives.jdbc.mapping;
 
-import com.maxwellnie.velox.sql.core.manager.ConvertorManager;
+import com.maxwellnie.velox.sql.core.natives.type.convertor.ConvertorManager;
 import com.maxwellnie.velox.sql.core.meta.MetaData;
 import com.maxwellnie.velox.sql.core.natives.jdbc.table.TableInfo;
 import com.maxwellnie.velox.sql.core.natives.jdbc.table.column.ColumnInfo;
 import com.maxwellnie.velox.sql.core.natives.jdbc.table.column.PrimaryInfo;
 import com.maxwellnie.velox.sql.core.natives.jdbc.table.join.JoinInfo;
 import com.maxwellnie.velox.sql.core.utils.java.TypeUtils;
-import com.maxwellnie.velox.sql.core.utils.reflect.TableInfoUtils;
+import com.maxwellnie.velox.sql.core.natives.jdbc.table.TableInfoManager;
 
 import java.util.*;
 
-import static com.maxwellnie.velox.sql.core.manager.ConvertorManager.DEFAULT_CONVERTOR;
+import static com.maxwellnie.velox.sql.core.natives.type.convertor.ConvertorManager.DEFAULT_CONVERTOR;
 
 /**
  * 类型解析器，用于解析返回值类型
@@ -20,7 +20,7 @@ import static com.maxwellnie.velox.sql.core.manager.ConvertorManager.DEFAULT_CON
 public class DefaultTypeParser implements TypeParser{
     @Override
     public ReturnTypeMapping parse(Class<?> returnType, Class<?> entityClass) {
-        return parse(returnType, TableInfoUtils.getTableInfo(entityClass));
+        return parse(returnType, TableInfoManager.getTableInfo(entityClass));
     }
     @Override
     public ReturnTypeMapping parse(Class<?> returnType, TableInfo tableInfo) {
@@ -91,14 +91,14 @@ public class DefaultTypeParser implements TypeParser{
         for (JoinInfo joinInfo : tableInfo.getJoinInfos()){
             TableInfo slaveTableInfo;
             if(joinInfo.isNotNested()){
-                slaveTableInfo = TableInfoUtils.getTableInfo(tableInfo.getMappedClazz().getName() + " - " + joinInfo.getSlaveTableName());
+                slaveTableInfo = TableInfoManager.getTableInfo(tableInfo.getMappedClazz().getName() + " - " + joinInfo.getSlaveTableName());
                 for (ColumnInfo columnInfo : slaveTableInfo.getColumnMappedMap().values()){
                     TypeMapping propertyMapping = parserPropertyMapping(typeMapping, columnInfo);
                     innerTypeMappings.add(propertyMapping);
                 }
                 return false;
             }
-            slaveTableInfo = TableInfoUtils.getTableInfo(joinInfo.getSlaveTable());
+            slaveTableInfo = TableInfoManager.getTableInfo(joinInfo.getSlaveTable());
             Class<?> fieldAdaptTableClass = getAdaptableType(joinInfo.getField().getType());
             boolean isCollection = TypeUtils.isCollection(fieldAdaptTableClass);
             TypeMapping slaveTypeMapping;

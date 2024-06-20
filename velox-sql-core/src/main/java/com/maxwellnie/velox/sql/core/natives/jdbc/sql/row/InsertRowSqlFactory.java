@@ -1,6 +1,6 @@
 package com.maxwellnie.velox.sql.core.natives.jdbc.sql.row;
 
-import com.maxwellnie.velox.sql.core.manager.KeyStrategyManager;
+import com.maxwellnie.velox.sql.core.natives.jdbc.table.primary.KeyStrategyManager;
 import com.maxwellnie.velox.sql.core.meta.MetaData;
 import com.maxwellnie.velox.sql.core.natives.exception.ExecutorException;
 import com.maxwellnie.velox.sql.core.natives.jdbc.sql.SqlType;

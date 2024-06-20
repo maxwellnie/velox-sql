@@ -1,7 +1,7 @@
 package com.maxwellnie.velox.sql.core.proxy.executor.impl;
 
 import com.maxwellnie.velox.sql.core.cache.key.CacheKey;
-import com.maxwellnie.velox.sql.core.manager.KeyStrategyManager;
+import com.maxwellnie.velox.sql.core.natives.jdbc.table.primary.KeyStrategyManager;
 import com.maxwellnie.velox.sql.core.meta.MetaData;
 import com.maxwellnie.velox.sql.core.natives.exception.ClassTypeException;
 import com.maxwellnie.velox.sql.core.natives.exception.ExecutorException;

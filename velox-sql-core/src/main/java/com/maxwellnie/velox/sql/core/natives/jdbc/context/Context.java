@@ -17,7 +17,7 @@ import com.maxwellnie.velox.sql.core.proxy.executor.MethodExecutorCycle;
 import com.maxwellnie.velox.sql.core.proxy.executor.aspect.*;
 import com.maxwellnie.velox.sql.core.utils.java.StringUtils;
 import com.maxwellnie.velox.sql.core.utils.reflect.ReflectionUtils;
-import com.maxwellnie.velox.sql.core.utils.reflect.TableInfoUtils;
+import com.maxwellnie.velox.sql.core.natives.jdbc.table.TableInfoManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,11 +28,11 @@ import java.lang.reflect.Proxy;
 import java.util.*;
 
 /**
- * velox-sql应用程序上下文
+ * velox-sql上下文
  *
  * @author Maxwell Nie
  */
-public class Context {
+public final class Context {
     private static final Logger logger = LoggerFactory.getLogger(Context.class);
     /**
      * 基础配置
@@ -45,15 +45,9 @@ public class Context {
     /**
      * 事务工厂
      *
-     * @see TransactionFactory#produce(DataSource, boolean, int)
+     * @see TransactionFactory#produce(boolean, int)
      */
     private TransactionFactory transactionFactory;
-    /**
-     * 数据源
-     *
-     * @see TransactionFactory#produce(DataSource, boolean, int)
-     */
-    private DataSource dataSource;
     /**
      * 开放接口
      *
@@ -74,10 +68,10 @@ public class Context {
     /**
      * 表信息工具
      *
-     * @see TableInfoUtils
+     * @see TableInfoManager
      * @see TableInfo
      */
-    private TableInfoUtils tableInfoUtils = new TableInfoUtils(){};
+    private TableInfoManager tableInfoManager = new TableInfoManager(){};
     /**
      * 方法映射管理器
      *
@@ -102,19 +96,15 @@ public class Context {
         methodHandlers.add(new SelectPageMethodHandler());
         methodHandlers.add(new LastSqlMethodHandler());
     }
-    public Context(TransactionFactory transactionFactory, DataSource dataSource, Configuration configuration, TableInfoUtils tableInfoUtils) {
+    public Context(TransactionFactory transactionFactory, Configuration configuration, TableInfoManager tableInfoManager) {
         this.configuration = configuration;
         this.level = configuration.getLevel();
         if (transactionFactory == null)
             throw new EnvironmentInitException("TransactionFactory must be not null");
         else
             this.transactionFactory = transactionFactory;
-        if (dataSource == null)
-            throw new EnvironmentInitException("DataSource must be not null");
-        else
-            this.dataSource = dataSource;
-        if (tableInfoUtils != null)
-            this.tableInfoUtils = tableInfoUtils;
+        if (tableInfoManager != null)
+            this.tableInfoManager = tableInfoManager;
         if (configuration.getDaoImplClass() == null)
             throw new EnvironmentInitException("DaoImplClazz must be not null.");
         else {
@@ -150,8 +140,8 @@ public class Context {
 
     }
 
-    public Context(TransactionFactory transactionFactory, DataSource dataSource, Configuration configuration) {
-        this(transactionFactory, dataSource, configuration, null);
+    public Context(TransactionFactory transactionFactory, Configuration configuration) {
+        this(transactionFactory, configuration, null);
     }
 
     public TransactionFactory getTransactionFactory() {
@@ -160,14 +150,6 @@ public class Context {
 
     public void setTransactionFactory(TransactionFactory transactionFactory) {
         this.transactionFactory = transactionFactory;
-    }
-
-    public DataSource getDataSource() {
-        return dataSource;
-    }
-
-    public void setDataSource(DataSource dataSource) {
-        this.dataSource = dataSource;
     }
     public synchronized void setTypeParser(TypeParser typeParser) {
         this.typeParser = typeParser;
@@ -198,7 +180,7 @@ public class Context {
     public void addDaoImpl(Class<?> clazz) {
         lazyProxy();
         daoImplManager.registerDaoImplFactory(clazz);
-        TableInfo tableInfo = TableInfoUtils.getTableInfo(clazz);
+        TableInfo tableInfo = TableInfoManager.getTableInfo(clazz);
         for (Method method : daoImplClazz.getMethods()) {
             if (method.isAnnotationPresent(RegisterMethod.class)) {
                 RegisterMethod registerMethod = method.getDeclaredAnnotation(RegisterMethod.class);
@@ -273,7 +255,7 @@ public class Context {
                         e.printStackTrace();
                     }
                 }
-                this.daoImplMap.put(clazz, new DaoImplFactory<>(daoImplClazz, tableInfoUtils.getTableInfo(clazz, configuration), cache));
+                this.daoImplMap.put(clazz, new DaoImplFactory<>(daoImplClazz, tableInfoManager.getTableInfo(clazz, configuration), cache));
             } else
                 throw new RegisterDaoImplFailedException("The daoImpl mapped class is null");
         }

@@ -1,6 +1,6 @@
 package com.maxwellnie.velox.sql.core.proxy.executor.aspect;
 
-import com.maxwellnie.velox.sql.core.manager.ConvertorManager;
+import com.maxwellnie.velox.sql.core.natives.type.convertor.ConvertorManager;
 import com.maxwellnie.velox.sql.core.natives.dao.BaseSql;
 import com.maxwellnie.velox.sql.core.natives.exception.ExecutorException;
 import com.maxwellnie.velox.sql.core.natives.jdbc.session.JdbcSession;
