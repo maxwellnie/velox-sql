@@ -13,6 +13,7 @@ import com.maxwellnie.velox.sql.core.natives.type.convertor.ConvertorManager;
 import com.maxwellnie.velox.sql.core.natives.type.convertor.TypeConvertor;
 import com.maxwellnie.velox.sql.core.natives.type.convertor.impl.DefaultConvertor;
 import com.maxwellnie.velox.sql.core.natives.type.convertor.impl.json.JsonConvertor;
+import com.maxwellnie.velox.sql.core.natives.type.convertor.impl.json.JsonSupporter;
 import com.maxwellnie.velox.sql.core.utils.java.StringUtils;
 import com.maxwellnie.velox.sql.core.utils.reflect.ReflectionUtils;
 import org.slf4j.Logger;
@@ -242,7 +243,10 @@ public abstract class TableInfoManager {
         try {
             if (!primaryKey.convertor().equals(DefaultConvertor.class)) {
                 if (primaryKey.convertor().equals(JsonConvertor.class)) {
-                    convertor = new JsonConvertor<>(SingletonConfiguration.getInstance().getJsonSupporter(), entityClass);
+                    JsonSupporter supporter = SingletonConfiguration.getInstance().getJsonSupporter();
+                    if(supporter == null)
+                        throw new EntityObjectException("The JsonSupporter must not be null.");
+                    convertor = new JsonConvertor<>(supporter, entityClass);
                 } else {
                     convertor = ReflectionUtils.newInstance(primaryKey.convertor());
                 }
@@ -260,7 +264,10 @@ public abstract class TableInfoManager {
         try {
             if (!column.convertor().equals(DefaultConvertor.class)) {
                 if (column.convertor().equals(JsonConvertor.class)) {
-                    convertor = new JsonConvertor<>(SingletonConfiguration.getInstance().getJsonSupporter(), entityClass);
+                    JsonSupporter supporter = SingletonConfiguration.getInstance().getJsonSupporter();
+                    if(supporter == null)
+                        throw new EntityObjectException("The JsonSupporter must not be null.");
+                    convertor = new JsonConvertor<>(supporter, entityClass);
                 } else {
                     convertor = ReflectionUtils.newInstance(column.convertor());
                 }
