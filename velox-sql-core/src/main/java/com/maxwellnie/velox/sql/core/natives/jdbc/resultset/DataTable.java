@@ -6,6 +6,7 @@ import java.util.*;
 
 /**
  * 数据表
+ *
  * @author Maxwell Nie
  */
 public class DataTable {
@@ -18,10 +19,6 @@ public class DataTable {
      */
     private final List<String> columns;
     /**
-     * 数据表行号
-     */
-    private int rowIndex = 0;
-    /**
      * 数据表缓存行数据限制
      */
     private final int fetchSize;
@@ -29,12 +26,16 @@ public class DataTable {
      * 数据表数据
      */
     private final Map<Integer, Map<String, Object>> data;
+    /**
+     * 数据表行号
+     */
+    private int rowIndex = 0;
 
     public DataTable(ResultSet resultSet, int fetchSize) throws SQLException {
         this.resultSet = resultSet;
         this.columns = new ArrayList<>();
         this.fetchSize = fetchSize;
-        for (int i = 1; i <= this.resultSet.getMetaData().getColumnCount();i++){
+        for (int i = 1; i <= this.resultSet.getMetaData().getColumnCount(); i++) {
             columns.add(this.resultSet.getMetaData().getColumnName(i));
         }
         data = new LinkedHashMap<Integer, Map<String, Object>>(fetchSize, 0.75f, true) {
@@ -59,6 +60,7 @@ public class DataTable {
 
     /**
      * 读取一行数据
+     *
      * @return
      * @throws SQLException
      */
@@ -71,8 +73,10 @@ public class DataTable {
         data.put(rowIndex, map);
         return map;
     }
+
     /**
      * 读取指定行数据
+     *
      * @param index
      * @return
      * @throws SQLException
@@ -80,33 +84,39 @@ public class DataTable {
     public Map<String, Object> readRowDataMap(int index) throws SQLException {
         if (data.containsKey(index)) {
             return data.get(index);
-        }else if(index < rowIndex){
-          throw new SQLException("Row data is out of date and inaccessible, yourIndex="+index+", currentIndex="+rowIndex);
+        } else if (index < rowIndex) {
+            throw new SQLException("Row data is out of date and inaccessible, yourIndex=" + index + ", currentIndex=" + rowIndex);
         } else {
             Map<String, Object> map = null;
-            while (this.rowIndex < index){
+            while (this.rowIndex < index) {
                 map = readRowDataMap();
                 data.put(rowIndex, map);
             }
             return map;
         }
     }
+
     /**
      * 获取当前行号
+     *
      * @return
      */
-    public int getCurrentRow(){
+    public int getCurrentRow() {
         return rowIndex;
     }
+
     /**
      * 获取当前所有行数据
+     *
      * @return
      */
-    public Collection<Map<String, Object>> getCurrentAllRowData(){
+    public Collection<Map<String, Object>> getCurrentAllRowData() {
         return data.values();
     }
+
     /**
      * 读取下一行数据
+     *
      * @throws SQLException
      */
     private void requestNextRow() throws SQLException {

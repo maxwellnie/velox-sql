@@ -23,14 +23,14 @@ public class DoubleConvertor implements TypeConvertor<Double> {
 
     @Override
     public void addParam(PreparedStatement preparedStatement, int index, Object param) throws SQLException {
-        if(param == null)
+        if (param == null)
             preparedStatement.setDouble(index, 0d);
         else if (param instanceof String)
             preparedStatement.setDouble(index, Double.parseDouble((String) param));
         else if (param instanceof Number)
             preparedStatement.setDouble(index, ((Number) param).doubleValue());
         else
-            throw new TypeConvertException("The param ["+param+"] is not convert to java.util.Double");
+            throw new TypeConvertException("The param [" + param + "] is not convert to java.util.Double");
     }
 
     @Override

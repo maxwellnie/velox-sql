@@ -1,7 +1,6 @@
 package com.maxwellnie.velox.sql.core.natives.jdbc.sql.row;
 
 import com.maxwellnie.velox.sql.core.config.simple.SingletonConfiguration;
-import com.maxwellnie.velox.sql.core.natives.type.convertor.ConvertorManager;
 import com.maxwellnie.velox.sql.core.meta.MetaData;
 import com.maxwellnie.velox.sql.core.natives.dao.SqlDecorator;
 import com.maxwellnie.velox.sql.core.natives.exception.ExecutorException;
@@ -9,11 +8,12 @@ import com.maxwellnie.velox.sql.core.natives.jdbc.sql.SqlPool;
 import com.maxwellnie.velox.sql.core.natives.jdbc.sql.SqlType;
 import com.maxwellnie.velox.sql.core.natives.jdbc.sql.creator.SqlCreator;
 import com.maxwellnie.velox.sql.core.natives.jdbc.table.TableInfo;
+import com.maxwellnie.velox.sql.core.natives.jdbc.table.TableInfoManager;
 import com.maxwellnie.velox.sql.core.natives.jdbc.table.column.ColumnInfo;
 import com.maxwellnie.velox.sql.core.natives.jdbc.table.join.JoinInfo;
+import com.maxwellnie.velox.sql.core.natives.type.convertor.ConvertorManager;
 import com.maxwellnie.velox.sql.core.natives.type.convertor.TypeConvertor;
 import com.maxwellnie.velox.sql.core.utils.java.StringUtils;
-import com.maxwellnie.velox.sql.core.natives.jdbc.table.TableInfoManager;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -47,7 +47,7 @@ public class QueryRowSqlFactory implements RowSqlFactory {
         handleSqlDecoratorObj(sqlDecorator, aRowSqlParams, otherSql, typeConvertors);
         params.add(aRowSqlParams);
         RowSql rowSql = instantiationRowSql(sqlType, params, columnSql, typeConvertors, fromSql, otherSql.toString());
-        if (sqlDecorator!=null && sqlDecorator.getLimitFragment() != null) {
+        if (sqlDecorator != null && sqlDecorator.getLimitFragment() != null) {
             otherSql.append(SqlPool.SPACE).append(sqlDecorator.getLimitFragment().getSql());
             rowSql = SingletonConfiguration.getInstance().getDialect().getDialectRowSql(rowSql, sqlDecorator.getLimitFragment().getStart(), sqlDecorator.getLimitFragment().getOffset());
         }
@@ -57,16 +57,17 @@ public class QueryRowSqlFactory implements RowSqlFactory {
 
     /**
      * 处理sql装饰器
+     *
      * @param sqlDecorator
      * @param aRowSqlParams
      * @param otherSql
      * @param typeConvertors
      */
     private void handleSqlDecoratorObj(SqlDecorator<?> sqlDecorator, List<Object> aRowSqlParams, StringBuilder otherSql, List<TypeConvertor<?>> typeConvertors) {
-        if (sqlDecorator != null){
+        if (sqlDecorator != null) {
             if (sqlDecorator.getWhereFragment() != null) {
                 StringBuilder inlineSqlFragment = new StringBuilder("");
-                for (int i = 0; i< sqlDecorator.getWhereFragment().getInlineSql().size(); i++){
+                for (int i = 0; i < sqlDecorator.getWhereFragment().getInlineSql().size(); i++) {
                     inlineSqlFragment.append(sqlDecorator.getWhereFragment().getInlineSql().get(i).getSql());
                     for (Object obj : sqlDecorator.getWhereFragment().getInlineSql().get(i).getParams())
                         typeConvertors.add(ConvertorManager.getConvertor(obj.getClass()));
@@ -82,7 +83,7 @@ public class QueryRowSqlFactory implements RowSqlFactory {
             }
             if (sqlDecorator.getHavingFragment() != null) {
                 StringBuilder inlineSqlFragment = new StringBuilder("");
-                for (int i = 0; i< sqlDecorator.getHavingFragment().getInlineSql().size(); i++){
+                for (int i = 0; i < sqlDecorator.getHavingFragment().getInlineSql().size(); i++) {
                     inlineSqlFragment.append(sqlDecorator.getHavingFragment().getInlineSql().get(i).getSql());
                     aRowSqlParams.addAll(sqlDecorator.getHavingFragment().getInlineSql().get(i).getParams());
                     for (Object obj : sqlDecorator.getHavingFragment().getInlineSql().get(i).getParams())
@@ -96,9 +97,9 @@ public class QueryRowSqlFactory implements RowSqlFactory {
             if (sqlDecorator.getOrderByFragment() != null) {
                 otherSql.append(SqlPool.SPACE).append(sqlDecorator.getOrderByFragment().getSql());
             }
-            if (sqlDecorator.getApplySql()!=null){
+            if (sqlDecorator.getApplySql() != null) {
                 otherSql.append(SqlPool.SPACE).append(sqlDecorator.getApplySql().getSql());
-                for (Object obj : sqlDecorator.getApplySql().getParams()){
+                for (Object obj : sqlDecorator.getApplySql().getParams()) {
                     typeConvertors.add(ConvertorManager.getConvertor(obj.getClass()));
                 }
                 aRowSqlParams.addAll(sqlDecorator.getApplySql().getParams());
@@ -122,14 +123,14 @@ public class QueryRowSqlFactory implements RowSqlFactory {
             String slaveTableColumn;
             TableInfo joinedTableInfo;
             boolean needAs = StringUtils.isNotNullOrEmpty(aliasSlaveTable);
-            if(joinInfo.isNotNested()){
+            if (joinInfo.isNotNested()) {
                 joinedTableInfo = TableInfoManager.getTableInfo(tableInfo.getMappedClazz().getName() + " - " + joinInfo.getSlaveTableName());
                 if (!needAs) {
                     aliasSlaveTable = joinInfo.getSlaveTableName();
                 }
                 slaveTableName = joinInfo.getSlaveTableName();
                 slaveTableColumn = joinInfo.getSlaveTableColumn();
-            }else {
+            } else {
                 joinedTableInfo = TableInfoManager.getTableInfo(joinInfo.getSlaveTable());
                 if (!needAs) {
                     aliasSlaveTable = joinedTableInfo.getTableName();
@@ -184,11 +185,12 @@ public class QueryRowSqlFactory implements RowSqlFactory {
             columnSql.append(tableName).append(".").append(tableInfo.getPkColumn().getColumnName()).append(",");
         }
         for (ColumnInfo columnInfo : tableInfo.getColumnMappedMap().values()) {
-            if(isInclude(columnInfo, excludedColumns)) {
+            if (isInclude(columnInfo, excludedColumns)) {
                 columnSql.append(tableName).append(".").append(columnInfo.getColumnName()).append(",");
             }
         }
     }
+
     /**
      * 判断是否包含该列
      *
@@ -197,10 +199,10 @@ public class QueryRowSqlFactory implements RowSqlFactory {
      * @return
      */
     private boolean isInclude(ColumnInfo columnInfo, List<ColumnInfo> excludedColumns) {
-        if(excludedColumns == null)
+        if (excludedColumns == null)
             return true;
         for (ColumnInfo excludedColumn : excludedColumns) {
-            if (excludedColumn != null&& excludedColumn.getColumnName().equals(columnInfo.getColumnName())) {
+            if (excludedColumn != null && excludedColumn.getColumnName().equals(columnInfo.getColumnName())) {
                 return false;
             }
         }

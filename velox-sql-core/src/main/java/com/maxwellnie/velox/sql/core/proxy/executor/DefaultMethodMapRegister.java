@@ -11,6 +11,7 @@ import java.lang.reflect.Method;
 
 /**
  * 默认的方法映射注册器
+ *
  * @author Maxwell Nie
  */
 public class DefaultMethodMapRegister implements MethodMapRegister {

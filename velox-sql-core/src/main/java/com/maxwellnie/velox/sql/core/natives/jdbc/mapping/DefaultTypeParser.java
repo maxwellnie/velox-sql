@@ -1,48 +1,53 @@
 package com.maxwellnie.velox.sql.core.natives.jdbc.mapping;
 
-import com.maxwellnie.velox.sql.core.natives.type.convertor.ConvertorManager;
 import com.maxwellnie.velox.sql.core.meta.MetaData;
 import com.maxwellnie.velox.sql.core.natives.jdbc.table.TableInfo;
+import com.maxwellnie.velox.sql.core.natives.jdbc.table.TableInfoManager;
 import com.maxwellnie.velox.sql.core.natives.jdbc.table.column.ColumnInfo;
 import com.maxwellnie.velox.sql.core.natives.jdbc.table.column.PrimaryInfo;
 import com.maxwellnie.velox.sql.core.natives.jdbc.table.join.JoinInfo;
+import com.maxwellnie.velox.sql.core.natives.type.convertor.ConvertorManager;
 import com.maxwellnie.velox.sql.core.utils.java.TypeUtils;
-import com.maxwellnie.velox.sql.core.natives.jdbc.table.TableInfoManager;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import static com.maxwellnie.velox.sql.core.natives.type.convertor.ConvertorManager.DEFAULT_CONVERTOR;
 
 /**
  * 类型解析器，用于解析返回值类型
+ *
  * @author Maxwell Nie
  */
-public class DefaultTypeParser implements TypeParser{
+public class DefaultTypeParser implements TypeParser {
     @Override
     public ReturnTypeMapping parse(Class<?> returnType, Class<?> entityClass) {
         return parse(returnType, TableInfoManager.getTableInfo(entityClass));
     }
+
     @Override
     public ReturnTypeMapping parse(Class<?> returnType, TableInfo tableInfo) {
         ReturnTypeMapping returnTypeMapping = new ReturnTypeMapping();
         returnTypeMapping.setType(returnType);
-        if(returnType.isArray()){
-            if(returnType.equals(int[].class)){
+        if (returnType.isArray()) {
+            if (returnType.equals(int[].class)) {
                 returnTypeMapping.setTypeMapping(TypeMapping.BATCH_ROW);
                 return returnTypeMapping;
             }
-            throw new UnsupportedOperationException("Array type["+returnType+"] is not supported.");
+            throw new UnsupportedOperationException("Array type[" + returnType + "] is not supported.");
         }
-        if(ConvertorManager.getConvertor(returnType) != DEFAULT_CONVERTOR){
+        if (ConvertorManager.getConvertor(returnType) != DEFAULT_CONVERTOR) {
             returnTypeMapping.setTypeMapping(TypeMapping.READ_ROW);
             return returnTypeMapping;
         }
         Class<?> finalReturnType = getAdaptableType(returnType);
         boolean isCollection = TypeUtils.isCollection(finalReturnType);
-        if(isCollection){
+        if (isCollection) {
             returnTypeMapping.setReturnManyObject(true);
         }
-        if(!isCollection && finalReturnType == returnType ){
+        if (!isCollection && finalReturnType == returnType) {
             finalReturnType = ArrayList.class;
         }
         TypeMapping rootTypeMapping = getTypeMapping(tableInfo, tableInfo.getMappedClazz(), null, returnTypeMapping);
@@ -54,8 +59,10 @@ public class DefaultTypeParser implements TypeParser{
         returnTypeMapping.setTypeMapping(rootTypeMapping);
         return returnTypeMapping;
     }
+
     /**
      * 获取类型映射
+     *
      * @param tableInfo
      * @param finalReturnType
      * @param parentTypeMapping
@@ -66,12 +73,12 @@ public class DefaultTypeParser implements TypeParser{
         typeMapping.setParentTypeMapping(parentTypeMapping);
         typeMapping.setNeedInstantiate(true);
         List<TypeMapping> innerTypeMappings = new ArrayList<>();
-        if(tableInfo.hasPk()){
+        if (tableInfo.hasPk()) {
             PrimaryInfo pkColumn = tableInfo.getPkColumn();
             TypeMapping pkPropertyMapping = parserPropertyMapping(typeMapping, pkColumn);
             innerTypeMappings.add(pkPropertyMapping);
         }
-        for (ColumnInfo columnInfo : tableInfo.getColumnMappedMap().values()){
+        for (ColumnInfo columnInfo : tableInfo.getColumnMappedMap().values()) {
             TypeMapping propertyMapping = parserPropertyMapping(typeMapping, columnInfo);
             innerTypeMappings.add(propertyMapping);
         }
@@ -79,8 +86,10 @@ public class DefaultTypeParser implements TypeParser{
         typeMapping.setInnerTypeMapping(innerTypeMappings);
         return typeMapping;
     }
+
     /**
      * 解析关联的属性类型映射
+     *
      * @param tableInfo
      * @param typeMapping
      * @param innerTypeMappings
@@ -88,11 +97,11 @@ public class DefaultTypeParser implements TypeParser{
      */
     private boolean parseHasJoinedChildPropertyTypeMapping(TableInfo tableInfo, TypeMapping typeMapping, List<TypeMapping> innerTypeMappings, ReturnTypeMapping returnTypeMapping) {
         boolean hasJoined = !tableInfo.getJoinInfos().isEmpty();
-        for (JoinInfo joinInfo : tableInfo.getJoinInfos()){
+        for (JoinInfo joinInfo : tableInfo.getJoinInfos()) {
             TableInfo slaveTableInfo;
-            if(joinInfo.isNotNested()){
+            if (joinInfo.isNotNested()) {
                 slaveTableInfo = TableInfoManager.getTableInfo(tableInfo.getMappedClazz().getName() + " - " + joinInfo.getSlaveTableName());
-                for (ColumnInfo columnInfo : slaveTableInfo.getColumnMappedMap().values()){
+                for (ColumnInfo columnInfo : slaveTableInfo.getColumnMappedMap().values()) {
                     TypeMapping propertyMapping = parserPropertyMapping(typeMapping, columnInfo);
                     innerTypeMappings.add(propertyMapping);
                 }
@@ -102,14 +111,14 @@ public class DefaultTypeParser implements TypeParser{
             Class<?> fieldAdaptTableClass = getAdaptableType(joinInfo.getField().getType());
             boolean isCollection = TypeUtils.isCollection(fieldAdaptTableClass);
             TypeMapping slaveTypeMapping;
-            if(isCollection && joinInfo.isManyToMany()){
+            if (isCollection && joinInfo.isManyToMany()) {
                 slaveTypeMapping = getJoinedWrapperTypeMapping(typeMapping, joinInfo, slaveTableInfo, fieldAdaptTableClass, returnTypeMapping);
-            }else {
+            } else {
                 slaveTypeMapping = getTypeMapping(slaveTableInfo, joinInfo.getSlaveTable(), typeMapping, returnTypeMapping);
             }
-            if(slaveTypeMapping.isCollection()){
+            if (slaveTypeMapping.isCollection()) {
                 MetaData fieldsMetaData = tableInfo.getOtherInfo().getProperty("fields");
-                for (TypeMapping parentPropertyTypeMapping : innerTypeMappings){
+                for (TypeMapping parentPropertyTypeMapping : innerTypeMappings) {
                     if (parentPropertyTypeMapping.getMetaField().getField() == fieldsMetaData.getProperty(joinInfo.getMasterTableField()))
                         parentPropertyTypeMapping.setJoinedFlag(true);
                 }
@@ -121,6 +130,7 @@ public class DefaultTypeParser implements TypeParser{
 
     /**
      * 获取关联表的包装器的类型映射
+     *
      * @param parentTypeMapping
      * @param joinInfo
      * @param slaveTableInfo
@@ -142,12 +152,13 @@ public class DefaultTypeParser implements TypeParser{
 
     /**
      * 获取属性映射
+     *
      * @param typeMapping
      * @param columnInfo
      * @return
      */
     private TypeMapping parserPropertyMapping(TypeMapping typeMapping, ColumnInfo columnInfo) {
-        if(columnInfo.getTypeConvertor() != null){
+        if (columnInfo.getTypeConvertor() != null) {
             TypeMapping propertyTypeMapping = new TypeMapping(columnInfo.getColumnMappedField().getType());
             propertyTypeMapping.setTypeConvertor(columnInfo.getTypeConvertor());
             propertyTypeMapping.setColumnName(columnInfo.getColumnName());
@@ -160,21 +171,22 @@ public class DefaultTypeParser implements TypeParser{
 
     /**
      * 获取适配的返回类型
+     *
      * @param returnType
      * @return
      */
-    private Class<?> getAdaptableType(Class<?> returnType){
-        if(returnType.isInterface()){
-            if(List.class.isAssignableFrom(returnType))
+    private Class<?> getAdaptableType(Class<?> returnType) {
+        if (returnType.isInterface()) {
+            if (List.class.isAssignableFrom(returnType))
                 return ArrayList.class;
-            else if(Set.class.isAssignableFrom(returnType))
+            else if (Set.class.isAssignableFrom(returnType))
                 return HashSet.class;
             else
                 return ArrayList.class;
-        }else {
-            if(List.class.isAssignableFrom(returnType))
+        } else {
+            if (List.class.isAssignableFrom(returnType))
                 return ArrayList.class;
-            else if(Set.class.isAssignableFrom(returnType))
+            else if (Set.class.isAssignableFrom(returnType))
                 return HashSet.class;
             else {
                 return returnType;

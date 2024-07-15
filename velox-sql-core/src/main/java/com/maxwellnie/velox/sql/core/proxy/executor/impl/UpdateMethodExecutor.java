@@ -4,6 +4,7 @@ import com.maxwellnie.velox.sql.core.cache.key.CacheKey;
 import com.maxwellnie.velox.sql.core.meta.MetaData;
 import com.maxwellnie.velox.sql.core.natives.exception.ExecutorException;
 import com.maxwellnie.velox.sql.core.natives.jdbc.mapping.ReturnTypeMapping;
+import com.maxwellnie.velox.sql.core.natives.jdbc.session.JdbcSession;
 import com.maxwellnie.velox.sql.core.natives.jdbc.sql.SqlType;
 import com.maxwellnie.velox.sql.core.natives.jdbc.sql.row.RowSql;
 import com.maxwellnie.velox.sql.core.natives.jdbc.sql.row.RowSqlFactory;
@@ -18,7 +19,7 @@ import java.util.Collections;
 /**
  * @author Maxwell Nie
  */
-public class UpdateMethodExecutor extends BaseMethodExecutor{
+public class UpdateMethodExecutor extends BaseMethodExecutor {
     public UpdateMethodExecutor() {
         super(LoggerFactory.getLogger(UpdateMethodExecutor.class));
     }
@@ -36,6 +37,14 @@ public class UpdateMethodExecutor extends BaseMethodExecutor{
         metaData.addProperty("sqlDecorator", args[1]);
         return metaData;
     }
+
+    @Override
+    public void check(TableInfo tableInfo, JdbcSession session, Object[] args) throws ExecutorException {
+        super.check(tableInfo, session, args);
+        if (args[0] == null)
+            throw new ExecutorException("update entity can not be null");
+    }
+
     @Override
     public RowSql buildRowSql(MetaData metaData) throws ExecutorException {
         RowSqlFactory rowSqlFactory = new UpdateRowSqlFactory();

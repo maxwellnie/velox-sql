@@ -1,8 +1,8 @@
 package com.maxwellnie.velox.sql.core.natives.jdbc.statement;
 
+import com.maxwellnie.velox.sql.core.meta.MetaData;
 import com.maxwellnie.velox.sql.core.natives.exception.ClassTypeException;
 import com.maxwellnie.velox.sql.core.natives.wrapper.MetaStyleWrapper;
-import com.maxwellnie.velox.sql.core.meta.MetaData;
 
 import java.sql.PreparedStatement;
 import java.sql.Statement;
@@ -40,9 +40,11 @@ public class StatementWrapper extends MetaStyleWrapper<Statement> implements Aut
     public StatementWrapper(Statement statement) {
         this.t = statement;
     }
+
     public MetaData getMetaData() {
         return this.meta;
     }
+
     public int getMode() {
         return this.mode;
     }
@@ -50,10 +52,11 @@ public class StatementWrapper extends MetaStyleWrapper<Statement> implements Aut
     public void setMode(int mode) {
         this.mode = mode;
     }
-    public PreparedStatement getPrepareStatement() throws ClassTypeException{
+
+    public PreparedStatement getPrepareStatement() throws ClassTypeException {
         if (this.t instanceof PreparedStatement)
             return (PreparedStatement) this.t;
-        throw new ClassTypeException("Type is not equals class[java.sql.PreparedStatement]");
+        throw new ClassTypeException("Statement Object [" + this.t + "] is not class[java.sql.PreparedStatement]");
     }
 
     @Override

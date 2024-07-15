@@ -1,26 +1,41 @@
 package com.maxwellnie.velox.sql.core.natives.jdbc.table;
 
+import com.maxwellnie.velox.sql.core.meta.MetaData;
 import com.maxwellnie.velox.sql.core.natives.jdbc.mapping.ReturnTypeMapping;
 import com.maxwellnie.velox.sql.core.natives.jdbc.resultset.parser.ResultSetParser;
 import com.maxwellnie.velox.sql.core.natives.jdbc.table.column.ColumnInfo;
 import com.maxwellnie.velox.sql.core.natives.jdbc.table.column.PrimaryInfo;
-import com.maxwellnie.velox.sql.core.meta.MetaData;
 import com.maxwellnie.velox.sql.core.natives.jdbc.table.join.JoinInfo;
-import com.maxwellnie.velox.sql.core.utils.java.StringUtils;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.*;
 
 /**
  * 表信息
+ *
  * @author Maxwell Nie
  */
 public class TableInfo {
     /**
+     * 其他配置
+     */
+    private final MetaData otherInfo = MetaData.ofEmpty();
+    /**
+     * 返回类型映射
+     */
+    private final Map<String, ReturnTypeMapping> returnTypeMappingMap = new HashMap<>();
+    /**
+     * 结果集解析器
+     */
+    private final ResultSetParser resultSetParser = new ResultSetParser();
+    /**
      * 表名
      */
     private String tableName;
+    /**
+     * 数据源名称
+     */
+    private String dataSourceName;
     /**
      * 被映射实体
      */
@@ -38,21 +53,10 @@ public class TableInfo {
      */
     private int fetchSize = 0;
     /**
-     * 其他配置
-     */
-    private final MetaData otherInfo = MetaData.ofEmpty();
-    /**
-     * 返回类型映射
-     */
-    private final Map<String, ReturnTypeMapping> returnTypeMappingMap = new HashMap<>();
-    /**
-     * 结果集解析器
-     */
-    private final ResultSetParser resultSetParser = new ResultSetParser();
-    /**
      * 关联信息
      */
     private List<JoinInfo> joinInfos = Collections.synchronizedList(new LinkedList<>());
+
     public TableInfo() {
     }
 
@@ -135,12 +139,15 @@ public class TableInfo {
     public MetaData getOtherInfo() {
         return this.otherInfo;
     }
-    public ColumnInfo getColumnInfo(String fieldName){
+
+    public ColumnInfo getColumnInfo(String fieldName) {
         return this.columnMappedMap.get(fieldName);
     }
-    public ColumnInfo getColumnInfo(Field field){
+
+    public ColumnInfo getColumnInfo(Field field) {
         return getColumnInfo(field.getName());
     }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -157,23 +164,20 @@ public class TableInfo {
     public ReturnTypeMapping getReturnTypeMapping(String key) {
         return returnTypeMappingMap.get(key);
     }
+
     public void registerReturnTypeMapping(String key, ReturnTypeMapping returnTypeMapping) {
         returnTypeMappingMap.put(key, returnTypeMapping);
     }
 
-    public ResultSetParser getResultSetParser() {
-        return resultSetParser;
+    public String getDataSourceName() {
+        return dataSourceName;
     }
 
+    public void setDataSourceName(String dataSourceName) {
+        this.dataSourceName = dataSourceName;
+    }
 
-    @Override
-    public String toString() {
-        return "TableInfo{" +
-                "tableName='" + tableName + '\'' +
-                ", mappedClazz=" + mappedClazz +
-                ", columnMappedMap=" + columnMappedMap +
-                ", pkColumn=" + pkColumn +
-                ", fetchSize=" + fetchSize +
-                '}';
+    public ResultSetParser getResultSetParser() {
+        return resultSetParser;
     }
 }

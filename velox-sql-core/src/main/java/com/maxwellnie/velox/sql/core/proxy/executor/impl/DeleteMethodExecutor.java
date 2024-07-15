@@ -19,7 +19,7 @@ import java.io.Serializable;
 /**
  * @author Maxwell Nie
  */
-public class DeleteMethodExecutor extends BaseMethodExecutor{
+public class DeleteMethodExecutor extends BaseMethodExecutor {
     public DeleteMethodExecutor() {
         super(LoggerFactory.getLogger(DeleteMethodExecutor.class));
     }
@@ -32,10 +32,10 @@ public class DeleteMethodExecutor extends BaseMethodExecutor{
     public MetaData prepared(TableInfo tableInfo, Object[] args) throws ExecutorException {
         MetaData metaData = MetaData.ofEmpty();
         metaData.addProperty("tableInfo", tableInfo);
-        if(args[0] instanceof Serializable[]){
+        if (args[0] instanceof Serializable[]) {
             metaData.addProperty("sqlType", SqlType.BATCH_UPDATE);
             metaData.addProperty("ids", args[0]);
-        }else {
+        } else {
             metaData.addProperty("sqlType", SqlType.UPDATE);
             metaData.addProperty("sqlDecorator", args[0]);
         }
@@ -45,12 +45,12 @@ public class DeleteMethodExecutor extends BaseMethodExecutor{
     @Override
     public void check(TableInfo tableInfo, JdbcSession session, Object[] args) throws ExecutorException {
         super.check(tableInfo, session, args);
-        if(args[0] instanceof Serializable[]){
+        if (args[0] instanceof Serializable[]) {
             Serializable[] ids = (Serializable[]) args[0];
             if (ids.length == 0) {
                 throw new ExecutorException("ids is empty");
             }
-            if (!tableInfo.hasPk()){
+            if (!tableInfo.hasPk()) {
                 throw new ExecutorException("tableInfo has no pk");
             }
         }

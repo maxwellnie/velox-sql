@@ -18,6 +18,7 @@ public class PrimaryInfo extends ColumnInfo {
         super(columnName, columnMappedField, typeConvertor);
         this.strategyName = strategyName;
     }
+
     public PrimaryInfo() {
     }
 

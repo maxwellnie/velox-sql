@@ -7,10 +7,16 @@ import java.util.List;
  */
 public interface Page<T> {
     List<T> getResult();
+
     long getTotal();
+
     void setTotal(long total);
+
     long getCurrent();
+
     void setCurrent(long current);
+
     long getOffset();
+
     void setOffset(long offset);
 }

@@ -9,10 +9,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- *
  * @author Maxwell Nie
  */
-public class RowSql{
+public class RowSql {
     private String nativeSql;
     private List<List<Object>> params = Collections.synchronizedList(new LinkedList<>());
     private List<TypeConvertor<?>> typeConvertors = Collections.synchronizedList(new LinkedList<>());

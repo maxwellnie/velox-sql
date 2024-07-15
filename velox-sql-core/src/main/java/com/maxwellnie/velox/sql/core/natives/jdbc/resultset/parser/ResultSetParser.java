@@ -1,12 +1,12 @@
 package com.maxwellnie.velox.sql.core.natives.jdbc.resultset.parser;
 
-import com.maxwellnie.velox.sql.core.natives.type.convertor.ConvertorManager;
 import com.maxwellnie.velox.sql.core.meta.MetaData;
 import com.maxwellnie.velox.sql.core.meta.MetaObject;
 import com.maxwellnie.velox.sql.core.natives.exception.TypeMappingException;
-import com.maxwellnie.velox.sql.core.natives.jdbc.resultset.hash.Hash;
 import com.maxwellnie.velox.sql.core.natives.jdbc.mapping.ReturnTypeMapping;
 import com.maxwellnie.velox.sql.core.natives.jdbc.mapping.TypeMapping;
+import com.maxwellnie.velox.sql.core.natives.jdbc.resultset.hash.Hash;
+import com.maxwellnie.velox.sql.core.natives.type.convertor.ConvertorManager;
 import com.maxwellnie.velox.sql.core.natives.type.convertor.TypeConvertor;
 import com.maxwellnie.velox.sql.core.utils.java.TypeUtils;
 import com.maxwellnie.velox.sql.core.utils.reflect.MetaField;
@@ -15,7 +15,10 @@ import com.maxwellnie.velox.sql.core.utils.reflect.ReflectionUtils;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static com.maxwellnie.velox.sql.core.natives.type.convertor.ConvertorManager.DEFAULT_CONVERTOR;
@@ -33,7 +36,7 @@ public class ResultSetParser {
      * 转换结果集到对象
      */
     public Object parseResultSet(ResultSet resultSet, ReturnTypeMapping returnTypeMapping) throws SQLException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-        try{
+        try {
             TypeMapping typeMapping = returnTypeMapping.getTypeMapping();
             if (typeMapping.getParentTypeMapping() == null) {
                 if (typeMapping == TypeMapping.BATCH_ROW)
@@ -49,7 +52,7 @@ public class ResultSetParser {
                     if (returnTypeMapping.isReturnManyObject())
                         return resultObject;
                     else
-                        return ((List<?>)resultObject).get(0);
+                        return ((List<?>) resultObject).get(0);
                 }
             } else
                 throw new TypeMappingException("Error TypeMapping [" + typeMapping + "]");
@@ -57,6 +60,7 @@ public class ResultSetParser {
             resultSet.close();
         }
     }
+
     /**
      * 处理简单映射
      */
@@ -74,8 +78,10 @@ public class ResultSetParser {
         }
         return resultForObject;
     }
+
     /**
      * 处理关联数据
+     *
      * @param resultSet
      * @param returnTypeMapping
      * @param resultObject
@@ -98,8 +104,10 @@ public class ResultSetParser {
         incompleteBuiltObjects.clear();
         return preResultObject;
     }
+
     /**
      * 处理行数据
+     *
      * @param resultSet
      * @param incompleteBuiltObjects
      * @param preResultObject
@@ -123,21 +131,23 @@ public class ResultSetParser {
         } else {
             rowObject = readObject(resultSet, null, null, typeMappingHashKey(typeMapping), typeMapping, incompleteBuiltObjects);
         }
-        if ((parentObjectMetaData == null) || (rowObject != null && rowObject != parentMetaObject.getObj())){
+        if ((parentObjectMetaData == null) || (rowObject != null && rowObject != parentMetaObject.getObj())) {
             resultObject = linkRowObjectToResultObject(field, rowObject, preResultObject);
         }
         return resultObject;
     }
+
     /**
      * 生成类型映射的HashKey
+     *
      * @param typeMapping
      * @return
      */
     private Hash typeMappingHashKey(TypeMapping typeMapping) {
-        if(HASH_KEY_MAP.containsKey(typeMapping))
+        if (HASH_KEY_MAP.containsKey(typeMapping))
             return HASH_KEY_MAP.get(typeMapping);
         Hash hash;
-        if(typeMapping.getParentTypeMapping() == null){
+        if (typeMapping.getParentTypeMapping() == null) {
             hash = Hash.create(typeMapping);
         } else {
             hash = Hash.create();
@@ -150,8 +160,10 @@ public class ResultSetParser {
         HASH_KEY_MAP.put(typeMapping, hash);
         return hash;
     }
+
     /**
      * 链接行数据到父对象
+     *
      * @param field
      * @param rowObject
      * @param resultForObject
@@ -160,15 +172,16 @@ public class ResultSetParser {
      */
     private Object linkRowObjectToResultObject(MetaField field, Object rowObject, Object resultForObject) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
         Object preResultForObject = resultForObject;
-        if(field == null)
-            preResultForObject = addValueToParentObject(preResultForObject ,rowObject);
+        if (field == null)
+            preResultForObject = addValueToParentObject(preResultForObject, rowObject);
         else
-            addFieldValueToParentObject(preResultForObject, rowObject,  field);
+            addFieldValueToParentObject(preResultForObject, rowObject, field);
         return preResultForObject;
     }
 
     /**
      * 读取行数据
+     *
      * @param resultSet
      * @param parentObject
      * @param typeMappingHash
@@ -202,8 +215,10 @@ public class ResultSetParser {
         }
         return result;
     }
+
     /**
      * 处理属性
+     *
      * @param resultSet
      * @param typeMapping
      * @param incompleteBuiltObjects
@@ -219,13 +234,13 @@ public class ResultSetParser {
     private void handleProperties(ResultSet resultSet, TypeMapping typeMapping, Map<Hash, MetaData> incompleteBuiltObjects, Object object, MetaObject metaObject, Hash hash) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException, SQLException {
         for (TypeMapping innerTypeMapping : typeMapping.getInnerTypeMapping()) {
             if (innerTypeMapping.isNeedInstantiate() && !innerTypeMapping.getInnerTypeMapping().isEmpty()) {
-                Hash childHash =  typeMappingHashKey(innerTypeMapping);
+                Hash childHash = typeMappingHashKey(innerTypeMapping);
                 MetaData parentObjectMetaData = incompleteBuiltObjects.get(childHash);
                 handleRowData(resultSet, incompleteBuiltObjects, object, innerTypeMapping, parentObjectMetaData, innerTypeMapping.getMetaField());
             } else {
                 Object unitValue = getUnitValue(resultSet, innerTypeMapping);
                 metaObject.setFieldValue(innerTypeMapping.getMetaField().getName(), unitValue);
-                if(innerTypeMapping.isJoinedFlag())
+                if (innerTypeMapping.isJoinedFlag())
                     hash.addValues(innerTypeMapping.getMetaField().getName(), unitValue);
             }
         }
@@ -233,6 +248,7 @@ public class ResultSetParser {
 
     /**
      * 创建未完成的对象
+     *
      * @param metaObject
      * @param hash
      * @param incompleteBuiltObjects
@@ -244,8 +260,10 @@ public class ResultSetParser {
         metaData.addProperty(HASH, hash);
         incompleteBuiltObjects.put(parentObjectHash, metaData);
     }
+
     /**
      * 合并子对象和父对象
+     *
      * @param parentObject
      * @param childObject
      * @param propertyMappings
@@ -253,7 +271,7 @@ public class ResultSetParser {
     private void mergeChildObjectAndParentObject(MetaObject parentObject, MetaObject childObject, List<TypeMapping> propertyMappings) {
         for (TypeMapping propertyMapping : propertyMappings) {
             Class<?> type = propertyMapping.getType();
-            if(isNotEntityMetaData(parentObject)){
+            if (isNotEntityMetaData(parentObject)) {
                 if (propertyMapping.isNeedInstantiate()) {
                     ((Collection) parentObject.getObj()).addAll((Collection) childObject.getObj());
                 }
@@ -261,7 +279,7 @@ public class ResultSetParser {
             }
             Object parentPropertyObject = parentObject.getFieldValue(propertyMapping.getMetaField().getName());
             Object childPropertyObject = childObject.getFieldValue(propertyMapping.getMetaField().getName());
-            if(childPropertyObject == null);
+            if (childPropertyObject == null) ;
             else if (propertyMapping.isNeedInstantiate()) {
                 if (TypeUtils.isCollection(type))
                     ((Collection) parentPropertyObject).addAll((Collection) childPropertyObject);
@@ -270,15 +288,18 @@ public class ResultSetParser {
             }
         }
     }
-    private boolean isNotEntityMetaData(MetaObject metaObject){
-        if(TypeUtils.isCollection(metaObject.getObj().getClass()) || TypeUtils.isArray(metaObject.getObj().getClass())){
+
+    private boolean isNotEntityMetaData(MetaObject metaObject) {
+        if (TypeUtils.isCollection(metaObject.getObj().getClass()) || TypeUtils.isArray(metaObject.getObj().getClass())) {
             return true;
-        }else{
+        } else {
             return false;
         }
     }
+
     /**
      * 添加子对象到父对象
+     *
      * @param parentObject
      * @param object
      * @param field
@@ -287,15 +308,17 @@ public class ResultSetParser {
     private void addFieldValueToParentObject(Object parentObject, Object object, MetaField field) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
         Class<?> type = field.getType();
         Object fieldObject = field.get(parentObject);
-        if (fieldObject == null){
+        if (fieldObject == null) {
             field.set(parentObject, object);
-        }else if (TypeUtils.isCollection(type)) {
+        } else if (TypeUtils.isCollection(type)) {
             ((Collection) fieldObject).add(object);
         } else
             field.set(parentObject, object);
     }
+
     /**
      * 添加子对象到父对象
+     *
      * @param parentObject
      * @param object
      * @return
@@ -309,6 +332,7 @@ public class ResultSetParser {
             resultForParentObject = object;
         return resultForParentObject;
     }
+
     /**
      * 获取单元值
      *
@@ -324,6 +348,7 @@ public class ResultSetParser {
             return null;
         }
     }
+
     /**
      * 获取受影响行数
      *
@@ -333,11 +358,12 @@ public class ResultSetParser {
      */
     private Object getAffectedRows(ResultSet resultSet, ReturnTypeMapping returnTypeMapping) throws SQLException {
         TypeConvertor<?> typeConvertor = ConvertorManager.getConvertor(returnTypeMapping.getType());
-        if (resultSet == null || resultSet.isClosed() || !resultSet.next() || typeConvertor == DEFAULT_CONVERTOR){
+        if (resultSet == null || resultSet.isClosed() || !resultSet.next() || typeConvertor == DEFAULT_CONVERTOR) {
             return typeConvertor.getEmpty();
         } else
             return typeConvertor.convert(resultSet, 1);
     }
+
     /**
      * 获取批量操作受影响行数
      *
@@ -348,11 +374,11 @@ public class ResultSetParser {
     private int[] getBatchAffectedRows(ResultSet resultSet) throws SQLException {
         if (resultSet == null || resultSet.isClosed() || !resultSet.next())
             return new int[0];
-        else{
+        else {
             int[] batchAffectedRows = new int[0];
             while (resultSet.next()) {
                 int[] newBatchAffectedRows = new int[batchAffectedRows.length + 1];
-                if(batchAffectedRows.length > 0)
+                if (batchAffectedRows.length > 0)
                     System.arraycopy(batchAffectedRows, 0, newBatchAffectedRows, 0, batchAffectedRows.length);
                 newBatchAffectedRows[newBatchAffectedRows.length - 1] = resultSet.getInt(1);
                 batchAffectedRows = newBatchAffectedRows;

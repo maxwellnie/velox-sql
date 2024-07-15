@@ -1,14 +1,11 @@
 package com.maxwellnie.velox.sql.core.natives.type.convertor;
 
 import com.maxwellnie.velox.sql.core.natives.registry.Registry;
-import com.maxwellnie.velox.sql.core.natives.type.convertor.TypeConvertor;
 import com.maxwellnie.velox.sql.core.natives.type.convertor.impl.*;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 /**
  * 类型转换器管理器

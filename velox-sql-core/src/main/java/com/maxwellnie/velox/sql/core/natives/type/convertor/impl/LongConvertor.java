@@ -23,14 +23,14 @@ public class LongConvertor implements TypeConvertor<Long> {
 
     @Override
     public void addParam(PreparedStatement preparedStatement, int index, Object param) throws SQLException {
-        if(param == null)
+        if (param == null)
             preparedStatement.setLong(index, 0L);
         else if (param instanceof String)
             preparedStatement.setLong(index, Long.parseLong((String) param));
         else if (param instanceof Number)
             preparedStatement.setLong(index, ((Number) param).longValue());
         else
-            throw new TypeConvertException("The param ["+param+"] is not convert to java.util.Long");
+            throw new TypeConvertException("The param [" + param + "] is not convert to java.util.Long");
     }
 
     @Override

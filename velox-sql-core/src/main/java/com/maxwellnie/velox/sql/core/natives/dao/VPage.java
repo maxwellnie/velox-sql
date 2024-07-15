@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * @author Maxwell Nie
  */
-public class VPage<T> implements Page<T>{
+public class VPage<T> implements Page<T> {
     private List<T> result;
     private long total;
     private long current;

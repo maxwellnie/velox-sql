@@ -1,4 +1,5 @@
 package com.maxwellnie.velox.sql.core.natives.enums;
+
 /**
  * 某些sql关键字
  */

@@ -1,6 +1,6 @@
 package com.maxwellnie.velox.sql.core.cache.key;
 
-import com.maxwellnie.velox.sql.core.utils.common.CollectionUtils;
+import com.maxwellnie.velox.sql.core.utils.base.CollectionUtils;
 
 import javax.sql.DataSource;
 import java.io.Serializable;
@@ -56,6 +56,7 @@ public class CacheKey implements Serializable {
 
     /**
      * 增加参数
+     *
      * @param value 可以是数组，也可以是集合
      */
     public void addParams(Object value) {
@@ -65,7 +66,7 @@ public class CacheKey implements Serializable {
             for (int i = 0; i < Array.getLength(value); i++) {
                 values.add(Array.get(value, i));
             }
-        } else if(CollectionUtils.isCollection(value)){
+        } else if (CollectionUtils.isCollection(value)) {
             values.addAll((Collection<?>) value);
         } else
             values.add(value);

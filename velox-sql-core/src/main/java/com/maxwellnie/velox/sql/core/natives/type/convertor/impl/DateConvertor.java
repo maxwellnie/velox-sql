@@ -33,19 +33,19 @@ public class DateConvertor implements TypeConvertor<Date> {
 
     @Override
     public void addParam(PreparedStatement preparedStatement, int index, Object param) throws SQLException {
-        java.sql.Date date ;
+        java.sql.Date date;
         if (param == null)
-            date =null;
+            date = null;
         else if (param instanceof java.sql.Date)
             date = (java.sql.Date) param;
-        else if(param instanceof Date)
+        else if (param instanceof Date)
             date = new java.sql.Date(((Date) param).getTime());
         else if (param instanceof String)
             date = java.sql.Date.valueOf((String) param);
         else if (param instanceof Long)
             date = new java.sql.Date((Long) param);
         else
-            throw new TypeConvertException("The object ["+param+"] is not convert to java.sql.Date");
+            throw new TypeConvertException("The object [" + param + "] is not convert to java.sql.Date");
         preparedStatement.setDate(index, date);
     }
 

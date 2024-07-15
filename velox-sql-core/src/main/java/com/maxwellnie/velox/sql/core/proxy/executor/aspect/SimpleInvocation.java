@@ -5,6 +5,7 @@ import java.lang.reflect.Method;
 
 /**
  * 代理对象调用方法的钩子
+ *
  * @author Maxwell Nie
  */
 public class SimpleInvocation {
@@ -22,20 +23,25 @@ public class SimpleInvocation {
 
     /**
      * 目标对象
+     *
      * @return Object
      */
     public Object getTarget() {
         return target;
     }
+
     /**
      * 目标方法参数
+     *
      * @return Object[]
      */
     public Object[] getArgs() {
         return args;
     }
+
     /**
      * 目标方法
+     *
      * @return Method
      */
     public Method getTargetMethod() {
@@ -48,6 +54,7 @@ public class SimpleInvocation {
 
     /**
      * 调用目标方法
+     *
      * @return Object
      * @throws InvocationTargetException
      * @throws IllegalAccessException
@@ -55,8 +62,10 @@ public class SimpleInvocation {
     public Object proceed() throws InvocationTargetException, IllegalAccessException {
         return this.targetMethod.invoke(target, args);
     }
+
     /**
      * 调用目标方法
+     *
      * @param args
      * @return Object
      * @throws InvocationTargetException

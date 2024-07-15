@@ -1,7 +1,7 @@
-package com.maxwellnie.velox.sql.core.utils.common;
+package com.maxwellnie.velox.sql.core.utils.base;
 
-import com.maxwellnie.velox.sql.core.natives.jdbc.statement.StatementWrapper;
 import com.maxwellnie.velox.sql.core.natives.exception.ExecutorException;
+import com.maxwellnie.velox.sql.core.natives.jdbc.statement.StatementWrapper;
 
 /**
  * @author Maxwell Nie

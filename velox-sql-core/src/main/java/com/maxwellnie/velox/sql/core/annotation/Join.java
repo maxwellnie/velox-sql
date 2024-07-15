@@ -14,10 +14,14 @@ import java.lang.annotation.Target;
 @Target({ElementType.FIELD})
 public @interface Join {
     Class<?> slaveTable();
+
     String masterTableField();
+
     String slaveTableField();
+
     String slaveTableAlias() default "";
 
     boolean isManyToMany() default false;
+
     JoinType joinType() default JoinType.LEFT;
 }

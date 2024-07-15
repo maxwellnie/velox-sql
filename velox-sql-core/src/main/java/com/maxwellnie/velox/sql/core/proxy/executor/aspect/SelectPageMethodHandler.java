@@ -31,7 +31,7 @@ import java.util.List;
 /**
  * @author Maxwell Nie
  */
-public class SelectPageMethodHandler extends AbstractMethodHandler{
+public class SelectPageMethodHandler extends AbstractMethodHandler {
     public SelectPageMethodHandler() {
         super(999, new MethodAspect[]{
                 new MethodAspect("prepared", new Class[]{
@@ -62,12 +62,12 @@ public class SelectPageMethodHandler extends AbstractMethodHandler{
                         CacheKey.class,
                         ReturnTypeMapping.class
                 })
-        },  new TargetMethodSignature("selectPage", new Class[]{Page.class, SqlDecorator.class}));
+        }, new TargetMethodSignature("selectPage", new Class[]{Page.class, SqlDecorator.class}));
     }
 
     @Override
     public Object handle(SimpleInvocation simpleInvocation) {
-        try{
+        try {
             switch (simpleInvocation.targetMethod.getName()) {
                 case "check":
                     check((TableInfo) simpleInvocation.getArgs()[0], (JdbcSession) simpleInvocation.getArgs()[1], (Object[]) simpleInvocation.getArgs()[2], simpleInvocation);
@@ -85,10 +85,11 @@ public class SelectPageMethodHandler extends AbstractMethodHandler{
                 default:
                     throw new ExecutorException("method not found" + simpleInvocation.getTargetMethod().getName());
             }
-        }catch (Throwable e){
+        } catch (Throwable e) {
             throw new ExecutorException(e);
         }
     }
+
     public MetaData prepared(TableInfo tableInfo, Object[] args) throws ExecutorException {
         MetaData metaData = MetaData.ofEmpty();
         metaData.addProperty("tableInfo", tableInfo);
@@ -98,7 +99,7 @@ public class SelectPageMethodHandler extends AbstractMethodHandler{
         return metaData;
     }
 
-    public void check(TableInfo tableInfo, JdbcSession session, Object[] args,SimpleInvocation simpleInvocation) throws ExecutorException, InvocationTargetException, IllegalAccessException {
+    public void check(TableInfo tableInfo, JdbcSession session, Object[] args, SimpleInvocation simpleInvocation) throws ExecutorException, InvocationTargetException, IllegalAccessException {
         simpleInvocation.proceed(tableInfo, session, args);
         if (args.length != 2) {
             throw new ExecutorException("args length must be contains Page and SqlDecorator parameter");
@@ -118,17 +119,17 @@ public class SelectPageMethodHandler extends AbstractMethodHandler{
         long count = 0;
         try {
             count = count(rowSql, tableInfo, session);
-        } catch (SQLException|ClassTypeException e) {
+        } catch (SQLException | ClassTypeException e) {
             throw new ExecutorException(e);
         }
         Page<?> page = (Page<?>) args[0];
         long currentRequestCount = 0;
         long updatedCurrent = 0;
         long offset = 10;
-        if(page != null && page.getCurrent() > 0){
+        if (page != null && page.getCurrent() > 0) {
             currentRequestCount = page.getCurrent() * page.getOffset();
             updatedCurrent = page.getCurrent();
-            if(currentRequestCount > count){
+            if (currentRequestCount > count) {
                 updatedCurrent = count / page.getOffset() - 1;
             }
         }
@@ -139,25 +140,26 @@ public class SelectPageMethodHandler extends AbstractMethodHandler{
         statementWrapper.addProperty("offset", offset);
         return statementWrapper;
     }
+
     public long count(RowSql rowSql, TableInfo tableInfo, JdbcSession session) throws SQLException, ClassTypeException {
         String sql = rowSql.getNativeSql();
         int fromIndex = sql.indexOf("FROM");
         sql = sql.substring(fromIndex);
         String count = "COUNT(*)";
-        if (tableInfo.hasPk()){
-            count = "COUNT("+tableInfo.getTableName()+"."+tableInfo.getPkColumn().getColumnName()+")";
+        if (tableInfo.hasPk()) {
+            count = "COUNT(" + tableInfo.getTableName() + "." + tableInfo.getPkColumn().getColumnName() + ")";
         }
-        sql = "SELECT"+ SqlPool.SPACE +count + SqlPool.SPACE + sql;
+        sql = "SELECT" + SqlPool.SPACE + count + SqlPool.SPACE + sql;
         RowSql countRowSql = new RowSql();
         countRowSql.setNativeSql(sql);
-        StatementWrapper statementWrapper = new StatementWrapper(session.getTransaction().getConnection().prepareStatement(countRowSql.getNativeSql()));
+        StatementWrapper statementWrapper = new StatementWrapper(session.getTransaction().getDataSourceAndConnection().getConnection().prepareStatement(countRowSql.getNativeSql()));
         PreparedStatement ps = statementWrapper.getPrepareStatement();
-        try (ResultSet resultSet = ps.executeQuery()){
+        try (ResultSet resultSet = ps.executeQuery()) {
             if (resultSet.next())
                 return resultSet.getLong(1);
             else
                 return 0;
-        }finally {
+        } finally {
             ps.close();
         }
 

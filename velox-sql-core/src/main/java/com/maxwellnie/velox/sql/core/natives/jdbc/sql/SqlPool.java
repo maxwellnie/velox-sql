@@ -2,6 +2,7 @@ package com.maxwellnie.velox.sql.core.natives.jdbc.sql;
 
 /**
  * SQL语句池
+ *
  * @author Maxwell Nie
  */
 public interface SqlPool {

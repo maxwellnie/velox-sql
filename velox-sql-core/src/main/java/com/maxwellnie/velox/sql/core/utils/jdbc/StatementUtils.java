@@ -18,10 +18,11 @@ public class StatementUtils {
      * @throws SQLException
      */
     public static void setParam(List<Object> objects, PreparedStatement preparedStatement) throws SQLException {
-        assert preparedStatement!=null : "PreparedStatement must not be null.";
+        assert preparedStatement != null : "PreparedStatement must not be null.";
         for (int i = 0; i < objects.size(); i++)
             preparedStatement.setObject(i + 1, objects.get(i));
     }
+
     /**
      * 设置param到PrepareStatement
      *

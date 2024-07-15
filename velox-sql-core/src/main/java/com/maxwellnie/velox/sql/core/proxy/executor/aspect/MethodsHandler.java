@@ -19,14 +19,14 @@ public class MethodsHandler implements InvocationHandler {
 
     public MethodsHandler(MethodHandler methodHandler, Object target) {
         this.methodHandler = methodHandler;
-        if (methodHandler.getMethodAspects()!= null) {
+        if (methodHandler.getMethodAspects() != null) {
             if (methodHandler.getMethodAspects() == MethodHandler.MethodAspect.ANY_FLAG)
                 methodAspectMap = null;
             for (MethodHandler.MethodAspect methodAspect : methodHandler.getMethodAspects()) {
                 try {
                     Method method = ReflectionUtils.getInterfaceDeclaredMethod(target.getClass(), methodAspect.getName(), methodAspect.getArgs());
-                    if(method == null)
-                        throw new MethodNotFoundException(methodAspect.getName()+"("+Arrays.toString(methodAspect.getArgs())+")"+"method not found.");
+                    if (method == null)
+                        throw new MethodNotFoundException(methodAspect.getName() + "(" + Arrays.toString(methodAspect.getArgs()) + ")" + "method not found.");
                     methodAspectMap.put(methodAspect.getName(), method);
                 } catch (NoSuchMethodException e) {
                     throw new NotMappedMethodException(e);
@@ -38,11 +38,11 @@ public class MethodsHandler implements InvocationHandler {
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        if (methodHandler!= null) {
-            if (methodAspectMap == null){
+        if (methodHandler != null) {
+            if (methodAspectMap == null) {
                 return methodHandler.handle(new SimpleInvocation(target, proxy, args, method));
             }
-            if(methodAspectMap.containsKey(method.getName()) && methodAspectMap.get(method.getName()).equals(method)){
+            if (methodAspectMap.containsKey(method.getName()) && methodAspectMap.get(method.getName()).equals(method)) {
                 return methodHandler.handle(new SimpleInvocation(target, proxy, args, method));
             }
         }

@@ -23,14 +23,14 @@ public class ShortConvertor implements TypeConvertor<Short> {
 
     @Override
     public void addParam(PreparedStatement preparedStatement, int index, Object param) throws SQLException {
-        if(param == null)
+        if (param == null)
             preparedStatement.setShort(index, (short) 0);
         else if (param instanceof String)
             preparedStatement.setShort(index, Short.parseShort((String) param));
         else if (param instanceof Number)
             preparedStatement.setShort(index, ((Number) param).shortValue());
         else
-            throw new TypeConvertException("The param ["+param+"] is not convert to java.util.Short");
+            throw new TypeConvertException("The param [" + param + "] is not convert to java.util.Short");
     }
 
     @Override

@@ -1,7 +1,6 @@
 package com.maxwellnie.velox.sql.core.natives.task;
 
 import com.maxwellnie.velox.sql.core.cache.key.CacheKey;
-import com.maxwellnie.velox.sql.core.natives.jdbc.session.DefaultJdbcSession;
 import com.maxwellnie.velox.sql.core.utils.reflect.ReflectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,15 +10,13 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
-import static java.lang.Thread.sleep;
-
 
 /**
  * @author Maxwell Nie
  */
 public class DefaultTaskQueue implements TaskQueue {
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultTaskQueue.class);
-    private ConcurrentHashMap<String, ConcurrentTaskQueue> queueMap = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, ConcurrentTaskQueue> queueMap = new ConcurrentHashMap<>();
 
     public DefaultTaskQueue() {
     }
@@ -28,7 +25,7 @@ public class DefaultTaskQueue implements TaskQueue {
     public void require(String group, CacheKey cacheKey, Runnable task) {
         ConcurrentTaskQueue queue = getQueue(group);
         queue.insertToHead(task);
-        LOGGER.info("Task {} finished", cacheKey);
+        LOGGER.info("Task {} finished", cacheKey.hashCode());
     }
 
     private ConcurrentTaskQueue getQueue(String group) {
@@ -62,10 +59,11 @@ public class DefaultTaskQueue implements TaskQueue {
 
         /**
          * powered by ConcurrentLinkedDeque
-         * @author Doug Lea
+         *
          * @param runnable
-         * @see ConcurrentLinkedDeque#linkFirst(Object)
          * @return new Node
+         * @author Doug Lea
+         * @see ConcurrentLinkedDeque#linkFirst(Object)
          */
         private Node insertToHead(Runnable runnable) {
             runnable = Objects.requireNonNull(runnable);

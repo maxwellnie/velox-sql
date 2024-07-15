@@ -3,7 +3,7 @@ package com.maxwellnie.velox.sql.core.natives.jdbc.sql.runner;
 import com.maxwellnie.velox.sql.core.natives.exception.ClassTypeException;
 import com.maxwellnie.velox.sql.core.natives.jdbc.sql.row.RowSql;
 import com.maxwellnie.velox.sql.core.natives.jdbc.statement.StatementWrapper;
-import com.maxwellnie.velox.sql.core.utils.common.CollectionUtils;
+import com.maxwellnie.velox.sql.core.utils.base.CollectionUtils;
 import com.maxwellnie.velox.sql.core.utils.jdbc.StatementUtils;
 
 import java.sql.PreparedStatement;

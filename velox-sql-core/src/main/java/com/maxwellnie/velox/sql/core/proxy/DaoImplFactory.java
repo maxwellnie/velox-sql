@@ -2,8 +2,8 @@ package com.maxwellnie.velox.sql.core.proxy;
 
 import com.maxwellnie.velox.sql.core.cache.Cache;
 import com.maxwellnie.velox.sql.core.natives.exception.DaoImplClassException;
-import com.maxwellnie.velox.sql.core.natives.jdbc.session.JdbcSession;
 import com.maxwellnie.velox.sql.core.natives.jdbc.context.Context;
+import com.maxwellnie.velox.sql.core.natives.jdbc.session.JdbcSession;
 import com.maxwellnie.velox.sql.core.natives.jdbc.table.TableInfo;
 
 import java.lang.reflect.Proxy;
@@ -25,6 +25,7 @@ public class DaoImplFactory<T> {
     public Class<T> getDaoInterfaceClass() {
         return daoInterfaceClass;
     }
+
     public <B extends T> T produce(JdbcSession jdbcSession, Context.MethodMappedManager methodMappedManager) {
         if (daoInterfaceClass.isInterface()) {
             return (B) Proxy.newProxyInstance(daoInterfaceClass.getClassLoader(), new Class[]{daoInterfaceClass},

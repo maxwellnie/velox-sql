@@ -23,14 +23,14 @@ public class IntegerConvertor implements TypeConvertor<Integer> {
 
     @Override
     public void addParam(PreparedStatement preparedStatement, int index, Object param) throws SQLException {
-        if(param == null)
+        if (param == null)
             preparedStatement.setInt(index, 0);
         else if (param instanceof String)
             preparedStatement.setInt(index, Integer.parseInt((String) param));
         else if (param instanceof Number)
             preparedStatement.setInt(index, ((Number) param).intValue());
         else
-            throw new TypeConvertException("The param ["+param+"] is not convert to java.util.Integer");
+            throw new TypeConvertException("The param [" + param + "] is not convert to java.util.Integer");
     }
 
     @Override

@@ -21,7 +21,7 @@ import java.util.Collections;
 /**
  * @author Maxwell Nie
  */
-public class QueryMethodExecutor extends BaseMethodExecutor{
+public class QueryMethodExecutor extends BaseMethodExecutor {
     public QueryMethodExecutor() {
         super(LoggerFactory.getLogger(QueryMethodExecutor.class));
     }
@@ -38,6 +38,7 @@ public class QueryMethodExecutor extends BaseMethodExecutor{
         metaData.addProperty("sqlDecorator", args[0]);
         return metaData;
     }
+
     @Override
     public RowSql buildRowSql(MetaData metaData) throws ExecutorException {
         RowSqlFactory rowSqlFactory = new QueryRowSqlFactory();

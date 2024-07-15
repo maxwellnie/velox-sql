@@ -23,14 +23,14 @@ public class FloatConvertor implements TypeConvertor<Float> {
 
     @Override
     public void addParam(PreparedStatement preparedStatement, int index, Object param) throws SQLException {
-        if(param == null)
+        if (param == null)
             preparedStatement.setFloat(index, 0f);
         else if (param instanceof String)
             preparedStatement.setFloat(index, Float.parseFloat((String) param));
         else if (param instanceof Number)
             preparedStatement.setFloat(index, ((Number) param).floatValue());
         else
-            throw new TypeConvertException("The param ["+param+"] is not convert to java.util.Float");
+            throw new TypeConvertException("The param [" + param + "] is not convert to java.util.Float");
     }
 
     @Override

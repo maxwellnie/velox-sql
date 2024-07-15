@@ -10,6 +10,7 @@ import java.util.Map;
 
 /**
  * 元对象
+ *
  * @author Maxwell Nie
  */
 public class MetaObject {
@@ -29,22 +30,6 @@ public class MetaObject {
     }
 
     /**
-     * 设置元对象属性值
-     *
-     * @param fieldName
-     * @param value
-     */
-    public void setFieldValue(String fieldName, Object value) {
-        MetaField field = fieldMap.get(fieldName);
-        if(field == null)
-            throw new IllegalArgumentException("not found：" + fieldName);
-        try {
-            field.set(obj, value);
-        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-            throw new IllegalArgumentException(e);
-        }
-    }
-    /**
      * 获取java对象的元对象
      *
      * @param obj
@@ -55,6 +40,24 @@ public class MetaObject {
         Map<String, MetaField> fieldMap = ReflectionUtils.getMetaFieldsMap(clazz);
         return new MetaObject(obj, fieldMap);
     }
+
+    /**
+     * 设置元对象属性值
+     *
+     * @param fieldName
+     * @param value
+     */
+    public void setFieldValue(String fieldName, Object value) {
+        MetaField field = fieldMap.get(fieldName);
+        if (field == null)
+            throw new IllegalArgumentException("not found：" + fieldName);
+        try {
+            field.set(obj, value);
+        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+            throw new IllegalArgumentException(e);
+        }
+    }
+
     /**
      * 获取元对象属性值
      *
@@ -62,7 +65,7 @@ public class MetaObject {
      * @return
      */
     public Object getFieldValue(String fieldName) {
-        if(!fieldMap.containsKey(fieldName))
+        if (!fieldMap.containsKey(fieldName))
             throw new IllegalArgumentException("not found：" + fieldName);
         try {
             return fieldMap.get(fieldName).get(obj);
@@ -70,6 +73,7 @@ public class MetaObject {
             throw new IllegalArgumentException(e);
         }
     }
+
     public Object getObj() {
         return obj;
     }

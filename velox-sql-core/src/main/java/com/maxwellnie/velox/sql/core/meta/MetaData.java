@@ -22,11 +22,12 @@ public class MetaData {
     private MetaData(Map<String, Object> meta) {
         this.meta = meta;
     }
+
     @SuppressWarnings("uncheck")
     public static MetaData of(Object o) {
         Class<?> clazz = o.getClass();
         Map<String, MetaField> fields = ReflectionUtils.getMetaFieldsMap(clazz);
-        Map<String, Object> fieldMap = Collections.synchronizedMap(fields.keySet().stream().collect(Collectors.toMap(k->k, (field) -> {
+        Map<String, Object> fieldMap = Collections.synchronizedMap(fields.keySet().stream().collect(Collectors.toMap(k -> k, (field) -> {
             try {
                 return fields.get(field).get(o);
             } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
@@ -44,16 +45,20 @@ public class MetaData {
     public void addProperty(String name, Object bean) {
         this.meta.put(name, bean);
     }
-    public void addProperty(Field field, Object bean){
+
+    public void addProperty(Field field, Object bean) {
         addProperty(field.getName(), bean);
     }
-    public<T> T getProperty(Field field, Class<T> clazz) {
+
+    public <T> T getProperty(Field field, Class<T> clazz) {
         return (T) this.meta.get(field.getName());
     }
-    public<T> T getProperty(String name) {
+
+    public <T> T getProperty(String name) {
         return (T) this.meta.get(name);
     }
-    public boolean isForClass(Class<?> beanClass){
+
+    public boolean isForClass(Class<?> beanClass) {
         if (this.meta.isEmpty())
             return false;
         else {
@@ -61,37 +66,41 @@ public class MetaData {
             return isForClass0(fields);
         }
     }
-    public void addFromMetaData(MetaData metaData){
+
+    public void addFromMetaData(MetaData metaData) {
         this.meta.putAll(metaData.meta);
     }
-    private boolean isForClass0(List<Field> fields){
+
+    private boolean isForClass0(List<Field> fields) {
         if (fields.isEmpty())
             return false;
         else {
-            for (Field field:fields){
-                if(!this.meta.containsKey(field.getName()))
+            for (Field field : fields) {
+                if (!this.meta.containsKey(field.getName()))
                     return false;
             }
             return true;
         }
     }
-    private boolean isForClass1(Collection<String> fields){
+
+    private boolean isForClass1(Collection<String> fields) {
         if (fields.isEmpty())
             return false;
         else {
-            for (String field:fields){
-                if(!this.meta.containsKey(field))
+            for (String field : fields) {
+                if (!this.meta.containsKey(field))
                     return false;
             }
             return true;
         }
     }
+
     public <T> T getBeanInstance(Class<T> beanClazz) throws InstantiationException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
         assert beanClazz != null : "Class instance must not be null.";
         Map<String, MetaField> fieldMap = ReflectionUtils.getMetaFieldsMap(beanClazz);
         assert isForClass1(fieldMap.keySet()) : "The class instance does not match the metadata.";
         T object = ReflectionUtils.newInstance(beanClazz);
-        for (MetaField field:ReflectionUtils.getMetaFieldsMap(beanClazz).values()){
+        for (MetaField field : ReflectionUtils.getMetaFieldsMap(beanClazz).values()) {
             field.set(object, meta.get(field.getName()));
         }
         return object;

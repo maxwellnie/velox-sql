@@ -11,6 +11,9 @@ public class ReturnTypeMapping {
     boolean hasJoin;
     boolean isReturnManyObject;
 
+    public ReturnTypeMapping() {
+    }
+
     public Class<?> getType() {
         return type;
     }
@@ -41,9 +44,6 @@ public class ReturnTypeMapping {
 
     public void setReturnManyObject(boolean returnManyObject) {
         isReturnManyObject = returnManyObject;
-    }
-
-    public ReturnTypeMapping() {
     }
 
     @Override

@@ -3,7 +3,7 @@ package com.maxwellnie.velox.sql.core.natives.exception;
 /**
  * @author Maxwell Nie
  */
-public class TableException extends RuntimeException{
+public class TableException extends RuntimeException {
     public TableException() {
     }
 

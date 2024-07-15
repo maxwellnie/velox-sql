@@ -1,4 +1,5 @@
 package com.maxwellnie.velox.sql.core.proxy.executor.result;
+
 import com.maxwellnie.velox.sql.core.cache.key.CacheKey;
 
 /**
@@ -51,8 +52,9 @@ public class SqlResult {
     public void setCacheKey(CacheKey cacheKey) {
         this.cacheKey = cacheKey;
     }
-    public interface CacheFlush{
+
+    public interface CacheFlush {
         String FLUSH = "flush";
-        String CLEAR =  "clear";
+        String CLEAR = "clear";
     }
 }

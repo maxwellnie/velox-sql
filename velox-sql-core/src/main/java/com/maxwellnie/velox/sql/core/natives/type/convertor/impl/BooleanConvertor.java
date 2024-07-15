@@ -23,14 +23,14 @@ public class BooleanConvertor implements TypeConvertor<Boolean> {
 
     @Override
     public void addParam(PreparedStatement preparedStatement, int index, Object param) throws SQLException {
-        if(param == null)
+        if (param == null)
             preparedStatement.setBoolean(index, false);
         else if (param instanceof String)
             preparedStatement.setBoolean(index, Boolean.parseBoolean((String) param));
         else if (param instanceof Number)
-            preparedStatement.setBoolean(index, ((Number) param).doubleValue()!=0);
+            preparedStatement.setBoolean(index, ((Number) param).doubleValue() != 0);
         else
-            throw new TypeConvertException("The param ["+param+"] is not convert to java.util.Integer");
+            throw new TypeConvertException("The param [" + param + "] is not convert to java.util.Integer");
     }
 
     @Override

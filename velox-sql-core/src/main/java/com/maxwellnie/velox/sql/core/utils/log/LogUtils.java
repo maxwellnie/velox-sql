@@ -24,6 +24,7 @@ public class LogUtils {
         executorException.setStackTrace(throwable.getStackTrace());
         return executorException;
     }
+
     public static String convertExceptionToLogMessage(Throwable throwable) {
         StringBuilder stringBuilder = new StringBuilder("\n|- ERROR MESSAGE: " + throwable.getMessage());
         if (throwable.getCause() != null)

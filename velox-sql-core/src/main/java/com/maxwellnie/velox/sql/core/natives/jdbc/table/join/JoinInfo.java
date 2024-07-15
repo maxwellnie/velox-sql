@@ -1,11 +1,7 @@
 package com.maxwellnie.velox.sql.core.natives.jdbc.table.join;
 
 import com.maxwellnie.velox.sql.core.natives.enums.JoinType;
-import com.maxwellnie.velox.sql.core.natives.jdbc.table.TableInfo;
 import com.maxwellnie.velox.sql.core.utils.reflect.MetaField;
-
-import java.lang.reflect.Field;
-import java.util.List;
 
 /**
  * @author Maxwell Nie
@@ -41,6 +37,7 @@ public class JoinInfo {
     public String getMasterTableField() {
         return masterTableField;
     }
+
     public void setMasterTableField(String masterTableField) {
         this.masterTableField = masterTableField;
     }
@@ -81,16 +78,16 @@ public class JoinInfo {
         return columnTypeClass;
     }
 
+    public void setColumnTypeClass(Class<?> columnTypeClass) {
+        this.columnTypeClass = columnTypeClass;
+    }
+
     public Class<?> getMasterTable() {
         return masterTable;
     }
 
     public void setMasterTable(Class<?> masterTable) {
         this.masterTable = masterTable;
-    }
-
-    public void setColumnTypeClass(Class<?> columnTypeClass) {
-        this.columnTypeClass = columnTypeClass;
     }
 
     public MetaField getField() {
@@ -104,6 +101,7 @@ public class JoinInfo {
     public boolean isNotNested() {
         return notNested;
     }
+
     public void setNotNested(boolean notNested) {
         this.notNested = notNested;
     }

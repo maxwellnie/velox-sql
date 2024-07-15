@@ -1,13 +1,13 @@
 package com.maxwellnie.velox.sql.core.proxy.executor;
 
 import com.maxwellnie.velox.sql.core.cache.Cache;
-import com.maxwellnie.velox.sql.core.cache.transactional.CacheTransactional;
 import com.maxwellnie.velox.sql.core.cache.key.CacheKey;
+import com.maxwellnie.velox.sql.core.cache.transactional.CacheTransactional;
 import com.maxwellnie.velox.sql.core.meta.MetaData;
 import com.maxwellnie.velox.sql.core.natives.exception.ExecutorException;
 import com.maxwellnie.velox.sql.core.natives.jdbc.context.Context;
-import com.maxwellnie.velox.sql.core.natives.jdbc.session.JdbcSession;
 import com.maxwellnie.velox.sql.core.natives.jdbc.mapping.ReturnTypeMapping;
+import com.maxwellnie.velox.sql.core.natives.jdbc.session.JdbcSession;
 import com.maxwellnie.velox.sql.core.natives.jdbc.sql.row.RowSql;
 import com.maxwellnie.velox.sql.core.natives.jdbc.statement.StatementWrapper;
 import com.maxwellnie.velox.sql.core.natives.jdbc.table.TableInfo;
@@ -32,6 +32,7 @@ public interface MethodExecutor {
      * @return 操作结果
      */
     Object execute(TableInfo tableInfo, JdbcSession session, Cache<Object, Object> cache, String daoImplHashCode, ReturnTypeMapping returnTypeMapping, Object[] args);
+
     /**
      * 检查参数
      *
@@ -44,12 +45,14 @@ public interface MethodExecutor {
 
     /**
      * 对所需要的数据进行预处理。
+     *
      * @param tableInfo
      * @param args
      * @return 元数据
      * @throws ExecutorException
      */
     MetaData prepared(TableInfo tableInfo, Object[] args) throws ExecutorException;
+
     /**
      * 构建sql
      *
@@ -58,6 +61,7 @@ public interface MethodExecutor {
      * @throws ExecutorException
      */
     RowSql buildRowSql(MetaData metaData) throws ExecutorException;
+
     /**
      * 打开statement
      *
@@ -69,6 +73,7 @@ public interface MethodExecutor {
      * @throws ExecutorException
      */
     StatementWrapper openStatement(RowSql rowSql, JdbcSession session, TableInfo tableInfo, Object[] args) throws ExecutorException;
+
     /**
      * 执行sql
      *
@@ -78,6 +83,7 @@ public interface MethodExecutor {
      * @throws ExecutorException
      */
     Object runSql(StatementWrapper statementWrapper, RowSql rowSql) throws ExecutorException;
+
     /**
      * 处理runner执行结果
      *
@@ -88,7 +94,8 @@ public interface MethodExecutor {
      * @return sql结果
      * @throws ExecutorException
      */
-    SqlResult handleRunnerResult(Object result,TableInfo tableInfo, CacheKey cacheKey, ReturnTypeMapping returnTypeMapping) throws ExecutorException;
+    SqlResult handleRunnerResult(Object result, TableInfo tableInfo, CacheKey cacheKey, ReturnTypeMapping returnTypeMapping) throws ExecutorException;
+
     /**
      * 刷新缓存
      *
@@ -99,6 +106,7 @@ public interface MethodExecutor {
      * @throws ExecutorException
      */
     void flushCache(SqlResult sqlResult, Cache cache, CacheTransactional dirtyManager, boolean isTransactional) throws ExecutorException;
+
     /**
      * 关闭statement
      *
@@ -108,5 +116,6 @@ public interface MethodExecutor {
     void closeStatement(StatementWrapper statementWrapper) throws ExecutorException;
 
     Logger getLogger();
+
     void setMethodMappedManager(Context.MethodMappedManager methodMappedManager);
 }

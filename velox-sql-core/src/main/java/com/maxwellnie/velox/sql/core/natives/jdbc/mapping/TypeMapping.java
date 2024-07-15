@@ -19,7 +19,8 @@ public class TypeMapping {
     MetaField metaField;
     boolean isNeedInstantiate = false;
 
-    TypeMapping primaryKeyPropertyMapping;;
+    TypeMapping primaryKeyPropertyMapping;
+    ;
 
     boolean isJoinedFlag;
     boolean isCollection;
@@ -27,64 +28,64 @@ public class TypeMapping {
     public TypeMapping() {
     }
 
-    public void setType(Class<?> type) {
+    TypeMapping(Class<?> type) {
         this.type = type;
-    }
-
-    public void setInnerTypeMapping(List<TypeMapping> innerTypeMapping) {
-        this.innerTypeMapping = innerTypeMapping;
-    }
-
-    public void setParentTypeMapping(TypeMapping parentTypeMapping) {
-        this.parentTypeMapping = parentTypeMapping;
-    }
-
-    public void setTypeConvertor(TypeConvertor<?> typeConvertor) {
-        this.typeConvertor = typeConvertor;
-    }
-
-    public void setColumnName(String columnName) {
-        this.columnName = columnName;
-    }
-
-    public void setMetaField(MetaField metaField) {
-        this.metaField = metaField;
-    }
-
-    public void setNeedInstantiate(boolean needInstantiate) {
-        isNeedInstantiate = needInstantiate;
     }
 
     public Class<?> getType() {
         return type;
     }
 
+    public void setType(Class<?> type) {
+        this.type = type;
+    }
+
     public List<TypeMapping> getInnerTypeMapping() {
         return innerTypeMapping;
+    }
+
+    public void setInnerTypeMapping(List<TypeMapping> innerTypeMapping) {
+        this.innerTypeMapping = innerTypeMapping;
     }
 
     public TypeMapping getParentTypeMapping() {
         return parentTypeMapping;
     }
 
+    public void setParentTypeMapping(TypeMapping parentTypeMapping) {
+        this.parentTypeMapping = parentTypeMapping;
+    }
+
     public TypeConvertor<?> getTypeConvertor() {
         return typeConvertor;
+    }
+
+    public void setTypeConvertor(TypeConvertor<?> typeConvertor) {
+        this.typeConvertor = typeConvertor;
     }
 
     public String getColumnName() {
         return columnName;
     }
 
+    public void setColumnName(String columnName) {
+        this.columnName = columnName;
+    }
+
     public MetaField getMetaField() {
         return metaField;
+    }
+
+    public void setMetaField(MetaField metaField) {
+        this.metaField = metaField;
     }
 
     public boolean isNeedInstantiate() {
         return isNeedInstantiate;
     }
 
-    TypeMapping(Class<?> type) {
-        this.type = type;
+    public void setNeedInstantiate(boolean needInstantiate) {
+        isNeedInstantiate = needInstantiate;
     }
 
     public TypeMapping getPrimaryKeyPropertyMapping() {

@@ -2,9 +2,9 @@ package com.maxwellnie.velox.sql.core.proxy;
 
 import com.maxwellnie.velox.sql.core.cache.Cache;
 import com.maxwellnie.velox.sql.core.natives.exception.NotMappedMethodException;
-import com.maxwellnie.velox.sql.core.natives.jdbc.session.JdbcSession;
 import com.maxwellnie.velox.sql.core.natives.jdbc.context.Context;
 import com.maxwellnie.velox.sql.core.natives.jdbc.mapping.ReturnTypeMapping;
+import com.maxwellnie.velox.sql.core.natives.jdbc.session.JdbcSession;
 import com.maxwellnie.velox.sql.core.natives.jdbc.table.TableInfo;
 import com.maxwellnie.velox.sql.core.proxy.executor.MethodExecutor;
 import com.maxwellnie.velox.sql.core.utils.java.StringUtils;
@@ -85,14 +85,16 @@ public class DaoImplInvokeHandler implements InvocationHandler {
         logger.debug("table info : " + tableInfo);
         logger.debug("enable cache : " + (cache != null));
     }
+
     public DaoImplInvokeHandler(TableInfo tableInfo, JdbcSession jdbcSession, Cache<Object, Object> cache, Context.MethodMappedManager methodMappedManager) {
         this.tableInfo = tableInfo;
         this.jdbcSession = jdbcSession;
         this.cache = cache;
         this.methodMappedManager = methodMappedManager;
         logger.debug("table info : " + tableInfo);
-        logger.debug("enable cache : " + (cache!= null));
+        logger.debug("enable cache : " + (cache != null));
     }
+
     /**
      * @param method
      * @return

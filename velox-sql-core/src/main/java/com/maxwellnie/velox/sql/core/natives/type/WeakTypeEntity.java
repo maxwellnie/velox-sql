@@ -15,23 +15,29 @@ public class WeakTypeEntity {
     public WeakTypeEntity(Class<?> targetType) {
         this.targetType = targetType;
     }
+
+    public static Builder create(Class<?> targetType) {
+        return new Builder(targetType);
+    }
+
     public void addProperty(String name, WeakTypeEntity weakTypeEntity) {
         PROPERTIES.put(name, weakTypeEntity);
     }
+
     public WeakTypeEntity getProperty(String name) {
         return PROPERTIES.get(name);
     }
+
     public Map<String, WeakTypeEntity> getProperties() {
         return PROPERTIES;
     }
+
     public void removeProperty(String name) {
         PROPERTIES.remove(name);
     }
+
     public Class<?> getTargetType() {
         return targetType;
-    }
-    public static Builder create(Class<?> targetType) {
-        return new Builder(targetType);
     }
 
     public Object getValue() {
@@ -49,14 +55,17 @@ public class WeakTypeEntity {
         public Builder(Class<?> targetType) {
             this.targetType = targetType;
         }
+
         public Builder addProperty(String name, WeakTypeEntity weakTypeEntity) {
             DATA.put(name, weakTypeEntity);
             return this;
         }
+
         public Builder addProperty(String name) {
             DATA.put(name, null);
             return this;
         }
+
         public Builder removeProperty(String name) {
             DATA.remove(name);
             return this;

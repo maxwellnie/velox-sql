@@ -2,12 +2,10 @@ package com.maxwellnie.velox.sql.core.natives.dao;
 
 import com.maxwellnie.velox.sql.core.natives.jdbc.sql.SqlPool;
 
-import java.util.List;
-
 /**
  * @author Maxwell Nie
  */
-public class GroupBySql extends BaseSql{
+public class GroupBySql extends BaseSql {
     protected String sql = SqlPool.GROUP_BY;
     protected boolean isInject = false;
 

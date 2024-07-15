@@ -2,16 +2,17 @@ package com.maxwellnie.velox.sql.core.natives.jdbc.table;
 
 import com.maxwellnie.velox.sql.core.annotation.*;
 import com.maxwellnie.velox.sql.core.config.Configuration;
-import com.maxwellnie.velox.sql.core.natives.type.convertor.ConvertorManager;
+import com.maxwellnie.velox.sql.core.config.simple.SingletonConfiguration;
 import com.maxwellnie.velox.sql.core.meta.MetaData;
-import com.maxwellnie.velox.sql.core.natives.concurrent.ThreadLock;
 import com.maxwellnie.velox.sql.core.natives.exception.EntityObjectException;
 import com.maxwellnie.velox.sql.core.natives.exception.TableException;
 import com.maxwellnie.velox.sql.core.natives.jdbc.table.column.ColumnInfo;
 import com.maxwellnie.velox.sql.core.natives.jdbc.table.column.PrimaryInfo;
 import com.maxwellnie.velox.sql.core.natives.jdbc.table.join.JoinInfo;
+import com.maxwellnie.velox.sql.core.natives.type.convertor.ConvertorManager;
 import com.maxwellnie.velox.sql.core.natives.type.convertor.TypeConvertor;
 import com.maxwellnie.velox.sql.core.natives.type.convertor.impl.DefaultConvertor;
+import com.maxwellnie.velox.sql.core.natives.type.convertor.impl.json.JsonConvertor;
 import com.maxwellnie.velox.sql.core.utils.java.StringUtils;
 import com.maxwellnie.velox.sql.core.utils.reflect.ReflectionUtils;
 import org.slf4j.Logger;
@@ -20,11 +21,14 @@ import org.slf4j.LoggerFactory;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.util.*;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * 表信息工具类
+ *
  * @author Maxwell Nie
  */
 public abstract class TableInfoManager {
@@ -33,7 +37,7 @@ public abstract class TableInfoManager {
      * 缓存表信息
      */
     private static final Map<Object, TableInfo> TABLE_INFO_CACHE = new LinkedHashMap<>();
-    private final ReentrantReadWriteLock lock = ThreadLock.reentrantReadWriteLock("TABLE_INFO_CACHE_READ_WRITE_LOCK");
+
     /**
      * 获取clazz对应表信息
      *
@@ -43,6 +47,11 @@ public abstract class TableInfoManager {
     public static TableInfo getTableInfo(Object o) {
         return TABLE_INFO_CACHE.get(o);
     }
+
+    public static Set<Object> getAllRegisteredClass() {
+        return TABLE_INFO_CACHE.keySet();
+    }
+
     /**
      * 获取clazz对应表信息
      *
@@ -50,14 +59,9 @@ public abstract class TableInfoManager {
      * @return 表信息
      */
     public TableInfo getCachedTableInfo(Class<?> clazz) {
-        try {
-            lock.readLock().lock();
-            return TABLE_INFO_CACHE.get(clazz);
-        }finally {
-            lock.readLock().unlock();
-        }
-
+        return TABLE_INFO_CACHE.get(clazz);
     }
+
     /**
      * 获取clazz对应表信息
      *
@@ -77,9 +81,7 @@ public abstract class TableInfoManager {
             return tableInfo;
         }
     }
-    public static Set<Object> getAllRegisteredClass(){
-        return TABLE_INFO_CACHE.keySet();
-    }
+
     /**
      * 初始化clazz对应表信息
      *
@@ -88,7 +90,7 @@ public abstract class TableInfoManager {
      * @return 表信息
      */
     private synchronized TableInfo initTableInfo(Class<?> clazz, Configuration configuration) {
-        if(!Serializable.class.isAssignableFrom(clazz))
+        if (!Serializable.class.isAssignableFrom(clazz))
             throw new EntityObjectException("The entity '" + clazz.getName() + "' is not serializable,Please implements Serializable interface.");
         TableInfo tableInfo = new TableInfo();
         tableInfo.setMappedClazz(clazz);
@@ -100,13 +102,14 @@ public abstract class TableInfoManager {
     /**
      * 将反射信息处理为表信息的一部分
      *
-     * @param clazz      实体
-     * @param tableInfo  表信息对象
-     * @param prefix     前缀
+     * @param clazz         实体
+     * @param tableInfo     表信息对象
+     * @param prefix        前缀
      * @param configuration 配置
      */
     private void handleTable(Class<?> clazz, TableInfo tableInfo, String prefix, Configuration configuration) {
         String name;
+        String dataSourceName;
         int fetchSize;
         if (clazz.isAnnotationPresent(Entity.class)) {
             if (configuration.isCache() && !ReflectionUtils.hasInterface(clazz, Serializable.class)) {
@@ -114,6 +117,7 @@ public abstract class TableInfoManager {
             }
             Entity entity = clazz.getDeclaredAnnotation(Entity.class);
             name = entity.value();
+            dataSourceName = entity.dataSourceName();
             fetchSize = entity.fetchSize();
         } else
             throw new TableException("The class '" + clazz.getName() + "' is not entity,Please check your entity class.It must use @Entity when it's entity.");
@@ -124,7 +128,10 @@ public abstract class TableInfoManager {
             if (!StringUtils.isNullOrEmpty(prefix))
                 name = prefix + name;
         }
-        if(clazz.isAnnotationPresent(JoinTable.class)){
+        if (StringUtils.isNullOrEmpty(dataSourceName)) {
+            tableInfo.setDataSourceName(dataSourceName);
+        }
+        if (clazz.isAnnotationPresent(JoinTable.class)) {
             handleTableTypeJoin(clazz, tableInfo);
         }
         tableInfo.setFetchSize(fetchSize);
@@ -132,18 +139,18 @@ public abstract class TableInfoManager {
     }
 
     private void handleTableTypeJoin(Class<?> clazz, TableInfo tableInfo) {
-        JoinTable[] joins = clazz.getDeclaredAnnotationsByType(JoinTable.class);
-        for (JoinTable join : joins){
+        JoinTable join = clazz.getDeclaredAnnotation(JoinTable.class);
+        if (join != null) {
             JoinInfo joinInfo = new JoinInfo();
             assert StringUtils.isNotNullOrEmpty(join.masterTableField()) : "The masterTableField must not be null.";
-            assert StringUtils.isNotNullOrEmpty(join.slaveTableColumn()) : "The slaveTableField must not be null.";
+            assert StringUtils.isNotNullOrEmpty(join.slaveTableJoinColumn()) : "The slaveTableField must not be null.";
             joinInfo.setMasterTableField(join.masterTableField());
             joinInfo.setMasterTable(clazz);
             joinInfo.setAliasSlaveTable(join.slaveTableAlias());
             joinInfo.setSlaveTableName(join.slaveTableName());
-            joinInfo.setSlaveTableColumn(join.slaveTableColumn());
+            joinInfo.setSlaveTableColumn(join.slaveTableJoinColumn());
             joinInfo.setJoinType(join.joinType());
-            joinInfo.setManyToMany(join.isManyToMany());
+            joinInfo.setManyToMany(false);
             joinInfo.setNotNested(true);
             TableInfo slaveTableInfo = new TableInfo();
             slaveTableInfo.setTableName(join.slaveTableName());
@@ -157,28 +164,28 @@ public abstract class TableInfoManager {
     /**
      * 初始化字段映射
      *
-     * @param tableInfo  表信息
-     * @param clazz      实体
+     * @param tableInfo     表信息
+     * @param clazz         实体
      * @param configuration 配置
      */
     private void initFieldMapped(TableInfo tableInfo, Class<?> clazz, Configuration configuration) {
         assert tableInfo != null;
         List<Field> fields = ReflectionUtils.getAllFields(clazz);
         for (Field f : fields) {
-            if (f.isAnnotationPresent(Join.class)){
+            if (f.isAnnotationPresent(Join.class)) {
                 handleJoin(tableInfo, f, clazz);
-            }else if(f.isAnnotationPresent(SlaveField.class)){
+            } else if (f.isAnnotationPresent(SlaveField.class)) {
                 SlaveField slaveField = f.getDeclaredAnnotation(SlaveField.class);
-                for (JoinInfo joinInfo: tableInfo.getJoinInfos()) {
-                    if(joinInfo.getSlaveTableName().equals(slaveField.slaveTableName())){
-                        TableInfo slaveTableInfo =  TABLE_INFO_CACHE.get(clazz.getName() + " - " +joinInfo.getSlaveTableName());
-                        if(slaveTableInfo == null){
+                for (JoinInfo joinInfo : tableInfo.getJoinInfos()) {
+                    if (joinInfo.getSlaveTableName().equals(slaveField.slaveTableName())) {
+                        TableInfo slaveTableInfo = TABLE_INFO_CACHE.get(clazz.getName() + " - " + joinInfo.getSlaveTableName());
+                        if (slaveTableInfo == null) {
                             throw new EntityObjectException("The slaveTableName '" + slaveField.slaveTableName() + "' is not found.Please make sure that the slave table is created when the master table is initialized,and try again.");
                         }
                         handleColumn(slaveTableInfo, configuration, f);
                     }
                 }
-            }else {
+            } else {
                 handleColumn(tableInfo, configuration, f);
             }
         }
@@ -188,12 +195,13 @@ public abstract class TableInfoManager {
         }
         tableInfo.getOtherInfo().addProperty("fields", metaData);
     }
+
     /**
      * 处理字段
      *
-     * @param tableInfo  表信息
+     * @param tableInfo     表信息
      * @param configuration 配置
-     * @param f          字段
+     * @param f             字段
      */
     private void handleColumn(TableInfo tableInfo, Configuration configuration, Field f) {
         String columnName = "";
@@ -207,15 +215,7 @@ public abstract class TableInfoManager {
                     columnName = f.getName();
                 else
                     columnName = StringUtils.getStandName(f.getName());
-            try {
-                if (!primaryKey.convertor().equals(DefaultConvertor.class))
-                    convertor = primaryKey.convertor().getConstructor().newInstance();
-                else
-                    convertor = ConvertorManager.getConvertor(f.getType());
-            } catch (InstantiationException | IllegalAccessException | NoSuchMethodException |
-                     InvocationTargetException e) {
-                logger.error(e.getMessage() + "\t\n" + e.getCause());
-            }
+            convertor = getPrimaryTypeConvertor(f, primaryKey, tableInfo.getMappedClazz());
             PrimaryInfo primaryInfo = new PrimaryInfo(columnName, ReflectionUtils.getMetaField(tableInfo.getMappedClazz(), f), convertor, strategy);
             tableInfo.setPkColumn(primaryInfo);
             return;
@@ -224,14 +224,7 @@ public abstract class TableInfoManager {
             Column column = f.getDeclaredAnnotation(Column.class);
             if (column.isExclusion())
                 return;
-            try {
-                if (!column.convertor().equals(DefaultConvertor.class))
-                    convertor = column.convertor().newInstance();
-                else
-                    convertor = ConvertorManager.getConvertor(f.getType());
-            } catch (InstantiationException | IllegalAccessException e) {
-                logger.error(e.getMessage() + "\t\n" + e.getCause());
-            }
+            convertor = getColumnTypeConvertor(f, column, tableInfo.getMappedClazz());
             columnName = column.value();
         }
         if (StringUtils.isNullOrEmpty(columnName)) {
@@ -243,8 +236,47 @@ public abstract class TableInfoManager {
         ColumnInfo columnInfo = new ColumnInfo(columnName, ReflectionUtils.getMetaField(tableInfo.getMappedClazz(), f), convertor);
         tableInfo.putColumnInfo(f.getName(), columnInfo);
     }
+
+    private static TypeConvertor<?> getPrimaryTypeConvertor(Field f, PrimaryKey primaryKey, Class<?> entityClass) {
+        TypeConvertor<?> convertor = null;
+        try {
+            if (!primaryKey.convertor().equals(DefaultConvertor.class)) {
+                if (primaryKey.convertor().equals(JsonConvertor.class)) {
+                    convertor = new JsonConvertor<>(SingletonConfiguration.getInstance().getJsonSupporter(), entityClass);
+                } else {
+                    convertor = ReflectionUtils.newInstance(primaryKey.convertor());
+                }
+            } else
+                convertor = ConvertorManager.getConvertor(f.getType());
+        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException |
+                 InvocationTargetException e) {
+            logger.error(e.getMessage() + "\t\n" + e.getCause());
+        }
+        return convertor;
+    }
+
+    private static TypeConvertor<?> getColumnTypeConvertor(Field f, Column column, Class<?> entityClass) {
+        TypeConvertor<?> convertor = null;
+        try {
+            if (!column.convertor().equals(DefaultConvertor.class)) {
+                if (column.convertor().equals(JsonConvertor.class)) {
+                    convertor = new JsonConvertor<>(SingletonConfiguration.getInstance().getJsonSupporter(), entityClass);
+                } else {
+                    convertor = ReflectionUtils.newInstance(column.convertor());
+                }
+            } else {
+                convertor = ConvertorManager.getConvertor(f.getType());
+            }
+        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException |
+                 InvocationTargetException e) {
+            logger.error(e.getMessage() + "\t\n" + e.getCause());
+        }
+        return convertor;
+    }
+
     /**
      * 处理join
+     *
      * @param tableInfo
      * @param f
      */

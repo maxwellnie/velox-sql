@@ -35,12 +35,15 @@ public abstract class BaseSql {
     public void setInject(boolean inject) {
         isInject = inject;
     }
+
     public void addParam(Object value) {
         params.add(value);
     }
+
     public void addParams(Collection<Object> values) {
         params.addAll(values);
     }
+
     public void addParams(Object[] values) {
         Collections.addAll(params, values);
     }

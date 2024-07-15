@@ -41,6 +41,7 @@ public class StringUtils {
             return true;
         else return str.trim().isEmpty();
     }
+
     /**
      * 判断字符串是否不为空
      *
@@ -50,6 +51,7 @@ public class StringUtils {
     public static boolean isNotNullOrEmpty(String str) {
         return !isNullOrEmpty(str);
     }
+
     /**
      * 获取全部的sql并且把他们拼接为：sql1,sql2,sql3的形式
      *
@@ -111,8 +113,6 @@ public class StringUtils {
     }
 
     /**
-     *
-     *
      * @param size
      * @return
      */
@@ -133,6 +133,7 @@ public class StringUtils {
     public static String getMethodDeclaredName(Method method) {
         return method.getName() + Arrays.toString(method.getParameterTypes());
     }
+
     /**
      * 获取可以被方法映射管理器识别到的方法的名字getId[class c.c.c.A, class c.c.c.f.B]
      *
@@ -142,10 +143,11 @@ public class StringUtils {
      */
     public static String getMethodDeclaredName(String method, Class<?>[] argsClass) {
         String argsTuple = "[]";
-        if(argsClass != null)
+        if (argsClass != null)
             argsTuple = Arrays.toString(argsClass);
         return method + argsTuple;
     }
+
     public static String toFirstLowerCase(String s) {
         return s == null ? null : (s.isEmpty() ? s : toLowerCase(s.charAt(0)) + s.substring(1));
     }
@@ -170,6 +172,7 @@ public class StringUtils {
 
     /**
      * 安全的字符串比对。
+     *
      * @param str1
      * @param str2
      * @return 比对结果

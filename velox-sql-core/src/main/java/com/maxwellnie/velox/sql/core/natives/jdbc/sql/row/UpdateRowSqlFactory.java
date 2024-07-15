@@ -1,18 +1,20 @@
 package com.maxwellnie.velox.sql.core.natives.jdbc.sql.row;
 
-import com.maxwellnie.velox.sql.core.natives.type.convertor.ConvertorManager;
 import com.maxwellnie.velox.sql.core.meta.MetaData;
 import com.maxwellnie.velox.sql.core.natives.dao.SqlDecorator;
 import com.maxwellnie.velox.sql.core.natives.exception.ExecutorException;
+import com.maxwellnie.velox.sql.core.natives.jdbc.sql.SqlPool;
 import com.maxwellnie.velox.sql.core.natives.jdbc.sql.SqlType;
+import com.maxwellnie.velox.sql.core.natives.jdbc.sql.creator.SqlCreator;
 import com.maxwellnie.velox.sql.core.natives.jdbc.table.TableInfo;
 import com.maxwellnie.velox.sql.core.natives.jdbc.table.column.ColumnInfo;
+import com.maxwellnie.velox.sql.core.natives.type.convertor.ConvertorManager;
 import com.maxwellnie.velox.sql.core.natives.type.convertor.TypeConvertor;
-import com.maxwellnie.velox.sql.core.natives.jdbc.sql.creator.SqlCreator;
-import com.maxwellnie.velox.sql.core.natives.jdbc.sql.SqlPool;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.*;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * @author Maxwell Nie
@@ -45,7 +47,7 @@ public class UpdateRowSqlFactory implements RowSqlFactory {
                     }
 
                 } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-                        throw new ExecutorException(e);
+                    throw new ExecutorException(e);
                 }
             }
             if (sqlDecorator != null) {
@@ -53,8 +55,8 @@ public class UpdateRowSqlFactory implements RowSqlFactory {
                     StringBuilder inlineSqlFragment = new StringBuilder("");
                     for (int i = 0; i < sqlDecorator.getWhereFragment().getInlineSql().size(); i++) {
                         param.addAll(sqlDecorator.getWhereFragment().getInlineSql().get(i).getParams());
-                        if(!justSetParam){
-                            for (Object obj:sqlDecorator.getWhereFragment().getInlineSql().get(i).getParams())
+                        if (!justSetParam) {
+                            for (Object obj : sqlDecorator.getWhereFragment().getInlineSql().get(i).getParams())
                                 typeConvertors.add(ConvertorManager.getConvertor(obj.getClass()));
                             inlineSqlFragment.append(sqlDecorator.getWhereFragment().getInlineSql().get(i).getSql());
                             if (i < sqlDecorator.getWhereFragment().getInlineSql().size() - 1) {
@@ -64,9 +66,9 @@ public class UpdateRowSqlFactory implements RowSqlFactory {
                     }
                     otherSql.append(SqlPool.SPACE).append(SqlCreator.create(sqlDecorator.getWhereFragment().getSql(), inlineSqlFragment.toString()));
                 }
-                if (sqlDecorator.getApplySql()!=null){
+                if (sqlDecorator.getApplySql() != null) {
                     otherSql.append(SqlPool.SPACE).append(sqlDecorator.getApplySql().getSql());
-                    for (Object obj : sqlDecorator.getApplySql().getParams()){
+                    for (Object obj : sqlDecorator.getApplySql().getParams()) {
                         typeConvertors.add(ConvertorManager.getConvertor(obj.getClass()));
                     }
                     param.addAll(sqlDecorator.getApplySql().getParams());
@@ -77,7 +79,7 @@ public class UpdateRowSqlFactory implements RowSqlFactory {
         }
 
         RowSql rowSql = new RowSql();
-        rowSql.setNativeSql(SqlCreator.create(SqlPool.UPDATE, tableName, setSql.substring(0, setSql.length()-1),otherSql.toString()));
+        rowSql.setNativeSql(SqlCreator.create(SqlPool.UPDATE, tableName, setSql.substring(0, setSql.length() - 1), otherSql.toString()));
         rowSql.setParams(params);
         rowSql.setSqlType(sqlType);
         rowSql.setTypeConvertors(typeConvertors);

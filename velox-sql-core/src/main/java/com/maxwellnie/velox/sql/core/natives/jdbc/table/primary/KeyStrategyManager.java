@@ -1,17 +1,14 @@
 package com.maxwellnie.velox.sql.core.natives.jdbc.table.primary;
 
-import com.maxwellnie.velox.sql.core.natives.jdbc.table.primary.PrimaryKeyStrategy;
 import com.maxwellnie.velox.sql.core.natives.jdbc.table.primary.generator.NoKeyGenerator;
 import com.maxwellnie.velox.sql.core.natives.jdbc.table.primary.keyselector.JdbcSelector;
 import com.maxwellnie.velox.sql.core.natives.jdbc.table.primary.keyselector.NoKeySelector;
 import com.maxwellnie.velox.sql.core.natives.registry.Registry;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 /**
  * 主键策略管理器，用于注册主键生成策略和主键获取策略
  * 请注意！这个主键策略管理器是局部线程安全的，建议在框架初始化前将主键设置完毕。
+ *
  * @author Maxwell Nie
  */
 public class KeyStrategyManager {

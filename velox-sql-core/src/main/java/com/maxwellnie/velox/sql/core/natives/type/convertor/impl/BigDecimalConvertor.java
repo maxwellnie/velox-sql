@@ -32,14 +32,14 @@ public class BigDecimalConvertor implements TypeConvertor<BigDecimal> {
 
     @Override
     public void addParam(PreparedStatement preparedStatement, int index, Object param) throws SQLException {
-        if(param == null)
+        if (param == null)
             preparedStatement.setBigDecimal(index, null);
         else if (param instanceof String)
             preparedStatement.setBigDecimal(index, new BigDecimal((String) param));
         else if (param instanceof Number)
             preparedStatement.setBigDecimal(index, new BigDecimal(param.toString()));
         else
-            throw new TypeConvertException("The param ["+param+"] is not convert to java.math.BigDecimal");
+            throw new TypeConvertException("The param [" + param + "] is not convert to java.math.BigDecimal");
     }
 
     @Override

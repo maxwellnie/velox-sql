@@ -1,10 +1,12 @@
-package com.maxwellnie.velox.sql.core.natives.jdbc.session;
+package com.maxwellnie.velox.sql.core.natives.jdbc.session.impl;
 
 
 import com.maxwellnie.velox.sql.core.natives.jdbc.context.Context;
+import com.maxwellnie.velox.sql.core.natives.jdbc.session.JdbcSession;
+import com.maxwellnie.velox.sql.core.natives.jdbc.session.JdbcSessionFactory;
 
 /**
- * JdbcContext工厂，生产出一个JdbcContext实例
+ * JdbcSession工厂，生产出一个JdbcSession实例
  *
  * @author Maxwell Nie
  */
@@ -23,7 +25,7 @@ public class DefaultSessionFactory implements JdbcSessionFactory {
     @Override
     public JdbcSession produce(boolean autoCommit) {
         return new DefaultJdbcSession(
-                        context.getTransactionFactory().
+                context.getTransactionFactory().
                         produce(autoCommit, context.getLevel()), autoCommit, context.getTaskQueue());
     }
 

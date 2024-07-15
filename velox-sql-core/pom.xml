@@ -5,7 +5,7 @@
     <parent>
         <artifactId>velox-sql</artifactId>
         <groupId>io.github.maxwellnie</groupId>
-        <version>1.2.1</version>
+        <version>1.2.2</version>
     </parent>
     <description>Framework core</description>
     <modelVersion>4.0.0</modelVersion>

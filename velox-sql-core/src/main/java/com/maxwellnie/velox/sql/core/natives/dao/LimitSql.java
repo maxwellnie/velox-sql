@@ -2,12 +2,10 @@ package com.maxwellnie.velox.sql.core.natives.dao;
 
 import com.maxwellnie.velox.sql.core.natives.jdbc.sql.SqlPool;
 
-import java.util.List;
-
 /**
  * @author Maxwell Nie
  */
-public class LimitSql extends BaseSql{
+public class LimitSql extends BaseSql {
     protected String sql = SqlPool.SPACE;
     protected boolean isInject = true;
     protected long start = 0;
@@ -18,16 +16,16 @@ public class LimitSql extends BaseSql{
         return offset;
     }
 
+    public void setOffset(long offset) {
+        this.offset = offset;
+    }
+
     public long getStart() {
         return start;
     }
 
     public void setStart(long start) {
         this.start = start;
-    }
-
-    public void setOffset(long offset) {
-        this.offset = offset;
     }
 
     @Override

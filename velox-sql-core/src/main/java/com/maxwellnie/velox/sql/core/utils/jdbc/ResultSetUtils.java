@@ -1,20 +1,16 @@
 package com.maxwellnie.velox.sql.core.utils.jdbc;
 
-import com.maxwellnie.velox.sql.core.natives.exception.NotMappedFieldException;
-import com.maxwellnie.velox.sql.core.natives.jdbc.table.TableInfo;
-import com.maxwellnie.velox.sql.core.natives.jdbc.table.column.ColumnInfo;
-import com.maxwellnie.velox.sql.core.natives.jdbc.table.column.PrimaryInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.lang.reflect.InvocationTargetException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+
 /**
  * ResultSet工具类
+ *
  * @author Maxwell Nie, Akiba no ichiichiyoha
  */
 public class ResultSetUtils {

@@ -1,6 +1,6 @@
 package com.maxwellnie.velox.sql.core.natives.jdbc.resultset.hash;
 
-import com.maxwellnie.velox.sql.core.utils.common.CollectionUtils;
+import com.maxwellnie.velox.sql.core.utils.base.CollectionUtils;
 
 import java.lang.reflect.Array;
 import java.util.Collection;
@@ -10,8 +10,14 @@ import java.util.Objects;
  * Hash
  */
 public class Hash {
-    int hash0 = 4;
     public static final Hash NO_HASH_KEY = new Hash();
+    int hash0 = 4;
+
+    public static Hash create(Object... values) {
+        Hash hash = new Hash();
+        for (Object value : values) hash.addValue(value);
+        return hash;
+    }
 
     public void addValue(Object value) {
         if (value == null) ;
@@ -27,12 +33,6 @@ public class Hash {
 
     public void addValues(Object... values) {
         for (Object value : values) addValue(value);
-    }
-
-    public static Hash create(Object... values) {
-        Hash hash = new Hash();
-        for (Object value : values) hash.addValue(value);
-        return hash;
     }
 
     @Override

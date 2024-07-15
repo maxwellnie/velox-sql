@@ -1,7 +1,6 @@
 package com.maxwellnie.velox.sql.core.proxy.executor.aspect;
 
 /**
- *
  * @author Maxwell Nie
  */
 public abstract class AbstractMethodHandler implements MethodHandler {
@@ -20,6 +19,7 @@ public abstract class AbstractMethodHandler implements MethodHandler {
         this.aspects = aspects;
         this.signature = signature;
     }
+
     /**
      * 重写compareTo方法，用于比较MethodHandler对象之间的顺序
      *
@@ -29,8 +29,9 @@ public abstract class AbstractMethodHandler implements MethodHandler {
     @Override
     public int compareTo(MethodHandler o) {
         long currentWeight = this.index - o.getIndex();
-        return currentWeight == 0?-1:currentWeight < 0?-1:1;
+        return currentWeight == 0 ? -1 : currentWeight < 0 ? -1 : 1;
     }
+
     @Override
     public long getIndex() {
         return index;

@@ -1,6 +1,5 @@
 package com.maxwellnie.velox.sql.core.natives.jdbc.sql.row;
 
-import com.maxwellnie.velox.sql.core.natives.type.convertor.ConvertorManager;
 import com.maxwellnie.velox.sql.core.meta.MetaData;
 import com.maxwellnie.velox.sql.core.natives.dao.SqlDecorator;
 import com.maxwellnie.velox.sql.core.natives.exception.ExecutorException;
@@ -8,6 +7,7 @@ import com.maxwellnie.velox.sql.core.natives.jdbc.sql.SqlPool;
 import com.maxwellnie.velox.sql.core.natives.jdbc.sql.SqlType;
 import com.maxwellnie.velox.sql.core.natives.jdbc.sql.creator.SqlCreator;
 import com.maxwellnie.velox.sql.core.natives.jdbc.table.TableInfo;
+import com.maxwellnie.velox.sql.core.natives.type.convertor.ConvertorManager;
 import com.maxwellnie.velox.sql.core.natives.type.convertor.TypeConvertor;
 
 import java.io.Serializable;
@@ -34,7 +34,7 @@ public class DeleteRowSqlFactory implements RowSqlFactory {
         RowSql rowSql = new RowSql();
         rowSql.setParams(params);
         rowSql.setSqlType(sqlType);
-        if(ids == null && !sqlType.equals(SqlType.BATCH_UPDATE)){
+        if (ids == null && !sqlType.equals(SqlType.BATCH_UPDATE)) {
             SqlDecorator<?> sqlDecorator = metaData.getProperty("sqlDecorator");
             List<Object> aRowSqlParams = new LinkedList<>();
             if (sqlDecorator != null) {
@@ -51,9 +51,9 @@ public class DeleteRowSqlFactory implements RowSqlFactory {
                     }
                     otherSql.append(SqlPool.SPACE).append(SqlCreator.create(sqlDecorator.getWhereFragment().getSql(), inlineSqlFragment.toString()));
                 }
-                if (sqlDecorator.getApplySql()!=null){
+                if (sqlDecorator.getApplySql() != null) {
                     otherSql.append(SqlPool.SPACE).append(sqlDecorator.getApplySql().getSql());
-                    for (Object obj : sqlDecorator.getApplySql().getParams()){
+                    for (Object obj : sqlDecorator.getApplySql().getParams()) {
                         typeConvertors.add(ConvertorManager.getConvertor(obj.getClass()));
                     }
                     aRowSqlParams.addAll(sqlDecorator.getApplySql().getParams());
@@ -64,15 +64,15 @@ public class DeleteRowSqlFactory implements RowSqlFactory {
             rowSql.setTypeConvertors(typeConvertors);
             rowSql.setSqlDecorator(sqlDecorator);
             return rowSql;
-        }else {
+        } else {
             StringBuilder sql = new StringBuilder("");
             boolean justSetParam = false;
-            for (Serializable id : ids){
+            for (Serializable id : ids) {
                 otherSql = new StringBuilder("");
                 List<Object> aRowSqlParams = new LinkedList<>();
                 aRowSqlParams.add(id);
                 params.add(aRowSqlParams);
-                if(!justSetParam){
+                if (!justSetParam) {
                     rowSql.setTypeConvertors(Collections.singletonList(ConvertorManager.getConvertor(id.getClass())));
                     justSetParam = true;
                     otherSql.append(SqlCreator.create(SqlPool.WHERE, tableInfo.getPkColumn().getColumnName() + " = ?"));

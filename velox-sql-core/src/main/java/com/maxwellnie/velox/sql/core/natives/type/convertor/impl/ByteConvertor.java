@@ -23,14 +23,14 @@ public class ByteConvertor implements TypeConvertor<Byte> {
 
     @Override
     public void addParam(PreparedStatement preparedStatement, int index, Object param) throws SQLException {
-        if(param == null)
+        if (param == null)
             preparedStatement.setByte(index, (byte) 0);
         else if (param instanceof String)
             preparedStatement.setByte(index, Byte.parseByte((String) param));
         else if (param instanceof Number)
             preparedStatement.setByte(index, ((Number) param).byteValue());
         else
-            throw new TypeConvertException("The param ["+param+"] is not convert to java.util.Byte");
+            throw new TypeConvertException("The param [" + param + "] is not convert to java.util.Byte");
     }
 
     @Override
