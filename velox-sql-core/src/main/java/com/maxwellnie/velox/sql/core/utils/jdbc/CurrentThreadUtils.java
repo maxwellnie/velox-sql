@@ -9,16 +9,22 @@ import javax.sql.DataSource;
  */
 public class CurrentThreadUtils {
     private static final ThreadLocal<String> dataSourceName = new ThreadLocal<>();
-    public static void setDataSourceName(String name) {
-        dataSourceName.set(name);
-    }
+
     public static String getDataSourceName() {
         return dataSourceName.get();
     }
+
+    public static void setDataSourceName(String name) {
+        dataSourceName.set(name);
+    }
+
     public static void clearDataSourceName() {
         dataSourceName.remove();
     }
+
     public static DataSource getDataSource() {
         return DataSourceManager.getDataSource(getDataSourceName());
     }
+
+
 }

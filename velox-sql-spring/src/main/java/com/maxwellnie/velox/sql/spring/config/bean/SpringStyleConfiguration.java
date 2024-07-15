@@ -2,7 +2,11 @@ package com.maxwellnie.velox.sql.spring.config.bean;
 
 import com.maxwellnie.velox.sql.core.cache.impl.LRUCache;
 import com.maxwellnie.velox.sql.core.natives.dao.BaseDao;
+import com.maxwellnie.velox.sql.core.natives.jdbc.dialect.Dialect;
+import com.maxwellnie.velox.sql.core.natives.jdbc.dialect.MySqlDialect;
 import com.maxwellnie.velox.sql.core.natives.task.DefaultTaskQueue;
+import com.maxwellnie.velox.sql.core.natives.task.TaskQueue;
+import com.maxwellnie.velox.sql.spring.support.NoSpringTransactionTask;
 
 import java.sql.Connection;
 
@@ -33,8 +37,17 @@ public class SpringStyleConfiguration {
      * cacheClassName
      */
     private String cacheClassName = LRUCache.class.getName();
-    private String taskQueueClassName = DefaultTaskQueue.class.getName();
-    private String dialect;
+    private Dialect dialect = new MySqlDialect();
+    private String transactionTaskClassName = NoSpringTransactionTask.class.getName();
+    private TaskQueue taskQueue = new DefaultTaskQueue();
+
+    public TaskQueue getTaskQueue() {
+        return taskQueue;
+    }
+
+    public void setTaskQueue(TaskQueue taskQueue) {
+        this.taskQueue = taskQueue;
+    }
 
     public boolean getIsTaskQueue() {
         return isTaskQueue;
@@ -42,14 +55,6 @@ public class SpringStyleConfiguration {
 
     public void setIsTaskQueue(boolean taskQueue) {
         isTaskQueue = taskQueue;
-    }
-
-    public String getTaskQueueClassName() {
-        return taskQueueClassName;
-    }
-
-    public void setTaskQueueClassName(String taskQueueClassName) {
-        this.taskQueueClassName = taskQueueClassName;
     }
 
     public String getDaoImplClassName() {
@@ -108,11 +113,19 @@ public class SpringStyleConfiguration {
         this.cacheClassName = cacheClassName;
     }
 
-    public String getDialect() {
+    public Dialect getDialect() {
         return dialect;
     }
 
-    public void setDialect(String dialect) {
+    public void setDialect(Dialect dialect) {
         this.dialect = dialect;
+    }
+
+    public String getTransactionTaskClassName() {
+        return transactionTaskClassName;
+    }
+
+    public void setTransactionTaskClassName(String transactionTaskClassName) {
+        this.transactionTaskClassName = transactionTaskClassName;
     }
 }

@@ -1,18 +1,20 @@
 package com.maxwellnie.velox.sql.core.natives.jdbc.transaction;
 
-import com.maxwellnie.velox.sql.core.natives.jdbc.session.ConnectionHolder;
+import com.maxwellnie.velox.sql.core.distributed.TransactionTask;
+import com.maxwellnie.velox.sql.core.natives.jdbc.session.DataSourceAndConnectionHolder;
+import com.maxwellnie.velox.sql.core.natives.jdbc.transaction.impl.jdbc.Connections;
 import com.maxwellnie.velox.sql.core.natives.resource.ResourceHolder;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.function.Consumer;
 
 /**
  * DaoImpl的事务
  *
  * @author Maxwell Nie
  */
-public interface Transaction extends ConnectionHolder, ResourceHolder<DataSource> {
+public interface Transaction extends DataSourceAndConnectionHolder, ResourceHolder<DataSource> {
     /**
      * 数据回滚
      *
@@ -33,4 +35,27 @@ public interface Transaction extends ConnectionHolder, ResourceHolder<DataSource
      * @throws SQLException
      */
     void release() throws SQLException;
+
+    TransactionTask getTransactionTask();
+
+    /**
+     * 预处理Connection
+     *
+     * @param consumer
+     */
+    void prepare(Consumer<Connections.DataSourceAndConnection> consumer);
+
+    /**
+     * 移除预处理Connection
+     *
+     * @param consumer
+     */
+    void removePrepare(Consumer<Connections.DataSourceAndConnection> consumer);
+
+    /**
+     * 恢复预处理前的Connection
+     *
+     * @param consumer
+     */
+    void restore(Consumer<Connections.DataSourceAndConnection> consumer);
 }

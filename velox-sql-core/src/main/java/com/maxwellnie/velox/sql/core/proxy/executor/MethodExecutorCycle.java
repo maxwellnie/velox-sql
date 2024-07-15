@@ -2,6 +2,7 @@ package com.maxwellnie.velox.sql.core.proxy.executor;
 
 import com.maxwellnie.velox.sql.core.cache.Cache;
 import com.maxwellnie.velox.sql.core.cache.key.CacheKey;
+import com.maxwellnie.velox.sql.core.distributed.TransactionTask;
 import com.maxwellnie.velox.sql.core.meta.MetaData;
 import com.maxwellnie.velox.sql.core.natives.exception.ExecutorException;
 import com.maxwellnie.velox.sql.core.natives.jdbc.mapping.ReturnTypeMapping;
@@ -16,12 +17,13 @@ import com.maxwellnie.velox.sql.core.proxy.executor.aspect.AbstractMethodHandler
 import com.maxwellnie.velox.sql.core.proxy.executor.aspect.MethodHandler;
 import com.maxwellnie.velox.sql.core.proxy.executor.aspect.SimpleInvocation;
 import com.maxwellnie.velox.sql.core.proxy.executor.result.SqlResult;
-import com.maxwellnie.velox.sql.core.utils.common.MetaWrapperUtils;
-import com.maxwellnie.velox.sql.core.utils.common.SystemClock;
+import com.maxwellnie.velox.sql.core.utils.base.MetaWrapperUtils;
+import com.maxwellnie.velox.sql.core.utils.base.SystemClock;
+import com.maxwellnie.velox.sql.core.utils.java.StringUtils;
+import com.maxwellnie.velox.sql.core.utils.jdbc.CurrentThreadUtils;
 import org.slf4j.Logger;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -30,7 +32,7 @@ import java.util.concurrent.atomic.AtomicReference;
 public class MethodExecutorCycle {
     public static Object start(MethodExecutor executor, Logger logger, TableInfo tableInfo, JdbcSession jdbcSession, Cache cache, String daoImplHashCode, ReturnTypeMapping returnTypeMapping, Object[] args) throws ExecutorException {
         executor.check(tableInfo, jdbcSession, args);
-        // 元数据
+        // 预处理
         MetaData metaData = executor.prepared(tableInfo, args);
         // 构建SQL
         RowSql rowSql = executor.buildRowSql(metaData);
@@ -59,14 +61,14 @@ public class MethodExecutorCycle {
                     if (value == Empty.EMPTY)
                         return null;
                     return value;
-                } else if(taskQueue != null) {
+                } else if (taskQueue != null) {
                     taskQueue.require(daoImplHashCode, cacheKey, () -> {
                         if (rowSql.getSqlType().equals(SqlType.QUERY)) {
                             result.set(cache.get(cacheKey));
                             if (result.get() == null) {
                                 result.set(executor.runSql(statementWrapper, rowSql));
                                 result.set(handleResult(executor, logger, tableInfo, jdbcSession, cache, returnTypeMapping, startTime, statementWrapper, result));
-                            }else
+                            } else
                                 logger.debug("Cache hit.");
                         } else {
                             result.set(executor.runSql(statementWrapper, rowSql));
@@ -77,13 +79,30 @@ public class MethodExecutorCycle {
                     if (value == Empty.EMPTY)
                         return null;
                     return value;
-                }else
+                } else
                     result.set(executor.runSql(statementWrapper, rowSql));
-            }else
+            } else
                 result.set(executor.runSql(statementWrapper, rowSql));
-            return handleResult(executor, logger, tableInfo, jdbcSession, cache, returnTypeMapping, startTime, statementWrapper, result);
+            Object resultObject = handleResult(executor, logger, tableInfo, jdbcSession, cache, returnTypeMapping, startTime, statementWrapper, result);
+            SqlType sqlType = MetaWrapperUtils.of(statementWrapper, "sqlType");
+            if (!sqlType.equals(SqlType.QUERY)) {
+                TransactionTask transactionTask = MetaWrapperUtils.of(statementWrapper, "transactionTask");
+                MetaData transactionMetaData = MetaData.ofEmpty();
+                transactionMetaData.addProperty("dataSource", statementWrapper.getProperty("dataSource"));
+                transactionMetaData.addProperty("connection", statementWrapper.getProperty("connection"));
+                transactionMetaData.addProperty("rowSql", rowSql);
+                transactionTask.add(transactionMetaData);
+            }
+            return resultObject;
         }
         throw new ExecutorException("rowSql build failed,rowSql is null.");
+    }
+
+    private static void setDataSource(TableInfo tableInfo) {
+        String id = CurrentThreadUtils.getDataSourceName();
+        if (StringUtils.isNullOrEmpty(id) && StringUtils.isNullOrEmpty(tableInfo.getDataSourceName())) {
+            CurrentThreadUtils.setDataSourceName(tableInfo.getDataSourceName());
+        }
     }
 
     private static Object handleResult(MethodExecutor executor, Logger logger, TableInfo tableInfo, JdbcSession context, Cache cache, ReturnTypeMapping returnTypeMapping, long startTime, StatementWrapper statementWrapper, AtomicReference<Object> result) {

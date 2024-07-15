@@ -30,10 +30,12 @@ public interface JdbcSession extends Closeable {
      * 关闭环境
      */
     void close();
+
     /**
      * 关闭环境
      */
     void close(boolean commit);
+
     /**
      * 提交操作
      */
@@ -64,5 +66,6 @@ public interface JdbcSession extends Closeable {
      * @return
      */
     boolean isClosed();
+
     TaskQueue getTaskQueue();
 }

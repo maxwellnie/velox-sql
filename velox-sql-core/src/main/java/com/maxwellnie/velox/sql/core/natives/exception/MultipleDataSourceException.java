@@ -3,7 +3,7 @@ package com.maxwellnie.velox.sql.core.natives.exception;
 /**
  * @author Maxwell Nie
  */
-public class MultipleDataSourceException extends RuntimeException{
+public class MultipleDataSourceException extends RuntimeException {
     public MultipleDataSourceException() {
     }
 
