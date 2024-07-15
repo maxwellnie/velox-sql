@@ -1,7 +1,5 @@
 package com.maxwellnie.velox.sql.core.annotation;
 
-import com.maxwellnie.velox.sql.core.natives.enums.JoinType;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -24,4 +22,9 @@ public @interface Entity {
      * @return 一次性从数据库查询数据条目
      */
     int fetchSize() default 0;
+
+    /**
+     * @return 数据源名称
+     */
+    String dataSourceName() default "";
 }
