@@ -4,7 +4,7 @@ import com.maxwellnie.velox.sql.core.natives.jdbc.session.JdbcSession;
 import org.springframework.transaction.support.ResourceHolderSupport;
 
 /**
- * JdbcContext持有者
+ * JdbcSession持有者
  *
  * @author Maxwell Nie
  */

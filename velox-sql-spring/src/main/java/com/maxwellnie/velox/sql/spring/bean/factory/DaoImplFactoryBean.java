@@ -25,6 +25,7 @@ public class DaoImplFactoryBean<T> implements FactoryBean<T> {
         return daoImplFactory.produce(null, jdbcSessionFactory.getHolderObject().getMethodMappedManager());
     }
 
+
     @Override
     public Class<?> getObjectType() {
         return this.daoImplClass;

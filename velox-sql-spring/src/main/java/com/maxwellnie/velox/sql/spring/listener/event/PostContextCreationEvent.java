@@ -9,10 +9,11 @@ import java.util.Arrays;
 /**
  * @author Maxwell Nie
  */
-public class PostContextCreationEvent extends SupportEvent{
+public class PostContextCreationEvent extends SupportEvent {
     protected Context context;
     protected DataSource dataSource;
     protected TransactionFactory transactionFactory;
+
     public PostContextCreationEvent(Context context, DataSource dataSource, TransactionFactory transactionFactory) {
         super(Arrays.asList(context, dataSource, transactionFactory));
         this.context = context;

@@ -11,6 +11,7 @@ public abstract class SupportEvent extends ApplicationEvent {
     public SupportEvent(List<Object> obj) {
         super(obj);
     }
+
     public List<Object> getParamObjects() {
         return (List<Object>) getSource();
     }

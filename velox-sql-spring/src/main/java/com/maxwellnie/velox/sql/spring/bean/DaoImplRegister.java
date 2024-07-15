@@ -78,8 +78,8 @@ public class DaoImplRegister implements BeanDefinitionRegistryPostProcessor {
     }
 
     private void register(BeanDefinitionRegistry registry) {
-        if(daoImplClass == null){
-            if(StringUtils.isNullOrEmpty(daoImplClassName))
+        if (daoImplClass == null) {
+            if (StringUtils.isNullOrEmpty(daoImplClassName))
                 throw new BeanCreationException("The daoImplClass is null.");
             else {
                 try {
@@ -100,11 +100,13 @@ public class DaoImplRegister implements BeanDefinitionRegistryPostProcessor {
             }
         }
     }
-    private void registerSpringTransactionSupport(BeanDefinitionRegistry registry){
+
+    private void registerSpringTransactionSupport(BeanDefinitionRegistry registry) {
         BeanDefinitionBuilder beanDefinitionBuilder = BeanDefinitionBuilder.genericBeanDefinition(SpringTransactionSupportInjection.class);
         beanDefinitionBuilder.setScope(BeanDefinition.SCOPE_SINGLETON);
         registry.registerBeanDefinition("springTransactionSupportInject", beanDefinitionBuilder.getBeanDefinition());
     }
+
     public String getPackagePaths() {
         return packagePaths;
     }

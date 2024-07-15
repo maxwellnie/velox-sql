@@ -1,17 +1,18 @@
 package com.maxwellnie.velox.sql.spring.listener.event;
 
-import com.maxwellnie.velox.sql.core.natives.jdbc.session.JdbcSessionFactory;
 import com.maxwellnie.velox.sql.core.natives.jdbc.context.Context;
+import com.maxwellnie.velox.sql.core.natives.jdbc.session.JdbcSessionFactory;
 
 import java.util.Arrays;
 
 /**
  * @author Maxwell Nie
  */
-public class PostJdbcContextFactoryEvent extends SupportEvent{
+public class PostJdbcSessionFactoryEvent extends SupportEvent {
     protected Context context;
     protected JdbcSessionFactory jdbcSessionFactory;
-    public PostJdbcContextFactoryEvent(Context context, JdbcSessionFactory jdbcSessionFactory) {
+
+    public PostJdbcSessionFactoryEvent(Context context, JdbcSessionFactory jdbcSessionFactory) {
         super(Arrays.asList(context, jdbcSessionFactory));
         this.context = context;
         this.jdbcSessionFactory = jdbcSessionFactory;
@@ -21,7 +22,7 @@ public class PostJdbcContextFactoryEvent extends SupportEvent{
         return context;
     }
 
-    public JdbcSessionFactory getJdbcContextFactory() {
+    public JdbcSessionFactory getJdbcSessionFactory() {
         return jdbcSessionFactory;
     }
 }

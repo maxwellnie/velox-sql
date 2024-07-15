@@ -16,6 +16,7 @@ public class SpringTransactionFactory extends BaseTransactionFactory {
     public SpringTransactionFactory(DataSource dataSource) {
         super(dataSource);
     }
+
     @Override
     public Transaction produce() {
         return new SpringTransaction(new ProxyCurrentDataSource(this.getDefaultDataSource()));

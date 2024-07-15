@@ -1,8 +1,8 @@
 package com.maxwellnie.velox.sql.spring.resource;
 
+import com.maxwellnie.velox.sql.core.natives.jdbc.context.Context;
 import com.maxwellnie.velox.sql.core.natives.jdbc.session.JdbcSession;
 import com.maxwellnie.velox.sql.core.natives.jdbc.session.JdbcSessionFactory;
-import com.maxwellnie.velox.sql.core.natives.jdbc.context.Context;
 import com.maxwellnie.velox.sql.spring.transaction.SpringTransactionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,34 +32,35 @@ public abstract class JdbcSessionUtils {
     private static final Logger logger = LoggerFactory.getLogger(JdbcSessionUtils.class);
 
     /**
-     * 当JdbcContext需要被spring管理时，获取一个被spring管理的JdbcContext，否则则返回未被管理的JdbcContext。
+     * 当JdbcSession需要被spring管理时，获取一个被spring管理的JdbcSession，否则则返回未被管理的JdbcSession。
      *
      * @param jdbcSessionFactory
-     * @return JdbcContext实例
+     * @return JdbcSession实例
      * @see DataSourceUtils#getConnection(DataSource)
      */
-    public static JdbcSession getJdbcContext(JdbcSessionFactory jdbcSessionFactory) {
+    public static JdbcSession getJdbcSession(JdbcSessionFactory jdbcSessionFactory) {
         notNull(jdbcSessionFactory, "JdbcSessionFactory must be not null");
         JdbcSessionHolder jdbcSessionHolder = (JdbcSessionHolder) TransactionSynchronizationManager.getResource(jdbcSessionFactory);
-        JdbcSession holderContext = requestJdbcContext(jdbcSessionHolder);
+        JdbcSession holderContext = requestJdbcSession(jdbcSessionHolder);
         if (holderContext != null) {
+            logger.debug("Get JdbcSession [{}] from TransactionSynchronizationManager", holderContext);
             return holderContext;
         } else {
             holderContext = jdbcSessionFactory.produce();
-            registerJdbcContextHolder(jdbcSessionFactory, holderContext);
+            registerJdbcSessionHolder(jdbcSessionFactory, holderContext);
         }
-        logger.debug("Get JdbcContext [{}] from JdbcSessionFactory", holderContext);
+        logger.debug("Get JdbcSession [{}] from JdbcSessionFactory", holderContext);
         return holderContext;
     }
 
     /**
-     * 请求一个被spring管理的JdbcContext
+     * 请求一个被spring管理的JdbcSession
      *
      * @param holder
-     * @return 被spring管理的JdbcContext
+     * @return 被spring管理的JdbcSession
      * @see PlatformTransactionManager
      */
-    private static JdbcSession requestJdbcContext(JdbcSessionHolder holder) {
+    private static JdbcSession requestJdbcSession(JdbcSessionHolder holder) {
         if (holder != null && holder.isSynchronizedWithTransaction()) {
             holder.requested();
             return holder.getJdbcSession();
@@ -68,12 +69,12 @@ public abstract class JdbcSessionUtils {
     }
 
     /**
-     * 释放JdbcContext在spring的资源
+     * 释放JdbcSession在spring的资源
      *
      * @param jdbcSession
      * @param jdbcSessionFactory
      */
-    public static void releaseJdbcContext(JdbcSession jdbcSession, JdbcSessionFactory jdbcSessionFactory) {
+    public static void releaseJdbcSession(JdbcSession jdbcSession, JdbcSessionFactory jdbcSessionFactory) {
         notNull(jdbcSession, "JdbcSession must be not null");
         notNull(jdbcSessionFactory, "JdbcSessionFactory must be not null");
 
@@ -88,13 +89,13 @@ public abstract class JdbcSessionUtils {
     }
 
     /**
-     * 注册JdbcContext资源到spring
+     * 注册JdbcSession资源到spring
      *
      * @param jdbcSessionFactory
      * @param jdbcSession
      * @see DataSourceUtils#doGetConnection(DataSource)
      */
-    private static void registerJdbcContextHolder(JdbcSessionFactory jdbcSessionFactory, JdbcSession jdbcSession) {
+    private static void registerJdbcSessionHolder(JdbcSessionFactory jdbcSessionFactory, JdbcSession jdbcSession) {
         JdbcSessionHolder holder;
         if (TransactionSynchronizationManager.isSynchronizationActive()) {
             Context context = jdbcSessionFactory.getHolderObject();
@@ -122,14 +123,14 @@ public abstract class JdbcSessionUtils {
     }
 
     /**
-     * 检测JdbcContext是否支持spring事务管理
+     * 检测JdbcSession是否支持spring事务管理
      *
      * @param jdbcSession
      * @param contextFactory
      * @return Boolean
      * @see DataSourceUtils#isConnectionTransactional(Connection, DataSource)
      */
-    public static boolean isJdbcContextTransactional(JdbcSession jdbcSession, JdbcSessionFactory contextFactory) {
+    public static boolean isJdbcSessionTransactional(JdbcSession jdbcSession, JdbcSessionFactory contextFactory) {
         notNull(jdbcSession, "JdbcSession must be not null");
         notNull(contextFactory, "JdbcSessionFactory must be not null");
 
@@ -157,7 +158,7 @@ public abstract class JdbcSessionUtils {
         }
 
         /**
-         * 提交前要将JdbcContext所携带的脏数据提交
+         * 提交前要将JdbcSession所携带的脏数据提交
          *
          * @param readOnly whether the transaction is defined as read-only transaction
          */
@@ -205,9 +206,9 @@ public abstract class JdbcSessionUtils {
         }
 
         /**
-         * 因为jdbcContext包装了Connection，所以应该将JdbcContext在事务同步器顺序调到Connection事务的前面
+         * 因为JdbcSession包装了Connection，所以应该将JdbcSession在事务同步器顺序调到Connection事务的前面
          *
-         * @return 事务同步器需要清理JdbcContext时，需要获取到它的序号，按序号清理，这里是他的序号
+         * @return 事务同步器需要清理JdbcSession时，需要获取到它的序号，按序号清理，这里是他的序号
          * @see #JDBC_CONTEXT_SYNCHRONIZATION_ORDER
          */
         @Override
@@ -233,4 +234,5 @@ public abstract class JdbcSessionUtils {
                 TransactionSynchronizationManager.bindResource(this.jdbcSessionFactory, this.jdbcSessionHolder);
         }
     }
+
 }
