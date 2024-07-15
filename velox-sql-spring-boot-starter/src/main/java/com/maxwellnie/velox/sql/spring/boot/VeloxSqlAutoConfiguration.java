@@ -32,7 +32,7 @@ public class VeloxSqlAutoConfiguration {
         JdbcSessionFactoryBean jdbcSessionFactoryBean = new JdbcSessionFactoryBean();
         jdbcSessionFactoryBean.setDataSource(dataSource);
         jdbcSessionFactoryBean.setConfiguration(veloxJpaBootConfig.getGlobal());
-        jdbcSessionFactoryBean.setTableInfoUtilsClass(veloxJpaBootConfig.getTableInfoManagerClass());
+        jdbcSessionFactoryBean.setTableInfoManagerClassName(veloxJpaBootConfig.getTableInfoManagerClass());
         return jdbcSessionFactoryBean;
     }
 }

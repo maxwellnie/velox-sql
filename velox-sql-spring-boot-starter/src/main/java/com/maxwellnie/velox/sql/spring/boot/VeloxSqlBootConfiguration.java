@@ -2,6 +2,7 @@ package com.maxwellnie.velox.sql.spring.boot;
 
 import com.maxwellnie.velox.sql.core.config.Configuration;
 import com.maxwellnie.velox.sql.core.config.simple.SingletonConfiguration;
+import com.maxwellnie.velox.sql.spring.support.NoSpringTransactionTask;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
@@ -12,9 +13,20 @@ import org.springframework.boot.context.properties.NestedConfigurationProperty;
 public class VeloxSqlBootConfiguration {
     private String tableInfoManagerClass;
     @NestedConfigurationProperty
-    private Configuration global = SingletonConfiguration.getInstance();
+    private Configuration global = initConfiguration();
+
     public String getTableInfoManagerClass() {
         return tableInfoManagerClass;
+    }
+
+    private Configuration initConfiguration() {
+        Configuration configuration = SingletonConfiguration.getInstance();
+        configuration.setTransactionTaskClass(NoSpringTransactionTask.class);
+        return configuration;
+    }
+
+    public void setTableInfoManagerClass(String tableInfoManagerClass) {
+        this.tableInfoManagerClass = tableInfoManagerClass;
     }
 
     public Configuration getGlobal() {
@@ -23,9 +35,5 @@ public class VeloxSqlBootConfiguration {
 
     public void setGlobal(Configuration configuration) {
         this.global = configuration;
-    }
-
-    public void setTableInfoManagerClass(String tableInfoManagerClass) {
-        this.tableInfoManagerClass = tableInfoManagerClass;
     }
 }
